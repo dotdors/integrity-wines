@@ -1,0 +1,258 @@
+:root {
+    --age-gate-overlay-bg: rgba(31, 31, 31, 0.92);
+    --age-gate-popup-bg: #1f1f1f;
+    --age-gate-text: #ffffff;
+    --age-gate-text-muted: #cccccc;
+    --age-gate-border: rgba(255, 255, 255, 0.15);
+    --age-gate-primary: #ff6b35;
+    --age-gate-primary-hover: #ff8555;
+}
+
+#age-gate-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: var(--age-gate-overlay-bg);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 999999;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+#age-gate-overlay.active {
+    opacity: 1;
+}
+
+#age-gate-popup {
+    width: 90%;
+    max-width: 420px;
+    margin: 12vh auto 0;
+    padding: 32px;
+    background: var(--age-gate-popup-bg);
+    color: var(--age-gate-text);
+    border-radius: 12px;
+    border: 1px solid var(--age-gate-border);
+    box-shadow: 0 12px 45px rgba(0, 0, 0, 0.65);
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+#age-gate-popup h2 {
+    margin: 0 0 12px;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--age-gate-text);
+}
+
+#age-gate-popup .subtitle {
+    margin: 0 0 24px;
+    font-size: 16px;
+    line-height: 1.5;
+    color: var(--age-gate-text-muted);
+}
+
+/* Age verification buttons */
+.age-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.age-buttons button {
+    width: 100%;
+    padding: 14px 20px;
+    font-size: 16px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border: 2px solid;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.age-buttons button.primary {
+    background: var(--age-gate-primary);
+    color: var(--age-gate-popup-bg);
+    border-color: var(--age-gate-primary);
+}
+
+.age-buttons button.primary:hover,
+.age-buttons button.primary:focus {
+    background: var(--age-gate-primary-hover);
+    border-color: var(--age-gate-primary-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+}
+
+.age-buttons button.secondary {
+    background: transparent;
+    color: var(--age-gate-text-muted);
+    border-color: var(--age-gate-border);
+}
+
+.age-buttons button.secondary:hover,
+.age-buttons button.secondary:focus {
+    color: var(--age-gate-text);
+    border-color: var(--age-gate-text-muted);
+}
+
+/* Cookie preferences section */
+#cookie-preferences {
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.cookie-info {
+    font-size: 14px;
+    line-height: 1.6;
+    margin: 0 0 16px;
+    color: var(--age-gate-text-muted);
+}
+
+.cookie-options {
+    margin-bottom: 20px;
+}
+
+.cookie-options label {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    margin-bottom: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--age-gate-border);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.cookie-options label:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.25);
+}
+
+.cookie-options input[type="radio"] {
+    margin: 0 12px 0 0;
+    cursor: pointer;
+}
+
+.cookie-options label span {
+    font-size: 15px;
+    flex: 1;
+}
+
+.cookie-options label strong {
+    font-weight: 700;
+    color: var(--age-gate-text);
+}
+
+.cookie-link {
+    text-align: center;
+    margin: 16px 0;
+    font-size: 13px;
+}
+
+.cookie-link a {
+    color: var(--age-gate-primary);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s ease;
+}
+
+.cookie-link a:hover,
+.cookie-link a:focus {
+    border-bottom-color: var(--age-gate-primary);
+}
+
+#age-gate-confirm {
+    width: 100%;
+    padding: 14px 20px;
+    font-size: 16px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    background: var(--age-gate-primary);
+    color: var(--age-gate-popup-bg);
+    border: 2px solid var(--age-gate-primary);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+#age-gate-confirm:hover,
+#age-gate-confirm:focus {
+    background: var(--age-gate-primary-hover);
+    border-color: var(--age-gate-primary-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+}
+
+/* Declined message */
+#age-gate-declined {
+    text-align: center;
+    animation: fadeIn 0.3s ease;
+}
+
+#age-gate-declined .declined-message {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0 0 12px;
+    color: var(--age-gate-text);
+}
+
+#age-gate-declined p:last-child {
+    font-size: 14px;
+    color: var(--age-gate-text-muted);
+    margin: 0;
+}
+
+/* Focus styles for accessibility */
+button:focus,
+input:focus,
+a:focus {
+    outline: 2px solid var(--age-gate-primary);
+    outline-offset: 2px;
+}
+
+/* Mobile adjustments */
+@media (max-width: 480px) {
+    #age-gate-popup {
+        margin-top: 8vh;
+        padding: 24px;
+        max-width: 95%;
+    }
+
+    #age-gate-popup h2 {
+        font-size: 20px;
+    }
+
+    #age-gate-popup .subtitle {
+        font-size: 14px;
+    }
+
+    .age-buttons button,
+    #age-gate-confirm {
+        padding: 12px 16px;
+        font-size: 14px;
+    }
+}
