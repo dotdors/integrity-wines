@@ -1,0 +1,164 @@
+/**
+ * Admin Styles for DS Wine Guy
+ */
+
+/* Meta Box Tables */
+.dswg-meta-box .form-table th {
+    width: 200px;
+    padding: 15px 10px 15px 0;
+}
+
+.dswg-meta-box .form-table td {
+    padding: 15px 10px;
+}
+
+/* Required field indicator */
+.required {
+    color: #d63638;
+}
+
+/* Gallery Styles */
+.dswg-gallery-container {
+    padding: 10px 0;
+}
+
+.dswg-gallery-images {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 15px;
+    min-height: 50px;
+    padding: 10px;
+    border: 2px dashed #c3c4c7;
+    border-radius: 4px;
+}
+
+.dswg-gallery-images:empty {
+    display: block;
+}
+
+.dswg-gallery-images:empty::before {
+    content: 'No images added yet. Click "Add Images to Gallery" to get started.';
+    color: #646970;
+    font-style: italic;
+}
+
+.dswg-gallery-image {
+    position: relative;
+    display: inline-block;
+    cursor: move;
+}
+
+.dswg-gallery-image img {
+    display: block;
+    max-width: 150px;
+    height: auto;
+    border: 1px solid #c3c4c7;
+    border-radius: 3px;
+}
+
+.dswg-remove-image {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: #d63638;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    font-size: 18px;
+    line-height: 1;
+    font-weight: bold;
+}
+
+.dswg-remove-image:hover {
+    background: #a00;
+}
+
+/* Logo Preview */
+.dswg-logo-preview {
+    margin: 10px 0;
+    min-height: 50px;
+}
+
+.dswg-logo-preview img {
+    max-width: 150px;
+    height: auto;
+    border: 1px solid #c3c4c7;
+    border-radius: 3px;
+}
+
+.dswg-logo-preview:empty::before {
+    content: 'No logo uploaded';
+    color: #646970;
+    font-style: italic;
+}
+
+/* Files List */
+.dswg-files-container {
+    padding: 10px 0;
+}
+
+.dswg-files-list {
+    min-height: 50px;
+    margin-bottom: 15px;
+}
+
+.dswg-files-list:empty::before {
+    content: 'No files added yet';
+    color: #646970;
+    font-style: italic;
+}
+
+.dswg-file-item {
+    padding: 10px;
+    margin-bottom: 8px;
+    background: #f6f7f7;
+    border: 1px solid #c3c4c7;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.dswg-file-item .dashicons {
+    color: #2271b1;
+    flex-shrink: 0;
+}
+
+.dswg-file-item a {
+    flex: 1;
+    text-decoration: none;
+    color: #2271b1;
+}
+
+.dswg-file-item a:hover {
+    color: #135e96;
+}
+
+.dswg-remove-file {
+    color: #d63638;
+    text-decoration: none;
+    flex-shrink: 0;
+}
+
+.dswg-remove-file:hover {
+    color: #a00;
+}
+
+/* Admin List Columns */
+.column-wine_count,
+.column-vintage {
+    width: 80px;
+}
+
+.column-country,
+.column-wine_type {
+    width: 120px;
+}
+
+.column-producer {
+    width: 200px;
+}
