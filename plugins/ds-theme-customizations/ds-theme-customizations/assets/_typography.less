@@ -1,0 +1,117 @@
+// out: false
+// Typography - Integrity Wines
+// Classic, elegant, readable
+
+body {
+  font-family: var(--font-primary);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-base);
+  color: var(--color-text);
+  background-color: var(--color-background);
+}
+
+// Headings
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-primary);
+  line-height: var(--line-height-tight);
+  color: var(--color-text);
+  margin-top: 0;
+  margin-bottom: var(--spacing-md);
+  font-weight: 600;
+}
+
+h1 {
+  font-size: var(--font-size-4xl);
+  color: var(--color-wine-red);
+  
+  @media (max-width: 768px) {
+    font-size: var(--font-size-3xl);
+  }
+}
+
+h2 {
+  font-size: var(--font-size-3xl);
+  
+  @media (max-width: 768px) {
+    font-size: var(--font-size-2xl);
+  }
+}
+
+h3 {
+  font-size: var(--font-size-2xl);
+}
+
+h4 {
+  font-size: var(--font-size-xl);
+}
+
+h5 {
+  font-size: var(--font-size-large);
+}
+
+h6 {
+  font-size: var(--font-size-base);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+// Paragraphs
+p {
+  margin-top: 0;
+  margin-bottom: var(--spacing-md);
+}
+
+// Links
+a {
+  color: var(--color-wine-red);
+  text-decoration: none;
+  transition: var(--transition);
+  
+  &:hover {
+    color: var(--color-wine-highlight);
+    text-decoration: underline;
+  }
+}
+
+// Lists
+ul, ol {
+  margin-bottom: var(--spacing-md);
+  padding-left: var(--spacing-lg);
+}
+
+li {
+  margin-bottom: var(--spacing-xs);
+}
+
+// Emphasis
+strong, b {
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+em, i {
+  font-style: italic;
+}
+
+// Blockquotes
+blockquote {
+  margin: var(--spacing-lg) 0;
+  padding-left: var(--spacing-lg);
+  border-left: 3px solid var(--color-accent);
+  font-style: italic;
+  color: var(--color-text-light);
+}
+
+// Code (if needed)
+code, pre {
+  font-family: 'Courier New', monospace;
+  background: var(--color-surface);
+  padding: 0.2em 0.4em;
+  border-radius: var(--border-radius);
+  font-size: 0.9em;
+}
+
+pre {
+  padding: var(--spacing-md);
+  overflow-x: auto;
+}

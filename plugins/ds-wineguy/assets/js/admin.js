@@ -215,6 +215,169 @@
     });
     
     /**
+     * Producer Logo Upload
+     */
+    var producerLogoFrame;
+    
+    $('.dswg-upload-producer-logo').on('click', function(e) {
+        e.preventDefault();
+        
+        if (producerLogoFrame) {
+            producerLogoFrame.open();
+            return;
+        }
+        
+        producerLogoFrame = wp.media({
+            title: 'Select Producer Logo',
+            button: {
+                text: 'Use as Logo'
+            },
+            multiple: false
+        });
+        
+        producerLogoFrame.on('select', function() {
+            var attachment = producerLogoFrame.state().get('selection').first().toJSON();
+            
+            $('#dswg_producer_logo').val(attachment.id);
+            $('.dswg-logo-preview').html('<img src="' + attachment.sizes.thumbnail.url + '" />');
+            
+            if ($('.dswg-remove-producer-logo').length === 0) {
+                $('.dswg-upload-producer-logo').after('<button type="button" class="button dswg-remove-producer-logo">Remove Logo</button>');
+            }
+        });
+        
+        producerLogoFrame.open();
+    });
+    
+    $(document).on('click', '.dswg-remove-producer-logo', function(e) {
+        e.preventDefault();
+        $('#dswg_producer_logo').val('');
+        $('.dswg-logo-preview').html('');
+        $(this).remove();
+    });
+    
+    /**
+     * Producer Files Upload
+     */
+    var producerFilesFrame;
+    
+    $('.dswg-add-producer-files').on('click', function(e) {
+        e.preventDefault();
+        
+        if (producerFilesFrame) {
+            producerFilesFrame.open();
+            return;
+        }
+        
+        producerFilesFrame = wp.media({
+            title: 'Select Files',
+            button: {
+                text: 'Add Files'
+            },
+            library: {
+                type: ['application/pdf', 'image']
+            },
+            multiple: true
+        });
+        
+        producerFilesFrame.on('select', function() {
+            var selection = producerFilesFrame.state().get('selection');
+            var files = $('#dswg_producer_files').val();
+            var filesArray = files ? files.split(',') : [];
+            
+            selection.map(function(attachment) {
+                attachment = attachment.toJSON();
+                
+                if (filesArray.indexOf(attachment.id.toString()) === -1) {
+                    filesArray.push(attachment.id);
+                    
+                    var fileHtml = '<div class="dswg-file-item" data-id="' + attachment.id + '">' +
+                                 '<span class="dashicons dashicons-media-document"></span>' +
+                                 '<a href="' + attachment.url + '" target="_blank">' + attachment.filename + '</a>' +
+                                 '<button type="button" class="button-link dswg-remove-producer-file">Remove</button>' +
+                                 '</div>';
+                    
+                    $('.dswg-producer-files-list').append(fileHtml);
+                }
+            });
+            
+            $('#dswg_producer_files').val(filesArray.join(','));
+        });
+        
+        producerFilesFrame.open();
+    });
+    
+    $(document).on('click', '.dswg-remove-producer-file', function(e) {
+        e.preventDefault();
+        
+        var $file = $(this).closest('.dswg-file-item');
+        var id = $file.data('id').toString();
+        var files = $('#dswg_producer_files').val();
+        var filesArray = files.split(',');
+        
+        var index = filesArray.indexOf(id);
+        if (index > -1) {
+            filesArray.splice(index, 1);
+        }
+        
+        $('#dswg_producer_files').val(filesArray.join(','));
+        $file.remove();
+    });
+    
+    /**
+     * Geocoding from Address
+     */
+    $('#dswg_geocode_btn').on('click', function(e) {
+        e.preventDefault();
+        
+        var address = $('#dswg_address').val();
+        var $status = $('#dswg_geocode_status');
+        var $btn = $(this);
+        
+        if (!address) {
+            $status.html('<span style="color: #d63638;">Please enter an address first</span>');
+            return;
+        }
+        
+        $btn.prop('disabled', true).text('Getting coordinates...');
+        $status.html('<span style="color: #2271b1;">Searching...</span>');
+        
+        // Use OpenStreetMap Nominatim API (free, no key required)
+        $.ajax({
+            url: 'https://nominatim.openstreetmap.org/search',
+            data: {
+                q: address,
+                format: 'json',
+                limit: 1
+            },
+            dataType: 'json',
+            success: function(data) {
+                if (data && data.length > 0) {
+                    var lat = data[0].lat;
+                    var lon = data[0].lon;
+                    
+                    $('#dswg_latitude').val(lat);
+                    $('#dswg_longitude').val(lon);
+                    
+                    $status.html('<span style="color: #00a32a;">✓ Coordinates found!</span>');
+                    
+                    setTimeout(function() {
+                        $status.html('');
+                    }, 3000);
+                } else {
+                    $status.html('<span style="color: #d63638;">No coordinates found for this address</span>');
+                }
+            },
+            error: function() {
+                $status.html('<span style="color: #d63638;">Error contacting geocoding service</span>');
+            },
+            complete: function() {
+                $btn.prop('disabled', false).text('Get Coordinates from Address');
+            }
+        });
+    });
+    
+    /**
      * Make gallery images sortable
      */
     if (typeof $.fn.sortable !== 'undefined') {

@@ -43,9 +43,27 @@ function dswg_register_meta_boxes() {
     );
     
     add_meta_box(
+        'dswg_producer_logo',
+        __('Producer Logo', 'ds-wineguy'),
+        'dswg_producer_logo_callback',
+        'dswg_producer',
+        'side',
+        'default'
+    );
+    
+    add_meta_box(
         'dswg_producer_gallery',
         __('Image Gallery', 'ds-wineguy'),
         'dswg_producer_gallery_callback',
+        'dswg_producer',
+        'normal',
+        'default'
+    );
+    
+    add_meta_box(
+        'dswg_producer_files',
+        __('Documents & Files', 'ds-wineguy'),
+        'dswg_producer_files_callback',
         'dswg_producer',
         'normal',
         'default'
@@ -164,10 +182,22 @@ function dswg_producer_contact_callback($post) {
  * Producer Location Meta Box Callback
  */
 function dswg_producer_location_callback($post) {
+    $address = get_post_meta($post->ID, 'dswg_address', true);
     $latitude = get_post_meta($post->ID, 'dswg_latitude', true);
     $longitude = get_post_meta($post->ID, 'dswg_longitude', true);
     
     ?>
+    <p>
+        <label for="dswg_address"><?php _e('Full Address', 'ds-wineguy'); ?></label><br>
+        <textarea id="dswg_address" name="dswg_address" class="widefat" rows="3" placeholder="123 Vineyard Road, Burgundy, France"><?php echo esc_textarea($address); ?></textarea>
+    </p>
+    <p>
+        <button type="button" id="dswg_geocode_btn" class="button button-secondary">
+            <?php _e('Get Coordinates from Address', 'ds-wineguy'); ?>
+        </button>
+        <span id="dswg_geocode_status"></span>
+    </p>
+    <hr style="margin: 15px 0;">
     <p>
         <label for="dswg_latitude"><?php _e('Latitude', 'ds-wineguy'); ?></label><br>
         <input type="text" id="dswg_latitude" name="dswg_latitude" value="<?php echo esc_attr($latitude); ?>" class="widefat" placeholder="45.4642" />
@@ -247,6 +277,65 @@ function dswg_producer_gallery_callback($post) {
             background: #a00;
         }
     </style>
+    <?php
+}
+
+/**
+ * Producer Logo Meta Box Callback
+ */
+function dswg_producer_logo_callback($post) {
+    $logo_id = get_post_meta($post->ID, 'dswg_producer_logo', true);
+    
+    ?>
+    <p class="description"><?php _e('Featured Image is the main producer image. Use this for the producer logo/brand mark.', 'ds-wineguy'); ?></p>
+    
+    <div class="dswg-logo-preview">
+        <?php if ($logo_id) : ?>
+            <?php echo wp_get_attachment_image($logo_id, 'thumbnail'); ?>
+        <?php endif; ?>
+    </div>
+    <input type="hidden" id="dswg_producer_logo" name="dswg_producer_logo" value="<?php echo esc_attr($logo_id); ?>" />
+    <p>
+        <button type="button" class="button dswg-upload-producer-logo"><?php _e('Upload Logo', 'ds-wineguy'); ?></button>
+        <?php if ($logo_id) : ?>
+            <button type="button" class="button dswg-remove-producer-logo"><?php _e('Remove Logo', 'ds-wineguy'); ?></button>
+        <?php endif; ?>
+    </p>
+    <?php
+}
+
+/**
+ * Producer Files Meta Box Callback
+ */
+function dswg_producer_files_callback($post) {
+    $files = get_post_meta($post->ID, 'dswg_producer_files', true);
+    if (!is_array($files)) {
+        $files = [];
+    }
+    
+    ?>
+    <div class="dswg-files-container">
+        <div class="dswg-producer-files-list">
+            <?php foreach ($files as $file_id) : ?>
+                <?php
+                $file_url = wp_get_attachment_url($file_id);
+                $file_name = basename(get_attached_file($file_id));
+                ?>
+                <div class="dswg-file-item" data-id="<?php echo esc_attr($file_id); ?>">
+                    <span class="dashicons dashicons-media-document"></span>
+                    <a href="<?php echo esc_url($file_url); ?>" target="_blank"><?php echo esc_html($file_name); ?></a>
+                    <button type="button" class="button-link dswg-remove-producer-file">Remove</button>
+                </div>
+            <?php endforeach; ?>
+        </div>
+        <input type="hidden" id="dswg_producer_files" name="dswg_producer_files" value="<?php echo esc_attr(implode(',', $files)); ?>" />
+        <p>
+            <button type="button" class="button dswg-add-producer-files"><?php _e('Add Files', 'ds-wineguy'); ?></button>
+        </p>
+        <p class="description">
+            <?php _e('Upload certifications, fact sheets, or other producer documents (PDFs and images)', 'ds-wineguy'); ?>
+        </p>
+    </div>
     <?php
 }
 
@@ -426,9 +515,12 @@ function dswg_save_producer_meta($post_id) {
         'dswg_instagram',
         'dswg_facebook',
         'dswg_twitter',
+        'dswg_address',
         'dswg_latitude',
         'dswg_longitude',
         'dswg_gallery_ids',
+        'dswg_producer_logo',
+        'dswg_producer_files',
     ];
     
     foreach ($fields as $field) {

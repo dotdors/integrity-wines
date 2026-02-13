@@ -1,0 +1,158 @@
+// out: false
+// ============================
+// variables.less
+// Integrity Wines - Brand Variables
+// ============================
+// Based on logo design palette
+// Classic, classy, warm wine country aesthetic
+
+// ===== BRAND COLORS (from designer) =====
+
+// Background
+@color-background: #F3E9D7;        // Warm parchment/antique cream
+@color-background-alt: #EFE3CF;    // Slightly warmer alternative
+
+// Vineyard Greens
+@color-green-primary: #3F6B3A;     // Deep vineyard green (leaves)
+@color-green-dark: #2E4F2A;        // Darker accent (veins/stems)
+
+// Wine Reds/Burgundy
+@color-wine-red: #7A1F2B;          // Deep burgundy (primary)
+@color-wine-highlight: #9B2C3A;    // Burgundy highlight/shading
+
+// Warm Wood & Metals
+@color-wood: #B0895A;              // Natural warm wood
+@color-brass: #8A6A2F;             // Antique brass/gold (muted)
+
+// Typography Gold
+@color-gold-primary: #C6A64B;      // Warm antique gold
+@color-gold-dark: #9E7C2F;         // Darker gold (depth/shadow)
+
+// Text Colors
+@color-text: #2A2420;              // Warm black (dark brown-black)
+@color-text-light: #5A524D;        // Lighter warm text
+@color-text-muted: #7A706A;        // Muted warm text
+
+// ===== SEMANTIC COLOR ASSIGNMENTS =====
+// Map brand colors to functional uses
+
+@color-primary: @color-wine-red;        // Primary brand color
+@color-secondary: @color-green-primary; // Secondary brand color  
+@color-accent: @color-gold-primary;     // Accent/highlights
+@color-border: #D4C8B5;                 // Subtle warm border
+@color-surface: #FDFBF7;                // Card/surface background (lighter than body)
+
+// ===== TYPOGRAPHY =====
+// Will update with designer's font choices
+
+@font-primary: Georgia, 'Times New Roman', serif;  // Temporary - wait for branding
+@font-secondary: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+@font-size-base: 1rem;
+@font-size-small: 0.875rem;
+@font-size-large: 1.125rem;
+@font-size-xl: 1.25rem;
+@font-size-2xl: 1.5rem;
+@font-size-3xl: 2rem;
+@font-size-4xl: 2.5rem;
+
+@line-height-base: 1.6;
+@line-height-tight: 1.2;
+
+// ===== SPACING =====
+@spacing-xs: 0.25rem;
+@spacing-sm: 0.5rem;
+@spacing-md: 1rem;
+@spacing-lg: 2rem;
+@spacing-xl: 3rem;
+@spacing-2xl: 4rem;
+
+// ===== LAYOUT =====
+@container-max-width: 1400px;
+@content-max-width: 900px;
+@sidebar-width: 300px;
+
+// ===== UI ELEMENTS =====
+@border-radius: 4px;               // Subtle, classic corners
+@border-radius-lg: 8px;
+@box-shadow: 0 2px 8px rgba(42, 36, 32, 0.08);  // Subtle warm shadow
+@box-shadow-lg: 0 4px 16px rgba(42, 36, 32, 0.12);
+@transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+// ===== WINE-SPECIFIC VARIABLES =====
+// Additional variables for wine/producer components
+
+// Wine Type Colors (for badges, labels)
+@color-wine-type-red: @color-wine-red;
+@color-wine-type-white: #F4E8D0;
+@color-wine-type-rose: #E8B4B8;
+@color-wine-type-sparkling: @color-gold-primary;
+
+// Component Sizing
+@wine-card-width: 280px;
+@producer-card-width: 320px;
+@bottle-aspect-ratio: 0.75;        // Width/height ratio for bottle images
+
+// ===== CSS CUSTOM PROPERTIES (runtime variables) =====
+:root {
+  /* Brand Colors */
+  --color-background: @color-background;
+  --color-background-alt: @color-background-alt;
+  --color-green-primary: @color-green-primary;
+  --color-green-dark: @color-green-dark;
+  --color-wine-red: @color-wine-red;
+  --color-wine-highlight: @color-wine-highlight;
+  --color-wood: @color-wood;
+  --color-brass: @color-brass;
+  --color-gold-primary: @color-gold-primary;
+  --color-gold-dark: @color-gold-dark;
+
+  /* Semantic Colors */
+  --color-primary: @color-primary;
+  --color-secondary: @color-secondary;
+  --color-accent: @color-accent;
+  --color-text: @color-text;
+  --color-text-light: @color-text-light;
+  --color-text-muted: @color-text-muted;
+  --color-border: @color-border;
+  --color-surface: @color-surface;
+
+  /* Typography */
+  --font-primary: @font-primary;
+  --font-secondary: @font-secondary;
+  --font-size-base: @font-size-base;
+  --font-size-small: @font-size-small;
+  --font-size-large: @font-size-large;
+  --font-size-xl: @font-size-xl;
+  --font-size-2xl: @font-size-2xl;
+  --font-size-3xl: @font-size-3xl;
+  --font-size-4xl: @font-size-4xl;
+  --line-height-base: @line-height-base;
+  --line-height-tight: @line-height-tight;
+
+  /* Spacing */
+  --spacing-xs: @spacing-xs;
+  --spacing-sm: @spacing-sm;
+  --spacing-md: @spacing-md;
+  --spacing-lg: @spacing-lg;
+  --spacing-xl: @spacing-xl;
+  --spacing-2xl: @spacing-2xl;
+
+  /* Layout */
+  --container-max-width: @container-max-width;
+  --content-max-width: @content-max-width;
+  --sidebar-width: @sidebar-width;
+  --border-radius: @border-radius;
+  --border-radius-lg: @border-radius-lg;
+  --box-shadow: @box-shadow;
+  --box-shadow-lg: @box-shadow-lg;
+  --transition: @transition;
+
+  /* Wine-Specific */
+  --color-wine-type-red: @color-wine-type-red;
+  --color-wine-type-white: @color-wine-type-white;
+  --color-wine-type-rose: @color-wine-type-rose;
+  --color-wine-type-sparkling: @color-wine-type-sparkling;
+  --wine-card-width: @wine-card-width;
+  --producer-card-width: @producer-card-width;
+}

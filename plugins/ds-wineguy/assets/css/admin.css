@@ -101,12 +101,14 @@
     padding: 10px 0;
 }
 
-.dswg-files-list {
+.dswg-files-list,
+.dswg-producer-files-list {
     min-height: 50px;
     margin-bottom: 15px;
 }
 
-.dswg-files-list:empty::before {
+.dswg-files-list:empty::before,
+.dswg-producer-files-list:empty::before {
     content: 'No files added yet';
     color: #646970;
     font-style: italic;

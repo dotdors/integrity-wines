@@ -79,6 +79,7 @@ class DS_WineGuy {
         // Admin functionality
         if (is_admin()) {
             require_once DSWG_PLUGIN_DIR . 'admin/settings.php';
+            require_once DSWG_PLUGIN_DIR . 'admin/importer.php';
         }
         
         // Frontend functionality

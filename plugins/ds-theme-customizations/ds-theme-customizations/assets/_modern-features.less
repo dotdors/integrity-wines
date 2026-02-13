@@ -1,0 +1,223 @@
+// out: false
+// Modern CSS Features - Container queries, :has(), :is(), :where()
+// All features include fallbacks for older browsers
+
+// ===== CONTAINER QUERIES =====
+// Cards adapt to their container width, not viewport
+
+.wine-card,
+.producer-card {
+  container-type: inline-size;
+  container-name: card;
+}
+
+// Responsive card layout based on container width
+@container card (min-width: 300px) {
+  .wine-card__content,
+  .producer-card__content {
+    padding: var(--spacing-lg);
+  }
+  
+  .wine-card__title,
+  .producer-card__title {
+    font-size: var(--font-size-xl);
+  }
+}
+
+@container card (max-width: 250px) {
+  .wine-card__content,
+  .producer-card__content {
+    padding: var(--spacing-sm);
+  }
+  
+  .wine-card__title,
+  .producer-card__title {
+    font-size: var(--font-size-base);
+  }
+}
+
+// Fallback for browsers without container query support
+@supports not (container-type: inline-size) {
+  @media (max-width: 768px) {
+    .wine-card__content,
+    .producer-card__content {
+      padding: var(--spacing-sm);
+    }
+  }
+}
+
+// ===== :has() PARENT SELECTOR =====
+// Style parents based on their children
+
+// Highlight cards with specific content
+@supports selector(:has(*)) {
+  // Producer card with no wines
+  .producer-card:has(.wine-count--zero) {
+    opacity: 0.7;
+  }
+  
+  // Wine card with logo
+  .wine-card:has(.wine-logo) {
+    .wine-card__image {
+      padding-top: var(--spacing-xl);
+    }
+  }
+  
+  // Cards with badges
+  .card:has(.badge) {
+    padding-top: var(--spacing-xl);
+  }
+  
+  // Menu items with submenus
+  .menu-item:has(.sub-menu) {
+    position: relative;
+    
+    &::after {
+      content: '▼';
+      margin-left: 0.5em;
+      font-size: 0.7em;
+    }
+  }
+}
+
+// ===== :is() SELECTOR =====
+// Simplify selector groups
+
+// Apply same hover effect to multiple elements
+.wine-card,
+.producer-card,
+.country-card {
+  &:is(:hover, :focus-within) {
+    transform: translateY(-2px);
+    box-shadow: var(--box-shadow-lg);
+  }
+}
+
+// Style multiple heading levels
+:is(h1, h2, h3):is(.page-title, .entry-title) {
+  color: var(--color-wine-red);
+  margin-bottom: var(--spacing-md);
+}
+
+// ===== :where() SELECTOR =====
+// Low-specificity styling (easier to override)
+
+:where(.button, .btn, .wp-block-button__link) {
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+:where(a:not([class])) {
+  color: var(--color-wine-red);
+  text-decoration: underline;
+}
+
+// ===== MODERN LAYOUT =====
+// Using modern CSS features
+
+// Subgrid (when supported)
+@supports (grid-template-rows: subgrid) {
+  .wine-grid,
+  .producer-grid {
+    display: grid;
+    grid-template-rows: subgrid;
+  }
+}
+
+// Aspect ratio (with fallback)
+.wine-card__image,
+.producer-card__image {
+  aspect-ratio: var(--aspect-ratio, 1);
+}
+
+@supports not (aspect-ratio: 1) {
+  .wine-card__image {
+    padding-bottom: 133.33%; // 3:4 ratio
+    position: relative;
+    
+    img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+  }
+  
+  .producer-card__image {
+    padding-bottom: 75%; // 4:3 ratio
+    position: relative;
+    
+    img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+  }
+}
+
+// ===== LOGICAL PROPERTIES =====
+// Better for internationalization
+
+.card {
+  padding-inline: var(--spacing-md);
+  padding-block: var(--spacing-md);
+  margin-block-end: var(--spacing-lg);
+}
+
+// ===== CLAMP() FOR FLUID SIZING =====
+// Already used in variables, but examples here
+
+.hero-title {
+  font-size: clamp(2rem, 5vw, 4rem);
+  margin-block-end: clamp(1rem, 3vw, 2rem);
+}
+
+.container {
+  width: min(90%, var(--container-max-width));
+  padding-inline: clamp(1rem, 3vw, 2rem);
+}
+
+// ===== CSS NESTING =====
+// Native CSS nesting (experimental, but LESS handles this already)
+// Just documenting the modern syntax for future
+
+// .wine-card {
+//   background: var(--color-surface);
+//   
+//   & .wine-card__title {
+//     color: var(--color-text);
+//   }
+//   
+//   &:hover {
+//     transform: translateY(-2px);
+//   }
+// }
+
+// ===== PROGRESSIVE ENHANCEMENT INDICATORS =====
+// Add classes when features are supported (via JS detection)
+
+.supports-container-queries {
+  // Enhanced layout when container queries work
+}
+
+.supports-has-selector {
+  // Enhanced styling when :has() works
+}
+
+// ===== FEATURE DETECTION EXAMPLES =====
+// For reference - already used above
+
+@supports (container-type: inline-size) {
+  // Container query styles
+}
+
+@supports selector(:has(*)) {
+  // :has() styles
+}
+
+@supports (aspect-ratio: 1) {
+  // Aspect ratio styles
+}
