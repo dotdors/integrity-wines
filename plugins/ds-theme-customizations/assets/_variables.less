@@ -9,8 +9,8 @@
 // ===== BRAND COLORS (from designer) =====
 
 // Background
-@color-background: #F3E9D7;        // Warm parchment/antique cream
-@color-background-alt: #EFE3CF;    // Slightly warmer alternative
+@color-background: #FFF7E9;        // Warm cream (from mockups - slightly lighter than logo parchment)
+@color-background-alt: #F3E9D7;    // Deeper parchment (logo background, section alternates)
 
 // Vineyard Greens
 @color-green-primary: #3F6B3A;     // Deep vineyard green (leaves)
@@ -33,20 +33,27 @@
 @color-text-light: #5A524D;        // Lighter warm text
 @color-text-muted: #7A706A;        // Muted warm text
 
+// Button Colors
+@color-button-text: @color-text;
+@color-button-bg: transparent;
+@color-button-border: rgba(42, 36, 32, 0.45);  // 45% opacity text color
+
 // ===== SEMANTIC COLOR ASSIGNMENTS =====
 // Map brand colors to functional uses
 
 @color-primary: @color-wine-red;        // Primary brand color
 @color-secondary: @color-green-primary; // Secondary brand color  
 @color-accent: @color-gold-primary;     // Accent/highlights
-@color-border: #D4C8B5;                 // Subtle warm border
-@color-surface: #FDFBF7;                // Card/surface background (lighter than body)
+@color-border: #E8D8C0;                 // Warm border
+@color-surface: #FFFFFF;                // Card/surface background (white sits on cream)
 
 // ===== TYPOGRAPHY =====
-// Will update with designer's font choices
+// EB Garamond - available on Google Fonts
+// Load in theme header: https://fonts.google.com/specimen/EB+Garamond
+// Weights used: 400 (regular), 400 italic, 600 (semibold), 700 (bold)
 
-@font-primary: Georgia, 'Times New Roman', serif;  // Temporary - wait for branding
-@font-secondary: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+@font-primary: 'EB Garamond', Georgia, serif;          // All text - headings and body
+@font-secondary: 'EB Garamond', Georgia, serif;        // Same - using Garamond everywhere
 
 @font-size-base: 1rem;
 @font-size-small: 0.875rem;
@@ -116,6 +123,11 @@
   --color-text-muted: @color-text-muted;
   --color-border: @color-border;
   --color-surface: @color-surface;
+
+  /* Button Colors */
+  --color-button-text: @color-button-text;
+  --color-button-bg: @color-button-bg;
+  --color-button-border: @color-button-border;
 
   /* Typography */
   --font-primary: @font-primary;

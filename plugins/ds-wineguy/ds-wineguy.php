@@ -168,6 +168,7 @@ class DS_WineGuy {
         );
         
         // Admin JS
+        wp_enqueue_media(); // Loads all WordPress media library scripts
         wp_enqueue_script(
             'dswg-admin-script',
             DSWG_PLUGIN_URL . 'assets/js/admin.js',

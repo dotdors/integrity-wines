@@ -47,7 +47,7 @@ function dswg_register_meta_boxes() {
         __('Producer Logo', 'ds-wineguy'),
         'dswg_producer_logo_callback',
         'dswg_producer',
-        'normal',        // Changed from 'side' to 'normal'
+        'side',
         'default'
     );
     
@@ -310,27 +310,16 @@ function dswg_producer_logo_callback($post) {
     $logo_id = get_post_meta($post->ID, 'dswg_producer_logo', true);
     
     ?>
-    <p class="description"><?php _e('Upload the producer logo (PNG or SVG with transparent background). Will display as white overlay on hero images.', 'ds-wineguy'); ?></p>
+    <p class="description"><?php _e('Featured Image is the main producer image. Use this for the producer logo/brand mark.', 'ds-wineguy'); ?></p>
     
-    <table class="form-table">
-        <tr>
-            <th><label for="dswg_producer_logo"><?php _e('Logo Attachment ID', 'ds-wineguy'); ?></label></th>
-            <td>
-                <input type="text" id="dswg_producer_logo" name="dswg_producer_logo" value="<?php echo esc_attr($logo_id); ?>" class="regular-text" />
-                <p class="description"><?php _e('Enter the attachment ID of the logo image, or use the button below.', 'ds-wineguy'); ?></p>
-            </td>
-        </tr>
-    </table>
-    
-    <!-- Media Upload UI (JavaScript handles this) -->
-    <div class="dswg-logo-preview" style="margin: 15px 0;">
+    <div class="dswg-logo-preview">
         <?php if ($logo_id) : ?>
             <?php echo wp_get_attachment_image($logo_id, 'thumbnail'); ?>
         <?php endif; ?>
     </div>
-    
+    <input type="hidden" id="dswg_producer_logo" name="dswg_producer_logo" value="<?php echo esc_attr($logo_id); ?>" />
     <p>
-        <button type="button" class="button dswg-upload-producer-logo"><?php _e('Select Logo from Media Library', 'ds-wineguy'); ?></button>
+        <button type="button" class="button dswg-upload-producer-logo"><?php _e('Upload Logo', 'ds-wineguy'); ?></button>
         <?php if ($logo_id) : ?>
             <button type="button" class="button dswg-remove-producer-logo"><?php _e('Remove Logo', 'ds-wineguy'); ?></button>
         <?php endif; ?>
@@ -539,10 +528,6 @@ function dswg_save_producer_meta($post_id) {
         return;
     }
     
-    // DEBUG - log what's in POST for logo
-    error_log('DSWG Save Debug - Post ID: ' . $post_id);
-    error_log('Logo in POST: ' . (isset($_POST['dswg_producer_logo']) ? $_POST['dswg_producer_logo'] : 'NOT SET'));
-    
     // Save fields
     $fields = [
         'dswg_location',
@@ -563,13 +548,7 @@ function dswg_save_producer_meta($post_id) {
     
     foreach ($fields as $field) {
         if (isset($_POST[$field])) {
-            $value = sanitize_text_field($_POST[$field]);
-            update_post_meta($post_id, $field, $value);
-            
-            // Extra logging for logo
-            if ($field === 'dswg_producer_logo') {
-                error_log('Saving logo - Value: ' . $value . ' | Result: ' . (update_post_meta($post_id, $field, $value) ? 'success' : 'failed or no change'));
-            }
+            update_post_meta($post_id, $field, sanitize_text_field($_POST[$field]));
         }
     }
     

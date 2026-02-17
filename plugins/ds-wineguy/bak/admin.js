@@ -3,17 +3,8 @@
  * Handles media uploads for galleries, logos, and files
  */
 
-// FORCE TEST - This will show an alert if JS loads AT ALL
-alert('DS WineGuy admin.js is loading - you should see this alert!');
-
-// Immediate test - runs as soon as file loads
-console.log('=== DS WineGuy admin.js loaded ===');
-console.log('jQuery version:', jQuery.fn.jquery);
-
 (function($) {
     'use strict';
-    
-    console.log('=== Inside jQuery wrapper ===');
     
     /**
      * Producer Gallery Management
@@ -228,13 +219,8 @@ console.log('jQuery version:', jQuery.fn.jquery);
      */
     var producerLogoFrame;
     
-    console.log('Setting up logo upload handler');
-    console.log('Upload button exists:', $('.dswg-upload-producer-logo').length);
-    
     $('.dswg-upload-producer-logo').on('click', function(e) {
         e.preventDefault();
-        
-        console.log('Logo upload button clicked!');
         
         if (producerLogoFrame) {
             producerLogoFrame.open();
@@ -252,13 +238,7 @@ console.log('jQuery version:', jQuery.fn.jquery);
         producerLogoFrame.on('select', function() {
             var attachment = producerLogoFrame.state().get('selection').first().toJSON();
             
-            // Store globally for debugging
-            window.dswgDebugLogoId = attachment.id;
-            console.log('Logo selected - ID:', attachment.id);
-            
             $('#dswg_producer_logo').val(attachment.id);
-            console.log('Set hidden field value to:', attachment.id);
-            console.log('Hidden field value is now:', $('#dswg_producer_logo').val());
             
             // Handle both regular images and SVG
             var imageUrl = attachment.sizes && attachment.sizes.thumbnail 
@@ -280,23 +260,6 @@ console.log('jQuery version:', jQuery.fn.jquery);
         $('#dswg_producer_logo').val('');
         $('.dswg-logo-preview').html('');
         $(this).remove();
-        window.dswgDebugLogoId = null;
-    });
-    
-    /**
-     * DEBUG: Check if logo value is present on form submit
-     */
-    $('form#post').on('submit', function() {
-        var logoValue = $('#dswg_producer_logo').val();
-        console.log('Form submitting - Logo value:', logoValue);
-        console.log('Logo field exists:', $('#dswg_producer_logo').length > 0);
-        console.log('Logo field in form:', $(this).find('#dswg_producer_logo').length > 0);
-        
-        // Also try to set it right before submit as a test
-        if (!logoValue && window.dswgDebugLogoId) {
-            console.log('Attempting to restore logo value:', window.dswgDebugLogoId);
-            $('#dswg_producer_logo').val(window.dswgDebugLogoId);
-        }
     });
     
     /**

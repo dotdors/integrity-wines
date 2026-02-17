@@ -61,13 +61,21 @@ final class DS_Theme_Customizations {
      * Enqueue custom styles
      */
     public function enqueue_styles() {
+        // Google Fonts - EB Garamond only (used for all text)
+        wp_enqueue_style(
+            'integrity-wines-fonts',
+            'https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;0,700;1,400&display=swap',
+            [],
+            null
+        );
+        
         // Main plugin styles - compiled from LESS
         $css_file = $this->plugin_path . 'assets/plugin-style.css';
         if (file_exists($css_file)) {
             wp_enqueue_style(
                 'ds-custom-styles',
                 $this->plugin_url . 'assets/plugin-style.css',
-                ['dsp-style'], // Load after theme styles
+                ['dsp-style', 'integrity-wines-fonts'],
                 filemtime($css_file)
             );
         }
@@ -94,8 +102,48 @@ final class DS_Theme_Customizations {
      * Load custom templates from plugin
      */
     public function load_custom_templates($template) {
-        $custom_template = $this->plugin_path . 'templates/' . basename($template);
+        // Check for single producer pages
+        if (is_singular('dswg_producer')) {
+            $producer_template = $this->plugin_path . 'templates/single-dswg_producer.php';
+            if (file_exists($producer_template)) {
+                return $producer_template;
+            }
+        }
         
+        // Check for single wine pages
+        if (is_singular('dswg_wine')) {
+            $wine_template = $this->plugin_path . 'templates/single-dswg_wine.php';
+            if (file_exists($wine_template)) {
+                return $wine_template;
+            }
+        }
+        
+        // Check for producer archive
+        if (is_post_type_archive('dswg_producer')) {
+            $archive_template = $this->plugin_path . 'templates/archive-dswg_producer.php';
+            if (file_exists($archive_template)) {
+                return $archive_template;
+            }
+        }
+        
+        // Check for wine archive
+        if (is_post_type_archive('dswg_wine')) {
+            $archive_template = $this->plugin_path . 'templates/archive-dswg_wine.php';
+            if (file_exists($archive_template)) {
+                return $archive_template;
+            }
+        }
+        
+        // Check for country taxonomy
+        if (is_tax('dswg_country')) {
+            $taxonomy_template = $this->plugin_path . 'templates/taxonomy-dswg_country.php';
+            if (file_exists($taxonomy_template)) {
+                return $taxonomy_template;
+            }
+        }
+        
+        // Fallback: check by basename (for other templates)
+        $custom_template = $this->plugin_path . 'templates/' . basename($template);
         if (file_exists($custom_template)) {
             return $custom_template;
         }
