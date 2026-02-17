@@ -1,0 +1,257 @@
+/**
+ * DS WineGuy - Producer Carousel Styles
+ * 
+ * Plugin: ds-wineguy
+ * File: assets/css/producer-carousel.css
+ * 
+ * Styles for the Swiper.js producer carousel
+ * All classes prefixed with 'ds-' to avoid theme conflicts
+ * Theme can override by enqueueing custom styles after this
+ */
+
+/* Carousel Wrapper */
+.ds-producer-carousel-wrapper {
+    position: relative;
+    width: 100%;
+    margin: 3rem 0;
+    padding: 0 2rem;
+}
+
+.ds-producer-carousel {
+    position: relative;
+    overflow: hidden;
+    padding-bottom: 3rem; /* Space for pagination dots */
+}
+
+/* Producer Card */
+.ds-producer-card {
+    position: relative;
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    border-radius: 8px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.ds-producer-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+/* Background Image Container */
+.ds-producer-card__image {
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2rem;
+    position: relative;
+}
+
+/* Subtle vignette effect on image */
+.ds-producer-card__image::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at center, transparent 0%, rgba(0, 0, 0, 0.2) 100%);
+    pointer-events: none;
+}
+
+/* White Logo Overlay */
+.ds-producer-card__logo {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+    max-width: 80%;
+}
+
+.ds-producer-card__logo img {
+    max-width: 100%;
+    max-height: 150px;
+    height: auto;
+    object-fit: contain;
+    filter: brightness(0) invert(1); /* Makes logo pure white */
+    drop-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Dark Glass Overlay Info Section */
+.ds-producer-card__info {
+    width: 100%;
+    padding: 1.25rem 1.5rem;
+    background: rgba(0, 0, 0, 0.65); /* Dark glass overlay */
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    text-align: center;
+    z-index: 2;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.ds-producer-card__country {
+    display: block;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.ds-producer-card__name {
+    color: #ffffff;
+    font-size: 1.5rem;
+    margin: 0;
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+/* Clickable Link Overlay */
+.ds-producer-card__link {
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    cursor: pointer;
+}
+
+/* Navigation Arrows */
+.ds-producer-carousel .swiper-button-prev,
+.ds-producer-carousel .swiper-button-next {
+    color: #ffffff;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.ds-producer-carousel .swiper-button-prev::after,
+.ds-producer-carousel .swiper-button-next::after {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.ds-producer-carousel .swiper-button-prev:hover,
+.ds-producer-carousel .swiper-button-next:hover {
+    background: rgba(0, 0, 0, 0.75);
+    transform: scale(1.1);
+}
+
+.ds-producer-carousel .swiper-button-prev.swiper-button-disabled,
+.ds-producer-carousel .swiper-button-next.swiper-button-disabled {
+    opacity: 0.3;
+    cursor: default;
+}
+
+/* Pagination Dots */
+.ds-producer-carousel .swiper-pagination {
+    bottom: 0;
+}
+
+.ds-producer-carousel .swiper-pagination-bullet {
+    width: 10px;
+    height: 10px;
+    background: rgba(255, 255, 255, 0.5);
+    opacity: 1;
+    transition: all 0.3s ease;
+}
+
+.ds-producer-carousel .swiper-pagination-bullet-active {
+    background: #ffffff;
+    width: 24px;
+    border-radius: 5px;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .ds-producer-carousel-wrapper {
+        padding: 0 1rem;
+        margin: 2rem 0;
+    }
+    
+    .ds-producer-card__image {
+        padding: 1.5rem;
+    }
+    
+    .ds-producer-card__logo img {
+        max-height: 100px;
+    }
+    
+    .ds-producer-card__name {
+        font-size: 1.25rem;
+    }
+    
+    .ds-producer-card__country {
+        font-size: 0.7rem;
+    }
+    
+    /* Smaller navigation arrows on mobile */
+    .ds-producer-carousel .swiper-button-prev,
+    .ds-producer-carousel .swiper-button-next {
+        width: 36px;
+        height: 36px;
+    }
+    
+    .ds-producer-carousel .swiper-button-prev::after,
+    .ds-producer-carousel .swiper-button-next::after {
+        font-size: 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .ds-producer-card__info {
+        padding: 1rem;
+    }
+    
+    .ds-producer-card__name {
+        font-size: 1.1rem;
+    }
+}
+
+/* Accessibility: Focus States */
+.ds-producer-card__link:focus {
+    outline: 3px solid rgba(255, 255, 255, 0.8);
+    outline-offset: 4px;
+}
+
+/* Print styles - hide carousel */
+@media print {
+    .ds-producer-carousel-wrapper {
+        display: none;
+    }
+}
+
+/**
+ * Theme Override Hook
+ * 
+ * Themes can add custom styles by enqueueing a stylesheet that depends on 'ds-wineguy-carousel'
+ * 
+ * Example in theme functions.php:
+ * 
+ * add_action('wp_enqueue_scripts', function() {
+ *     if (wp_style_is('ds-wineguy-carousel', 'enqueued')) {
+ *         wp_enqueue_style(
+ *             'theme-carousel-custom',
+ *             get_stylesheet_directory_uri() . '/css/carousel-overrides.css',
+ *             array('ds-wineguy-carousel'),
+ *             '1.0.0'
+ *         );
+ *     }
+ * }, 20);
+ * 
+ * Then in carousel-overrides.css you can override any styles:
+ * 
+ * .ds-producer-card {
+ *     border-radius: 12px; // Override border radius
+ * }
+ * 
+ * .ds-producer-card__info {
+ *     background: rgba(100, 0, 0, 0.8); // Wine red overlay instead of black
+ * }
+ */

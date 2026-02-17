@@ -85,7 +85,6 @@ class DS_WineGuy {
         // Frontend functionality
         require_once DSWG_PLUGIN_DIR . 'includes/template-functions.php';
         require_once DSWG_PLUGIN_DIR . 'includes/search-filter.php';
-        require_once DSWG_PLUGIN_DIR . 'includes/carousel.php';
     }
     
     /**
@@ -95,6 +94,7 @@ class DS_WineGuy {
         // Register post types and taxonomies
         require_once DSWG_PLUGIN_DIR . 'includes/post-types.php';
         require_once DSWG_PLUGIN_DIR . 'includes/taxonomies.php';
+        require_once DSWG_PLUGIN_DIR . 'includes/carousel.php';
         dswg_register_post_types();
         dswg_register_taxonomies();
         
