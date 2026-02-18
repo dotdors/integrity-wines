@@ -157,15 +157,13 @@
     // Initialize all functions
     ready(function() {
         initSmoothScrolling();
-        initMobileMenu();
+        initMobileMenu();     // NOTE: header.js handles the primary hamburger — this covers legacy markup only
         initLazyLoading();
         initProjectFilters();
-        initScrollHeader();
+        // initScrollHeader() is superseded by header.js — do not call here
         
         // Add loaded class to body for CSS animations
         document.body.classList.add('loaded');
-        
-        console.log('Dandysite Portfolio theme loaded successfully!');
     });
 
 })();

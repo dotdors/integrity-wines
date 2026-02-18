@@ -10,42 +10,44 @@
 <body <?php body_class(); ?>>
 <?php wp_body_open(); ?>
 
+<a class="skip-link" href="#primary"><?php esc_html_e('Skip to content', 'dandysite-jane'); ?></a>
+
 <div id="page" class="site">
-    <header id="masthead" class="site-header">
-        <div class="container">
-            <div class="header-content">
-                <div class="site-branding">
-                    <?php dsp_display_logo(); ?>
-                    <?php
-                    $description = get_bloginfo('description', 'display');
-                    if ($description || is_customize_preview()) :
-                    ?>
-                        <p class="site-description"><?php echo $description; ?></p>
-                    <?php endif; ?>
-                </div>
 
-                <!-- Mobile Menu Toggle -->
-                <button class="mobile-menu-toggle" aria-controls="primary-menu" aria-expanded="false">
-                    <span class="hamburger">
-                        <span class="hamburger-line"></span>
-                        <span class="hamburger-line"></span>
-                        <span class="hamburger-line"></span>
-                    </span>
-                    <span class="sr-only"><?php _e('Menu', 'dandysite-portfolio'); ?></span>
-                </button>
+    <header id="masthead" class="site-header" role="banner">
+        <div class="header-inner">
 
-                <nav id="site-navigation" class="main-navigation">
-                    <?php
-                    wp_nav_menu([
-                        'theme_location' => 'primary',
-                        'menu_id'        => 'primary-menu',
-                        'fallback_cb'    => 'dsp_fallback_menu',
-                        'container'      => false,
-                    ]);
-                    ?>
-                </nav>
+            <!-- Logo -->
+            <div class="header-logo">
+                <?php dsp_display_header_logo(); ?>
             </div>
-        </div>
-    </header>
+
+            <!-- Desktop / Mobile Navigation -->
+            <nav id="site-navigation" class="header-nav" aria-label="<?php esc_attr_e('Primary navigation', 'dandysite-jane'); ?>">
+                <?php
+                wp_nav_menu([
+                    'theme_location' => 'primary',
+                    'menu_id'        => 'primary-menu',
+                    'menu_class'     => 'menu',
+                    'container'      => false,
+                    'fallback_cb'    => 'dsp_fallback_menu',
+                ]);
+                ?>
+            </nav>
+
+            <!-- Hamburger Toggle -->
+            <button class="header-hamburger"
+                    aria-controls="site-navigation"
+                    aria-expanded="false"
+                    aria-label="<?php esc_attr_e('Toggle menu', 'dandysite-jane'); ?>">
+                <span class="hamburger-bar" aria-hidden="true"></span>
+                <span class="hamburger-bar" aria-hidden="true"></span>
+                <span class="hamburger-bar" aria-hidden="true"></span>
+            </button>
+
+        </div><!-- .header-inner -->
+    </header><!-- #masthead -->
+
+    <div class="header-spacer" aria-hidden="true"></div>
 
     <main id="primary" class="site-main">

@@ -108,17 +108,6 @@ function dsp_enqueue_assets() {
         );
     }
 
-    // Footer CSS
-    $footer_css = DSP_THEME_DIR . '/assets/css/footer.css';
-    if (file_exists($footer_css)) {
-        wp_enqueue_style(
-            'dsp-footer-style',
-            DSP_THEME_URI . '/assets/css/footer.css',
-            ['dsp-style'],
-            filemtime($footer_css)
-        );
-    }
-
     // Header JS (no dependencies — vanilla, loads in footer)
     $header_js = DSP_THEME_DIR . '/assets/js/header.js';
     if (file_exists($header_js)) {
@@ -626,7 +615,6 @@ add_action('update_option_dsp_enable_projects', 'dsp_projects_setting_updated', 
 // ===== HEADER SYSTEM =====
 require_once DSP_THEME_DIR . '/includes/header-settings.php';
 require_once DSP_THEME_DIR . '/includes/header-functions.php';
-require_once DSP_THEME_DIR . '/includes/footer-settings.php';
 
 // ===== DEVELOPMENT & DEBUGGING =====
 // Uncomment the line below during development/debugging, comment out for production
@@ -714,19 +702,9 @@ add_shortcode('navmenu', 'nd_navmenu_shortcode');
  */
 function jane_register_footer_widgets() {
     register_sidebar(array(
-        'name'          => __('Footer Widgets (Primary)', 'dandysite-jane'),
+        'name'          => __('Footer Widgets', 'dandysite-jane'),
         'id'            => 'footer-widgets',
-        'description'   => __('Main footer widget row. Layout controlled by Footer Layout setting.', 'dandysite-jane'),
-        'before_widget' => '<div class="footer-widget">',
-        'after_widget'  => '</div>',
-        'before_title'  => '<h4 class="footer-widget__title">',
-        'after_title'   => '</h4>',
-    ));
-
-    register_sidebar(array(
-        'name'          => __('Footer Widgets (Secondary)', 'dandysite-jane'),
-        'id'            => 'footer-widgets-secondary',
-        'description'   => __('Optional second row below primary footer widgets. Centered by default.', 'dandysite-jane'),
+        'description'   => __('Add widgets or blocks here. They will auto-flow into columns.', 'dandysite-jane'),
         'before_widget' => '<div class="footer-widget">',
         'after_widget'  => '</div>',
         'before_title'  => '<h4 class="footer-widget__title">',
