@@ -256,6 +256,15 @@ function dswg_import_producers($data) {
         }
         
         // Add meta fields
+        if (!empty($producer_data['Display Location'])) {
+            update_post_meta($post_id, 'dswg_location', sanitize_text_field($producer_data['Display Location']));
+        }
+        if (!empty($producer_data['Short Description'])) {
+            update_post_meta($post_id, 'dswg_short_desc', sanitize_textarea_field($producer_data['Short Description']));
+        }
+        if (!empty($producer_data['Key Highlights'])) {
+            update_post_meta($post_id, 'dswg_highlights', sanitize_textarea_field($producer_data['Key Highlights']));
+        }
         if (!empty($producer_data['Region'])) {
             update_post_meta($post_id, 'dswg_region', sanitize_text_field($producer_data['Region']));
         }

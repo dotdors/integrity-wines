@@ -543,16 +543,26 @@ function dswg_save_producer_meta($post_id) {
     error_log('DSWG Save Debug - Post ID: ' . $post_id);
     error_log('Logo in POST: ' . (isset($_POST['dswg_producer_logo']) ? $_POST['dswg_producer_logo'] : 'NOT SET'));
     
-    // Save fields
-    $fields = [
+    // Save fields with appropriate sanitization
+    
+    // URL fields
+    $url_fields = ['dswg_website', 'dswg_instagram', 'dswg_facebook', 'dswg_twitter'];
+    foreach ($url_fields as $field) {
+        if (isset($_POST[$field])) {
+            update_post_meta($post_id, $field, esc_url_raw($_POST[$field]));
+        }
+    }
+    
+    // Email field
+    if (isset($_POST['dswg_contact_email'])) {
+        update_post_meta($post_id, 'dswg_contact_email', sanitize_email($_POST['dswg_contact_email']));
+    }
+    
+    // Text fields
+    $text_fields = [
         'dswg_location',
         'dswg_region',
-        'dswg_website',
-        'dswg_contact_email',
         'dswg_contact_phone',
-        'dswg_instagram',
-        'dswg_facebook',
-        'dswg_twitter',
         'dswg_address',
         'dswg_latitude',
         'dswg_longitude',
@@ -561,7 +571,7 @@ function dswg_save_producer_meta($post_id) {
         'dswg_producer_files',
     ];
     
-    foreach ($fields as $field) {
+    foreach ($text_fields as $field) {
         if (isset($_POST[$field])) {
             $value = sanitize_text_field($_POST[$field]);
             update_post_meta($post_id, $field, $value);

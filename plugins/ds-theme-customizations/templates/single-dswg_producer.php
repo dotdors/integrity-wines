@@ -12,6 +12,11 @@ get_header();
 
 while (have_posts()) : the_post();
     
+    // LAYOUT OPTION: Set to 'overlay' or 'below'
+    // 'overlay' = name/location overlaid on hero image
+    // 'below' = name/location in separate section below hero
+    $hero_layout = 'below'; // Change this to 'overlay' to test
+    
     // Get meta fields
     $location = get_post_meta(get_the_ID(), 'dswg_location', true);
     $short_desc = get_post_meta(get_the_ID(), 'dswg_short_desc', true);
@@ -33,7 +38,7 @@ while (have_posts()) : the_post();
     
     <!-- Producer Hero -->
     <?php if ($hero_image || $logo_id) : ?>
-    <div class="producer-hero">
+    <div class="producer-hero <?php echo ($hero_layout === 'overlay') ? 'producer-hero--overlay' : ''; ?>">
         <?php if ($hero_image) : ?>
             <img src="<?php echo esc_url($hero_image); ?>" alt="<?php echo esc_attr(get_the_title()); ?>" class="producer-hero__image">
             <div class="producer-hero__overlay"></div>
@@ -53,10 +58,24 @@ while (have_posts()) : the_post();
         <?php else : ?>
             <!-- No producer logo set (dswg_producer_logo meta field) -->
         <?php endif; ?>
+        
+        <?php if ($hero_layout === 'overlay') : ?>
+            <!-- OVERLAY LAYOUT: Name/Location on hero -->
+            <div class="producer-hero__identity">
+                <div class="producer-hero__identity-left">
+                    <h1 class="producer-hero__name"><?php the_title(); ?></h1>
+                    <?php if ($location) : ?>
+                        <p class="producer-hero__location"><?php echo esc_html($location); ?></p>
+                    <?php endif; ?>
+                </div>
+                <!-- Right side reserved for future content (e.g., CTA button, social icons, etc.) -->
+            </div>
+        <?php endif; ?>
     </div>
     <?php endif; ?>
     
-    <!-- Producer Name & Location -->
+    <?php if ($hero_layout === 'below') : ?>
+    <!-- BELOW LAYOUT: Name/Location in separate section -->
     <div class="producer-identity">
         <div class="container" style="max-width: var(--content-max-width);">
             <h1 class="producer-identity__name"><?php the_title(); ?></h1>
@@ -65,33 +84,36 @@ while (have_posts()) : the_post();
             <?php endif; ?>
         </div>
     </div>
+    <?php endif; ?>
     
     <!-- Main Content Area -->
     <article id="post-<?php the_ID(); ?>" <?php post_class('producer-single'); ?>>
         
         <!-- Short Description & Highlights -->
         <?php if ($short_desc || $highlights) : ?>
-        <section class="section">
+        <section class="section" id="producer-intro-section">
             <div class="container" style="max-width: var(--content-max-width);">
                 
-                <?php if ($short_desc) : ?>
-                <div class="producer-intro">
-                    <p class="lead"><?php echo wp_kses_post(wpautop($short_desc)); ?></p>
+                <div class="producer-intro-grid">
+                    <?php if ($short_desc) : ?>
+                    <div class="producer-intro">
+                        <p class="lead"><?php echo wp_kses_post(wpautop($short_desc)); ?></p>
+                    </div>
+                    <?php endif; ?>
+                    
+                    <?php if ($highlights) : ?>
+                    <div class="producer-highlights">
+                        <ul class="list-highlights">
+                            <?php 
+                            $highlights_array = array_filter(array_map('trim', explode("\n", $highlights)));
+                            foreach ($highlights_array as $highlight) : 
+                            ?>
+                                <li><?php echo esc_html($highlight); ?></li>
+                            <?php endforeach; ?>
+                        </ul>
+                    </div>
+                    <?php endif; ?>
                 </div>
-                <?php endif; ?>
-                
-                <?php if ($highlights) : ?>
-                <div class="producer-highlights">
-                    <ul class="list-highlights">
-                        <?php 
-                        $highlights_array = array_filter(array_map('trim', explode("\n", $highlights)));
-                        foreach ($highlights_array as $highlight) : 
-                        ?>
-                            <li><?php echo esc_html($highlight); ?></li>
-                        <?php endforeach; ?>
-                    </ul>
-                </div>
-                <?php endif; ?>
                 
             </div>
         </section>
@@ -101,41 +123,44 @@ while (have_posts()) : the_post();
         <?php if (get_the_content()) : ?>
         <section class="section">
             <div class="container">
-                <div class="producer-story" style="display: grid; grid-template-columns: 2fr 1fr; gap: var(--spacing-xl); max-width: var(--container-max-width); margin: 0 auto;">
+                <div class="producer-story-container" style="max-width: var(--container-max-width); margin: 0 auto;">
                     
-                    <!-- Story Content (left) -->
-                    <div class="story">
-                        <h2>The Story</h2>
-                        
+                    <h2>The Story</h2>
+                    
+                    <div class="story" id="producer-story">
                         <div class="story__body" id="producer-story-content">
-                            <?php the_content(); ?>
+                            <div class="story__grid">
+                                <!-- Story Content (left column) -->
+                                <div class="story__text">
+                                    <?php the_content(); ?>
+                                </div>
+                                
+                                <!-- Photo Grid (right column, single column) -->
+                                <div class="story__photos">
+                                    <?php 
+                                    // Display gallery if available
+                                    $gallery_ids = get_post_meta(get_the_ID(), 'dswg_gallery_ids', true);
+                                    if ($gallery_ids) :
+                                        $gallery_array = explode(',', $gallery_ids);
+                                        
+                                        if (count($gallery_array) > 0) :
+                                        ?>
+                                        <div class="photo-grid photo-grid--single-column">
+                                            <?php foreach ($gallery_array as $image_id) : ?>
+                                                <div class="photo-grid__item">
+                                                    <?php echo wp_get_attachment_image($image_id, 'dswg-producer-large'); ?>
+                                                </div>
+                                            <?php endforeach; ?>
+                                        </div>
+                                        <?php endif; ?>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
                         </div>
                         
                         <button type="button" class="story__toggle" id="story-toggle" aria-expanded="false">
                             <span class="story__toggle-text">Read the full story</span>
                         </button>
-                    </div>
-                    
-                    <!-- Photo Grid (right) -->
-                    <div class="producer-photos">
-                        <?php 
-                        // Display gallery if available
-                        $gallery_ids = get_post_meta(get_the_ID(), 'dswg_gallery_ids', true);
-                        if ($gallery_ids) :
-                            $gallery_array = explode(',', $gallery_ids);
-                            $gallery_array = array_slice($gallery_array, 0, 4); // Max 4 for 2x2 grid
-                            
-                            if (count($gallery_array) > 0) :
-                            ?>
-                            <div class="photo-grid photo-grid--2x2">
-                                <?php foreach ($gallery_array as $image_id) : ?>
-                                    <div class="photo-grid__item">
-                                        <?php echo wp_get_attachment_image($image_id, 'dswg-producer-large'); ?>
-                                    </div>
-                                <?php endforeach; ?>
-                            </div>
-                            <?php endif; ?>
-                        <?php endif; ?>
                     </div>
                     
                 </div>
@@ -169,6 +194,7 @@ while (have_posts()) : the_post();
         
         if ($wines->have_posts()) :
         ?>
+        <!-- WINE SECTION RENDERING -->
         <section class="section">
             <div class="container" style="max-width: var(--container-max-width);">
                 
@@ -177,7 +203,12 @@ while (have_posts()) : the_post();
                 </div>
                 
                 <div class="wine-grid">
-                    <?php while ($wines->have_posts()) : $wines->the_post(); ?>
+                    <?php 
+                    $wine_count = 0;
+                    while ($wines->have_posts()) : $wines->the_post(); 
+                    $wine_count++;
+                    echo '<!-- Wine #' . $wine_count . ': ' . get_the_title() . ' (ID: ' . get_the_ID() . ') -->';
+                    ?>
                         
                         <article class="wine-card">
                             <a href="<?php the_permalink(); ?>" class="wine-card__link">
@@ -218,6 +249,8 @@ while (have_posts()) : the_post();
                 
             </div>
         </section>
+        <?php else : ?>
+        <!-- WINES SECTION NOT RENDERING: Query found <?php echo $wines->found_posts; ?> wines but have_posts() is false -->
         <?php endif; ?>
         
         <!-- Contact & Social (optional section) -->
@@ -228,40 +261,101 @@ while (have_posts()) : the_post();
         $instagram = get_post_meta(get_the_ID(), 'dswg_instagram', true);
         $facebook = get_post_meta(get_the_ID(), 'dswg_facebook', true);
         $twitter = get_post_meta(get_the_ID(), 'dswg_twitter', true);
+        $address = get_post_meta(get_the_ID(), 'dswg_address', true);
+        $latitude = get_post_meta(get_the_ID(), 'dswg_latitude', true);
+        $longitude = get_post_meta(get_the_ID(), 'dswg_longitude', true);
         
-        if ($contact_email || $contact_phone || $website || $instagram || $facebook || $twitter) :
+        // DEBUG - what's actually in the database?
+        echo '<!-- CONNECT DEBUG: ';
+        echo 'Instagram: ' . var_export($instagram, true) . ' | ';
+        echo 'Facebook: ' . var_export($facebook, true) . ' | ';
+        echo 'Twitter: ' . var_export($twitter, true);
+        echo ' -->';
+        
+        if ($contact_email || $contact_phone || $website || $instagram || $facebook || $twitter || $address || ($latitude && $longitude)) :
         ?>
         <section class="section section--alt">
-            <div class="container" style="max-width: var(--content-max-width); text-align: center;">
-                <h2>Connect With <?php the_title(); ?></h2>
+            <div class="container" style="max-width: var(--container-max-width);">
                 
-                <div class="producer-contact" style="margin-top: var(--spacing-lg);">
-                    <?php if ($website) : ?>
-                        <a href="<?php echo esc_url($website); ?>" target="_blank" rel="noopener" class="button">
-                            Visit Website
-                        </a>
-                    <?php endif; ?>
+                <h6 class="producer-connect__label">Connect With <?php the_title(); ?></h6>
+                
+                <div class="producer-connect">
                     
-                    <?php if ($instagram || $facebook || $twitter) : ?>
-                    <div class="producer-social" style="justify-content: center; margin-top: var(--spacing-md);">
-                        <?php if ($instagram) : ?>
-                            <a href="<?php echo esc_url($instagram); ?>" target="_blank" rel="noopener" aria-label="Instagram">
-                                <span class="dashicons dashicons-instagram"></span>
-                            </a>
+                    <!-- Column 1: Logo Only -->
+                    <div class="producer-connect__logo-col">
+                        <?php if ($logo_id) : ?>
+                            <?php echo wp_get_attachment_image($logo_id, 'thumbnail', false, ['class' => 'producer-connect__logo']); ?>
                         <?php endif; ?>
-                        <?php if ($facebook) : ?>
-                            <a href="<?php echo esc_url($facebook); ?>" target="_blank" rel="noopener" aria-label="Facebook">
-                                <span class="dashicons dashicons-facebook"></span>
-                            </a>
+                    </div>
+                    
+                    <!-- Column 2: Name / Location / Address -->
+                    <div class="producer-connect__identity">
+                        <h3 class="producer-connect__name"><?php the_title(); ?></h3>
+                        <?php if ($location) : ?>
+                            <p class="producer-connect__location"><?php echo esc_html($location); ?></p>
                         <?php endif; ?>
-                        <?php if ($twitter) : ?>
-                            <a href="<?php echo esc_url($twitter); ?>" target="_blank" rel="noopener" aria-label="Twitter">
-                                <span class="dashicons dashicons-twitter"></span>
-                            </a>
+                        <?php if ($address) : ?>
+                            <address class="producer-connect__address"><?php echo nl2br(esc_html($address)); ?></address>
+                        <?php endif; ?>
+                    </div>
+                    
+                    <!-- Contact -->
+                    <?php if ($contact_email || $contact_phone || $website) : ?>
+                    <div class="producer-connect__col">
+                        <?php if ($website) : ?>
+                            <p><a href="<?php echo esc_url($website); ?>" target="_blank" rel="noopener"><?php echo esc_html(parse_url($website, PHP_URL_HOST)); ?></a></p>
+                        <?php endif; ?>
+                        <?php if ($contact_email) : ?>
+                            <p><a href="mailto:<?php echo esc_attr($contact_email); ?>"><?php echo esc_html($contact_email); ?></a></p>
+                        <?php endif; ?>
+                        <?php if ($contact_phone) : ?>
+                            <p><a href="tel:<?php echo esc_attr($contact_phone); ?>"><?php echo esc_html($contact_phone); ?></a></p>
                         <?php endif; ?>
                     </div>
                     <?php endif; ?>
+                    
+                    <!-- Social Links -->
+                    <!-- DEBUG: Instagram: <?php echo $instagram ? 'YES' : 'NO'; ?> | Facebook: <?php echo $facebook ? 'YES' : 'NO'; ?> | Twitter: <?php echo $twitter ? 'YES' : 'NO'; ?> -->
+                    <?php if ($instagram || $facebook || $twitter) : ?>
+                    <div class="producer-connect__col producer-connect__col--social">
+                        <div class="producer-connect__social">
+                            <?php if ($instagram) : ?>
+                                <a href="<?php echo esc_url($instagram); ?>" target="_blank" rel="noopener" aria-label="Instagram">
+                                    Instagram
+                                </a>
+                            <?php endif; ?>
+                            <?php if ($facebook) : ?>
+                                <a href="<?php echo esc_url($facebook); ?>" target="_blank" rel="noopener" aria-label="Facebook">
+                                    Facebook
+                                </a>
+                            <?php endif; ?>
+                            <?php if ($twitter) : ?>
+                                <a href="<?php echo esc_url($twitter); ?>" target="_blank" rel="noopener" aria-label="Twitter">
+                                    Twitter
+                                </a>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                    <?php endif; ?>
+                    
+                    <!-- Map -->
+                    <?php if ($latitude && $longitude) : ?>
+                    <div class="producer-connect__map">
+                        <iframe 
+                            width="100%" 
+                            height="200" 
+                            frameborder="0" 
+                            scrolling="no" 
+                            marginheight="0" 
+                            marginwidth="0" 
+                            src="https://www.openstreetmap.org/export/embed.html?bbox=<?php echo esc_attr($longitude - 0.05); ?>%2C<?php echo esc_attr($latitude - 0.05); ?>%2C<?php echo esc_attr($longitude + 0.05); ?>%2C<?php echo esc_attr($latitude + 0.05); ?>&amp;layer=mapnik&amp;marker=<?php echo esc_attr($latitude); ?>%2C<?php echo esc_attr($longitude); ?>" 
+                            style="border-radius: var(--border-radius);">
+                        </iframe>
+                    </div>
+                    <?php endif; ?>
+                    
                 </div>
+                
             </div>
         </section>
         <?php endif; ?>
