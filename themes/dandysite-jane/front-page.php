@@ -1,69 +1,36 @@
-<?php get_header(); ?>
+<?php
+/**
+ * Front Page Template
+ * Delegates to the shared hero partial.
+ *
+ * Because front-page.php always takes priority in the WP template hierarchy,
+ * page template assignments are ignored here by default. We read the assigned
+ * template manually and map it to a hero layout so the Page Attributes
+ * template dropdown works as expected on the homepage too.
+ *
+ * Hero image:   Featured Image on this page.
+ * Hero content: Hero Section meta box in the page editor.
+ * Logos:        Appearance → Site Identity.
+ */
 
-<main id="primary" class="site-main">
-    <?php
-    // Only show video if the plugin function exists
-    if (function_exists('display_responsive_video')) {
-        echo display_responsive_video(null, [
-            'container_class' => 'fullscreen-video-container',
-            'show_overlay' => false,
-            'autoplay' => true,
-            'muted' => true,
-            'loop' => true
-        ]);
-    } else {
-        // Fallback if plugin not active
-        echo '<div class="no-video">Video plugin not active</div>';
-    }
-    ?>
-</main>
+$template_map = [
+    'page-templates/page-hero-fullbleed.php'   => 'fullbleed',
+    'page-templates/page-hero-split-left.php'  => 'split-left',
+    'page-templates/page-hero-split-right.php' => 'split-right',
+];
 
-<style>
-.fullscreen-video-container {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    z-index: -1;
-    overflow: hidden;
-}
+$assigned = get_page_template_slug( get_option( 'page_on_front' ) );
+$layout   = $template_map[ $assigned ] ?? 'fullbleed';
 
-.fullscreen-video-container video {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    min-width: 100%;
-    min-height: 100%;
-    width: auto;
-    height: auto;
-    transform: translateX(-50%) translateY(-50%);
-    object-fit: cover;
-}
+get_header();
+?>
 
-/* Make sure header/footer are above video */
-.site-header,
-.site-footer {
-    position: relative;
-    z-index: 1;
-}
+<?php get_template_part( 'template-parts/hero', null, [ 'layout' => $layout ] ); ?>
 
-/* Hide main content margins/padding */
-.site-main {
-    padding: 0;
-    margin: 0;
-}
-
-/* Fallback styles */
-.no-video {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-    background: #000;
-    color: #fff;
-    font-size: 2rem;
-}
-</style>
+<?php if ( have_posts() ) : while ( have_posts() ) : the_post(); ?>
+    <div class="front-page-content">
+        <?php the_content(); ?>
+    </div>
+<?php endwhile; endif; ?>
 
 <?php get_footer(); ?>

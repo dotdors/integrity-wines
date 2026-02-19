@@ -23,14 +23,12 @@ if (!defined('ABSPATH')) {
 function dsp_get_header_style() {
     $default = get_option('dsp_header_default_style', 'solid');
 
-    // Only check page templates on singular pages
+    // Per-page/CPT override via meta field (set in the Header Style sidebar panel)
     if (is_singular()) {
-        if (is_page_template('page-templates/page-overlay-header.php')) {
-            return 'overlay';
-        }
-        if (is_page_template('page-templates/page-solid-header.php')) {
-            return 'solid';
-        }
+        $post_id = get_queried_object_id();
+        $meta    = get_post_meta($post_id, '_dsp_header_style', true);
+        if ($meta === 'overlay') return 'overlay';
+        if ($meta === 'solid')   return 'solid';
     }
 
     return $default;

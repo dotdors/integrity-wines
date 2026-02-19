@@ -319,7 +319,10 @@
   &__logo {
     max-width: 220px;
     margin-bottom: var(--spacing-lg);
-    filter: brightness(0) invert(1);
+    // Only invert to white on fullbleed (dark bg). Split layouts use full color logo.
+    .hero--fullbleed & {
+      filter: brightness(0) invert(1);
+    }
   }
 
   &__tagline {

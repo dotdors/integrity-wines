@@ -119,6 +119,19 @@ function dsp_enqueue_assets() {
         );
     }
 
+    // Homepage CSS — only on front page
+    if ( is_front_page() ) {
+        $homepage_css = DSP_THEME_DIR . '/assets/css/homepage.css';
+        if ( file_exists( $homepage_css ) ) {
+            wp_enqueue_style(
+                'dsp-homepage-style',
+                DSP_THEME_URI . '/assets/css/homepage.css',
+                [ 'dsp-style' ],
+                filemtime( $homepage_css )
+            );
+        }
+    }
+
     // Header JS (no dependencies — vanilla, loads in footer)
     $header_js = DSP_THEME_DIR . '/assets/js/header.js';
     if (file_exists($header_js)) {
@@ -626,7 +639,14 @@ add_action('update_option_dsp_enable_projects', 'dsp_projects_setting_updated', 
 // ===== HEADER SYSTEM =====
 require_once DSP_THEME_DIR . '/includes/header-settings.php';
 require_once DSP_THEME_DIR . '/includes/header-functions.php';
+require_once DSP_THEME_DIR . '/includes/header-meta.php';
 require_once DSP_THEME_DIR . '/includes/footer-settings.php';
+
+// ===== SITE IDENTITY (logo variants) =====
+require_once DSP_THEME_DIR . '/includes/site-identity.php';
+
+// ===== HOMEPAGE =====
+require_once DSP_THEME_DIR . '/includes/homepage-meta.php';
 
 // ===== DEVELOPMENT & DEBUGGING =====
 // Uncomment the line below during development/debugging, comment out for production

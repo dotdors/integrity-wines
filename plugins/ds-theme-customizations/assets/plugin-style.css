@@ -654,6 +654,8 @@ blockquote p {
 .hero__logo {
   max-width: 220px;
   margin-bottom: var(--spacing-lg);
+}
+.hero--fullbleed .hero__logo {
   filter: brightness(0) invert(1);
 }
 .hero__tagline {
