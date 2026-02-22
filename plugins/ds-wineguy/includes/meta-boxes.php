@@ -43,16 +43,16 @@ function dswg_register_meta_boxes() {
     );
     
     add_meta_box(
-        'dswg_producer_logo',
+        'dswg_mb_producer_logo',
         __('Producer Logo', 'ds-wineguy'),
         'dswg_producer_logo_callback',
         'dswg_producer',
-        'normal',        // Changed from 'side' to 'normal'
+        'normal',
         'default'
     );
     
     add_meta_box(
-        'dswg_producer_gallery',
+        'dswg_mb_producer_gallery',
         __('Image Gallery', 'ds-wineguy'),
         'dswg_producer_gallery_callback',
         'dswg_producer',
@@ -61,7 +61,7 @@ function dswg_register_meta_boxes() {
     );
     
     add_meta_box(
-        'dswg_producer_files',
+        'dswg_mb_producer_files',
         __('Documents & Files', 'ds-wineguy'),
         'dswg_producer_files_callback',
         'dswg_producer',
@@ -80,7 +80,7 @@ function dswg_register_meta_boxes() {
     );
     
     add_meta_box(
-        'dswg_wine_images',
+        'dswg_mb_wine_images',
         __('Wine Images', 'ds-wineguy'),
         'dswg_wine_images_callback',
         'dswg_wine',
@@ -89,7 +89,7 @@ function dswg_register_meta_boxes() {
     );
     
     add_meta_box(
-        'dswg_wine_files',
+        'dswg_mb_wine_files',
         __('Tech Sheets & Marketing Materials', 'ds-wineguy'),
         'dswg_wine_files_callback',
         'dswg_wine',
@@ -312,17 +312,12 @@ function dswg_producer_logo_callback($post) {
     ?>
     <p class="description"><?php _e('Upload the producer logo (PNG or SVG with transparent background). Will display as white overlay on hero images.', 'ds-wineguy'); ?></p>
     
-    <table class="form-table">
-        <tr>
-            <th><label for="dswg_producer_logo"><?php _e('Logo Attachment ID', 'ds-wineguy'); ?></label></th>
-            <td>
-                <input type="text" id="dswg_producer_logo" name="dswg_producer_logo" value="<?php echo esc_attr($logo_id); ?>" class="regular-text" />
-                <p class="description"><?php _e('Enter the attachment ID of the logo image, or use the button below.', 'ds-wineguy'); ?></p>
-            </td>
-        </tr>
-    </table>
-    
     <!-- Media Upload UI (JavaScript handles this) -->
+    <input type="text" id="dswg_producer_logo" name="dswg_producer_logo" 
+           value="<?php echo esc_attr($logo_id); ?>" 
+           class="small-text" placeholder="Attachment ID" 
+           style="width:80px; vertical-align:middle;" />
+    <span style="color:#666; font-size:12px; margin-left:6px;">← ID auto-filled by picker, or type manually</span>
     <div class="dswg-logo-preview" style="margin: 15px 0;">
         <?php if ($logo_id) : ?>
             <?php echo wp_get_attachment_image($logo_id, 'thumbnail'); ?>
@@ -539,10 +534,6 @@ function dswg_save_producer_meta($post_id) {
         return;
     }
     
-    // DEBUG - log what's in POST for logo
-    error_log('DSWG Save Debug - Post ID: ' . $post_id);
-    error_log('Logo in POST: ' . (isset($_POST['dswg_producer_logo']) ? $_POST['dswg_producer_logo'] : 'NOT SET'));
-    
     // Save fields with appropriate sanitization
     
     // URL fields
@@ -575,11 +566,6 @@ function dswg_save_producer_meta($post_id) {
         if (isset($_POST[$field])) {
             $value = sanitize_text_field($_POST[$field]);
             update_post_meta($post_id, $field, $value);
-            
-            // Extra logging for logo
-            if ($field === 'dswg_producer_logo') {
-                error_log('Saving logo - Value: ' . $value . ' | Result: ' . (update_post_meta($post_id, $field, $value) ? 'success' : 'failed or no change'));
-            }
         }
     }
     

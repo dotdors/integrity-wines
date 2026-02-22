@@ -5,6 +5,8 @@
 
 (function($) {
     'use strict';
+
+    $(document).ready(function() {
     
     /**
      * Producer Gallery Management
@@ -112,8 +114,13 @@
             // Update hidden field
             $('#dswg_wine_logo').val(attachment.id);
             
+            // Handle SVGs and files without thumbnail sizes
+            var imageUrl = attachment.sizes && attachment.sizes.thumbnail
+                ? attachment.sizes.thumbnail.url
+                : attachment.url;
+            
             // Update preview
-            $('.dswg-logo-preview').html('<img src="' + attachment.sizes.thumbnail.url + '" />');
+            $('.dswg-logo-preview').html('<img src="' + imageUrl + '" />');
             
             // Show remove button
             if ($('.dswg-remove-logo').length === 0) {
@@ -153,9 +160,6 @@
             title: 'Select Files',
             button: {
                 text: 'Add Files'
-            },
-            library: {
-                type: ['application/pdf', 'image']
             },
             multiple: true
         });
@@ -280,9 +284,6 @@
             button: {
                 text: 'Add Files'
             },
-            library: {
-                type: ['application/pdf', 'image']
-            },
             multiple: true
         });
         
@@ -400,4 +401,6 @@
         });
     }
     
+    }); // end document.ready
+
 })(jQuery);

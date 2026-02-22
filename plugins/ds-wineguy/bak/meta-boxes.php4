@@ -313,11 +313,7 @@ function dswg_producer_logo_callback($post) {
     <p class="description"><?php _e('Upload the producer logo (PNG or SVG with transparent background). Will display as white overlay on hero images.', 'ds-wineguy'); ?></p>
     
     <!-- Media Upload UI (JavaScript handles this) -->
-    <input type="text" id="dswg_producer_logo" name="dswg_producer_logo" 
-           value="<?php echo esc_attr($logo_id); ?>" 
-           class="small-text" placeholder="Attachment ID" 
-           style="width:80px; vertical-align:middle;" />
-    <span style="color:#666; font-size:12px; margin-left:6px;">← ID auto-filled by picker, or type manually</span>
+    <input type="hidden" id="dswg_producer_logo" name="dswg_producer_logo" value="<?php echo esc_attr($logo_id); ?>" />
     <div class="dswg-logo-preview" style="margin: 15px 0;">
         <?php if ($logo_id) : ?>
             <?php echo wp_get_attachment_image($logo_id, 'thumbnail'); ?>
@@ -534,13 +530,6 @@ function dswg_save_producer_meta($post_id) {
         return;
     }
     
-    // DEBUG - compare gallery (works) vs logo/files (broken)
-    error_log('=== DSWG SAVE POST ID: ' . $post_id . ' ===');
-    error_log('gallery_ids in POST: ' . (isset($_POST['dswg_gallery_ids']) ? '"' . $_POST['dswg_gallery_ids'] . '"' : 'NOT SET'));
-    error_log('producer_logo in POST: ' . (isset($_POST['dswg_producer_logo']) ? '"' . $_POST['dswg_producer_logo'] . '"' : 'NOT SET'));
-    error_log('producer_files in POST: ' . (isset($_POST['dswg_producer_files']) ? '"' . $_POST['dswg_producer_files'] . '"' : 'NOT SET'));
-    error_log('nonce present: ' . (isset($_POST['dswg_producer_nonce']) ? 'YES' : 'NO'));
-
     // Save fields with appropriate sanitization
     
     // URL fields

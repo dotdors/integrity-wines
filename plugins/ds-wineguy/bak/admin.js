@@ -5,6 +5,8 @@
 
 (function($) {
     'use strict';
+
+    $(document).ready(function() {
     
     /**
      * Producer Gallery Management
@@ -112,8 +114,13 @@
             // Update hidden field
             $('#dswg_wine_logo').val(attachment.id);
             
+            // Handle SVGs and files without thumbnail sizes
+            var imageUrl = attachment.sizes && attachment.sizes.thumbnail
+                ? attachment.sizes.thumbnail.url
+                : attachment.url;
+            
             // Update preview
-            $('.dswg-logo-preview').html('<img src="' + attachment.sizes.thumbnail.url + '" />');
+            $('.dswg-logo-preview').html('<img src="' + imageUrl + '" />');
             
             // Show remove button
             if ($('.dswg-remove-logo').length === 0) {
@@ -153,9 +160,6 @@
             title: 'Select Files',
             button: {
                 text: 'Add Files'
-            },
-            library: {
-                type: ['application/pdf', 'image']
             },
             multiple: true
         });
@@ -238,7 +242,12 @@
         producerLogoFrame.on('select', function() {
             var attachment = producerLogoFrame.state().get('selection').first().toJSON();
             
+            console.log('DSWG Logo select fired. Attachment ID:', attachment.id);
+            console.log('DSWG Logo input element:', $('#dswg_producer_logo').length, 'elements found');
+            
             $('#dswg_producer_logo').val(attachment.id);
+            
+            console.log('DSWG Logo input value after set:', $('#dswg_producer_logo').val());
             
             // Handle both regular images and SVG
             var imageUrl = attachment.sizes && attachment.sizes.thumbnail 
@@ -280,9 +289,6 @@
             button: {
                 text: 'Add Files'
             },
-            library: {
-                type: ['application/pdf', 'image']
-            },
             multiple: true
         });
         
@@ -290,6 +296,9 @@
             var selection = producerFilesFrame.state().get('selection');
             var files = $('#dswg_producer_files').val();
             var filesArray = files ? files.split(',') : [];
+            
+            console.log('DSWG Files select fired. Selection count:', selection.length);
+            console.log('DSWG Files input element:', $('#dswg_producer_files').length, 'elements found');
             
             selection.map(function(attachment) {
                 attachment = attachment.toJSON();
@@ -400,4 +409,14 @@
         });
     }
     
+    // DEBUG: Log all our field values right before form submits
+    $('#post').on('submit', function() {
+        console.log('=== DSWG FORM SUBMIT ===');
+        console.log('gallery_ids value:', $('#dswg_gallery_ids').val());
+        console.log('producer_logo value:', $('#dswg_producer_logo').val());
+        console.log('producer_files value:', $('#dswg_producer_files').val());
+    });
+
+    }); // end document.ready
+
 })(jQuery);
