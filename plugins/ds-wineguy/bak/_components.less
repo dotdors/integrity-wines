@@ -1,17 +1,6 @@
 // out: false
 // Base Components - Buttons, Cards, Forms, etc.
 
-// ===== MIXINS =====
-// Reusable style blocks. Use .mixin-name() to apply.
-
-.section-title-styles() {
-  font-family: var(--font-primary);
-  font-size: clamp(2rem, 4vw, 3rem);
-  font-weight: 600;
-  color: var(--color-text);
-  margin: 0 0 var(--spacing-md) 0;
-}
-
 // ===== BUTTONS =====
 .button,
 .btn,
@@ -534,7 +523,11 @@
   }
 
   &__title {
-    .section-title-styles();
+    font-family: var(--font-primary);
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 600;
+    color: var(--color-text);
+    margin: 0 0 var(--spacing-md) 0;
   }
 
   &__desc {
@@ -678,10 +671,8 @@
 
 // ===== PRODUCER CONNECT SECTION =====
 .producer-connect__label {
-  display: none; // Hidden in V2 — V1 shows it
-  text-align: left;
-  .section-title-styles();
-  margin-bottom: var(--spacing-lg);
+  text-align: center;
+  margin-bottom: var(--spacing-xl);
 }
 
 .producer-connect {
@@ -787,23 +778,7 @@
   }
 }
 
-// Hero headline always centered on fullbleed (dark overlay, cinematic feel)
-.hero--fullbleed .hero__headline {
-  text-align: center;
-}
-
-// Hero split: ensure image column stretches to full grid height.
-// The image is position:absolute/inset:0, so it needs the col to have
-// a defined height — grid stretch + height:100% on the col provides that.
-.hero--split {
-  align-items: stretch;
-}
-
-.hero__image-col {
-  height: 100%;
-}
-
-
+// ===== HEADER =====
 // dandysite-jane base style.css sets:
 //   border-bottom: 2px solid var(--color-primary) on .site-header
 // This conflicts with the header system which manages its own border via

@@ -27,8 +27,7 @@
 // Typography Gold
 @color-gold-primary: #C6A64B;      // Warm antique gold
 @color-gold-dark: #9E7C2F;         // Darker gold (depth/shadow)
-@color-brown: #5c4206;  
-@color-gold-bright: #f9c941;
+
 // Text Colors
 @color-text: #2A2420;              // Warm black (dark brown-black)
 @color-text-light: #5A524D;        // Lighter warm text
@@ -38,18 +37,6 @@
 @color-button-text: @color-text;
 @color-button-bg: transparent;
 @color-button-border: rgba(42, 36, 32, 0.45);  // 45% opacity text color
-
-
-// ===== DARK MODE COLORS =====
-@color-dark-bg:             @color-brown;    // Dark footer/section background
-@color-dark-bg-deep:       @color-gold-dark;    // Deeper dark (colophon, nested sections)
-@color-dark-text:           @color-background;    // Body text on dark background
-@color-dark-link:            @color-gold-bright;
-@color-dark-text-heading:   @color-background;    // Heading text on dark background (slightly warmer/brighter)
-@color-dark-text-muted:     @color-background-alt;    // Muted text on dark background
-@color-dark-border:         rgba(255, 255, 255, 0.1);
-@color-dark-divider:        rgba(255, 255, 255, 0.12);
-
 
 // ===== SEMANTIC COLOR ASSIGNMENTS =====
 // Map brand colors to functional uses
@@ -99,6 +86,14 @@
 @box-shadow-lg: 0 4px 16px rgba(42, 36, 32, 0.12);
 @transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
+// ===== DARK MODE COLORS =====
+@color-dark-bg:             #1E1A17;    // Dark footer/section background
+@color-dark-bg-deep:        #161310;    // Deeper dark (colophon, nested sections)
+@color-dark-text:           #E8DFD0;    // Body text on dark background
+@color-dark-text-heading:   #F3E9D7;    // Heading text on dark background (slightly warmer/brighter)
+@color-dark-text-muted:     #B0A090;    // Muted text on dark background
+@color-dark-border:         rgba(255, 255, 255, 0.1);
+@color-dark-divider:        rgba(255, 255, 255, 0.12);
 // Additional variables for wine/producer components
 
 // Wine Type Colors (for badges, labels)
@@ -228,7 +223,7 @@
 
 // ===== FOOTER OVERRIDES FOR INTEGRITY WINES =====
 .site-footer {
-  --footer-bg:            @color-background-alt;
+  --footer-bg:            @color-background;
   --footer-border:        @color-border;
   --footer-text:          @color-text;
   --footer-text-muted:    @color-text-muted;
@@ -247,12 +242,12 @@ body.footer-dark .site-footer {
   --footer-border:        @color-dark-border;
   --footer-text:          @color-dark-text;
   --footer-text-muted:    @color-dark-text-muted;
-  --footer-link:          @color-dark-link;
-  --footer-link-hover:    @color-dark-text;
+  --footer-link:          @color-dark-text;
+  --footer-link-hover:    @color-gold-primary;
   --footer-title:         @color-dark-text-heading;
   --footer-divider:       @color-dark-divider;
   --footer-logo-opacity:  0.9;
 
   --footer-colophon-bg:   @color-dark-bg-deep;
-  --footer-colophon-text: @color-dark-text;
+  --footer-colophon-text: @color-text-muted;
 }

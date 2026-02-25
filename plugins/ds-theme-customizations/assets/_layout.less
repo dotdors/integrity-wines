@@ -101,15 +101,34 @@
   }
 }
 
-// Section spacing
-.section {
-  padding: var(--spacing-2xl) 0;
-  
-  @media (max-width: 768px) {
-    padding: var(--spacing-xl) 0;
-  }
+// ===== SECTION LAYOUT =====
+// .fullwidth  — content runs edge to edge, no horizontal constraint
+// (default)   — constrained with horizontal padding up to --container-max-width
+// Add "fullwidth" class in block editor to opt a section out of padding.
+
+.section:not(.fullwidth) {
+  padding-left:  max(var(--spacing-xl), calc((100% - var(--container-max-width)) / 2));
+  padding-right: max(var(--spacing-xl), calc((100% - var(--container-max-width)) / 2));
 }
 
-.section--narrow {
-  padding: var(--spacing-lg) 0;
+// .section--narrow uses double-class selector (0,2,0) to beat .section:not(.fullwidth)
+// which also has specificity 0,2,0 — source order then decides, narrow wins as it's later.
+.section.section--narrow {
+  padding-left:  max(var(--spacing-xl), calc((100% - var(--content-max-width)) / 2));
+  padding-right: max(var(--spacing-xl), calc((100% - var(--content-max-width)) / 2));
+}
+
+// Front page block groups — horizontal padding so content doesn't run wall to wall.
+// Add "fullwidth" class in the block editor to opt out (carousel, hero images etc).
+// Add "section--narrow" to constrain to --content-max-width instead.
+// Vertical padding: add class "section" in the block editor.
+.front-page-content > .wp-block-group:not(.fullwidth) {
+  padding-left:  max(var(--spacing-xl), calc((100% - var(--container-max-width)) / 2));
+  padding-right: max(var(--spacing-xl), calc((100% - var(--container-max-width)) / 2));
+}
+
+// Same specificity (0,3,0), comes after — wins by source order
+.front-page-content > .wp-block-group.section--narrow {
+  padding-left:  max(var(--spacing-xl), calc((100% - var(--content-max-width)) / 2));
+  padding-right: max(var(--spacing-xl), calc((100% - var(--content-max-width)) / 2));
 }

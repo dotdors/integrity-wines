@@ -1,0 +1,339 @@
+// out: false
+// ============================================
+// Design V1 — "Editorial"
+// All rules scoped to body.design-v1
+// ============================================
+// Character: structured, dense, left-aligned,
+// Lato body text, visible section dividers,
+// boxed nav, defined cards, tight spacing.
+// ============================================
+
+body.design-v1 {
+
+  // ===== SPACING — denser =====
+  --spacing-xl:  2rem;
+  --spacing-2xl: 3rem;
+
+  // ===== LAYOUT — tighter content width =====
+  --container-max-width: 1280px;
+  --content-max-width:   820px;
+
+  // ===== TYPOGRAPHY — Garamond headings, Lato body =====
+  --font-primary:   'EB Garamond', Georgia, serif;   // Headings
+  --font-secondary: 'Lato', system-ui, sans-serif;
+  --font-body:      'Lato', system-ui, sans-serif;   // Overrides base (Garamond) for V1
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  line-height: 1.65;
+
+  // Body text and paragraphs use --font-body
+  p, li, td, th, label, input, select, textarea, address {
+    font-family: var(--font-body);
+  }
+
+  // ===== BORDERS =====
+  --border-radius:    2px;
+  --border-radius-lg: 3px;
+  --color-border:     var(--color-gold-dark);
+
+  // For demo: .fullwidth gets identical padding to .section--narrow
+  .section.fullwidth,
+  .front-page-content > .wp-block-group.fullwidth {
+    padding-left:  max(var(--spacing-xl), calc((100% - var(--content-max-width)) / 2));
+    padding-right: max(var(--spacing-xl), calc((100% - var(--content-max-width)) / 2));
+  }
+
+  // ===== SHADOWS — more defined =====
+  --box-shadow:    0 1px 3px rgba(42, 36, 32, 0.12);
+  --box-shadow-lg: 0 3px 10px rgba(42, 36, 32, 0.18);
+
+  // ===== HEADER — shorter, bottom border, pipe separators =====
+  --header-height:        52px;
+  --header-height-mobile: 48px;
+  --header-logo-height:   22px;
+
+  .site-header {
+    padding: 0;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  // ===== NAV — full-height pipe separators =====
+  // .header-nav 100% doesn't reach the fixed px height — target the specific
+  // desktop nav class with enough specificity to override header.css.
+  .site-header.header--desktop-nav .header-nav {
+    height: var(--header-height);
+  }
+
+  .header-nav {
+
+    ul {
+      height: 100%;
+      gap: 0;
+      align-items: stretch; // ul children stretch to full height
+    }
+
+    ul li {
+      display: flex;
+      height: 100%;
+
+      // Pipe before each item except the first
+      & + li {
+        border-left: 1px solid var(--color-border);
+      }
+    }
+
+    a {
+      display: flex;
+      align-items: center;
+      height: 100%;
+      font-size: 0.78rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0 1.25rem;
+      white-space: nowrap;
+      transition: background var(--transition);
+
+      &:hover {
+        opacity: 1;
+        background: var(--color-background-alt);
+      }
+    }
+  }
+
+  // Nav item with .featured class gets the filled CTA treatment
+  // Add "featured" CSS class to any menu item in Appearance → Menus
+  .header-nav ul li.featured > a {
+    background: var(--color-green-dark);
+    color: #fff;
+    opacity: 1;
+
+    &:hover {
+      background: var(--color-green-primary);
+    }
+  }
+
+  // ===== HERO — split headline + logo sizing =====
+  .hero--split .hero__headline {
+    font-style: normal;
+    line-height: 1em;
+    font-size: 28px;
+  }
+
+  .hero--split .hero__logo {
+    max-width: 30vh;
+    max-height: 50vw;
+  }
+
+  // ===== HERO — bottom border, fix split height =====
+  .hero--fullbleed,
+  .hero--split {
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  // Inline style sets min-height: 90vh — override to fit-content so the grid
+  // row height is driven by content, not a forced value. !important beats inline style.
+  .hero--split {
+    min-height: fit-content !important;
+  }
+
+  // ===== SECTION--NARROW + FULLWIDTH — vertical accent line (demo) =====
+  .section.section--narrow,
+  .section.fullwidth,
+  .front-page-content > .wp-block-group.section--narrow,
+  .front-page-content > .wp-block-group.fullwidth {
+    position: relative;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: var(--spacing-2xl);
+      width: 2px;
+      background: var(--color-border);
+    }
+  }
+
+  // ===== SECTIONS — dense padding, dividers between =====
+  .section {
+    padding: var(--spacing-2xl) 0;
+
+    @media (max-width: 768px) {
+      padding: var(--spacing-lg) 0;
+    }
+
+    // Horizontal rule divider above each section (except first)
+    & + .section {
+      border-top: 1px solid var(--color-border);
+    }
+  }
+
+  // Alt sections get background AND divider
+  .section--alt {
+    background: var(--color-background-alt);
+    border-top: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  // Connect section always gets alt bg
+  .producer-connect-section {
+    border-top: 1px solid var(--color-border);
+  }
+
+  // ===== HEADINGS — all left-aligned =====
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-primary);
+    text-align: left;
+  }
+
+  // ===== SECTION HEADERS — left-aligned, smaller =====
+  .section-header {
+    text-align: left;
+    margin-bottom: var(--spacing-lg);
+
+    &__label {
+      letter-spacing: 0.15em;
+      font-size: 0.7rem;
+    }
+
+    &__title {
+      font-size: clamp(1.5rem, 3vw, 2.25rem);
+      font-weight: 600;
+    }
+
+    &__desc {
+      font-family: var(--font-body);
+      font-size: var(--font-size-base);
+      font-style: normal;
+    }
+  }
+
+  // ===== CONNECT LABEL — hidden for now =====
+  .producer-connect__label {
+    display: none;
+  }
+
+  // ===== CONNECT SECTION — plain background =====
+  .producer-connect-section {
+    background: var(--color-background);
+  }
+
+  // ===== PRODUCER INTRO — vertical divider between description and highlights =====
+  .producer-highlights {
+    padding-left: var(--spacing-xl);
+    border-left: 1px solid var(--color-border);
+  }
+
+  // ===== PRODUCER IDENTITY — left-aligned =====
+  .producer-identity {
+    text-align: left;
+    border-bottom: 1px solid var(--color-border);
+
+    &__name {
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 700;
+    }
+
+    &__location {
+      font-family: var(--font-body);
+      font-size: var(--font-size-base);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+  }
+
+  // ===== BUTTONS — sharper, slightly filled =====
+  .button,
+  .btn,
+  .wp-block-button__link {
+    border-width: 1px;
+    border-radius: var(--border-radius);
+    padding: 0.5em 1.5em;
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  // ===== CARDS — defined borders =====
+  .wine-card {
+    border: 1px solid var(--color-border);
+    box-shadow: none;
+
+    &:hover {
+      box-shadow: var(--box-shadow);
+    }
+  }
+
+  .producer-card {
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius);
+    box-shadow: none;
+
+    &:hover {
+      box-shadow: var(--box-shadow);
+      transform: translateY(-1px);
+    }
+  }
+
+  // ===== FRONT PAGE =====
+  .front-page-content {
+    padding-top: 0;
+  }
+
+  // ===== CARD INFO + HERO IDENTITY — glass treatment =====
+  .ds-producer-card__info {
+    background: #c6a64b4f;
+    backdrop-filter: blur(4px) saturate(120%);
+    border-top: 0;
+  }
+
+  .producer-hero__identity {
+    background: #c6a64b4f;
+    backdrop-filter: blur(4px) saturate(120%);
+    border-top: 0;
+  }
+
+  // ===== SPACING TWEAKS =====
+  .ds-producer-carousel {
+    padding-bottom: 0;
+  }
+
+  .ds-producer-carousel-wrapper {
+    margin: 1rem 0;
+  }
+
+  .site-main {
+    padding-bottom: 0;
+  }
+
+  // ===== FOOTER — denser =====
+  .site-footer {
+    --footer-bg:           var(--color-background-alt);
+    --footer-border:       var(--color-text);    // override footer.css scoped variable
+    --footer-colophon-bg:  var(--color-background);
+
+    // Footer widget image — pull up to reduce whitespace
+    figure.wp-block-image {
+      margin-top: -2em;
+    }
+
+    // Tighter widget spacing
+    .widget {
+      margin-bottom: var(--spacing-lg);
+    }
+
+    // Footer headings — smaller, uppercase label style
+    h2, h3, h4 {
+      font-family: var(--font-body);
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--color-text-muted);
+      margin-bottom: var(--spacing-sm);
+    }
+  }
+
+} // end body.design-v1

@@ -1,0 +1,259 @@
+// out: false
+// ============================================
+// Design V2 — "Immersive"
+// All rules scoped to body.design-v2
+// ============================================
+// Character: generous whitespace, centered type,
+// full EB Garamond throughout, minimal borders,
+// sections breathe rather than divide.
+// ============================================
+
+body.design-v2 {
+
+  // ===== SPACING — moderate, not aggressive =====
+  --spacing-xl:  3rem;
+  --spacing-2xl: 4.5rem;
+
+  // ===== LAYOUT — wider, more expansive =====
+  --container-max-width: 1600px;
+  --content-max-width:   1100px;
+
+  // ===== TYPOGRAPHY — all Garamond, larger body =====
+  --font-primary:   'EB Garamond', Georgia, serif;
+  --font-secondary: 'EB Garamond', Georgia, serif;
+  font-family: var(--font-primary);
+  font-size: 1.125rem; // Body slightly larger than base
+
+  // ===== BORDERS — softer =====
+  --border-radius:    0;
+  --border-radius-lg: 0;
+
+  // ===== SHADOWS — very subtle =====
+  --box-shadow:    0 1px 4px rgba(42, 36, 32, 0.05);
+  --box-shadow-lg: 0 2px 12px rgba(42, 36, 32, 0.08);
+
+  // ===== BUTTONS — wider, thinner, more elegant =====
+  .button,
+  .btn,
+  .wp-block-button__link {
+    border-width: 1px;
+    padding: 0.65em 2.5em;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-size: 1rem;
+    font-family: var(--font-primary);
+  }
+
+  // ===== HEADER — logo sizes and nav font =====
+  --header-nav-font-size: 1em;
+
+  &.header-style-overlay {
+    --header-logo-height: 20px;
+  }
+
+  &.header-style-solid {
+    --header-logo-height: 25px;
+  }
+
+  // ===== NAV — spaced, no boxes =====
+  .main-navigation a {
+    letter-spacing: 0.06em;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+  }
+
+  // ===== SECTIONS — tighter since no dividers or bg changes do the visual work =====
+  .section {
+    padding: var(--spacing-xl) 0;
+
+    @media (max-width: 768px) {
+      padding: var(--spacing-lg) 0;
+    }
+  }
+
+  // ===== FRONT PAGE =====
+  // Top-level block groups get horizontal padding via _layout.less.
+  // Vertical padding: add class "section" to each group block in the editor.
+
+  // Colophon — flush against footer, no gap
+  footer#colophon {
+    margin-top: 0;
+    padding-top: 0;
+  }
+
+  // Remove bottom padding from main content area
+  .site-main {
+    padding-bottom: 0;
+  }
+
+  // Carousel section — alt background, tight bottom
+  .wp-block-group.section.carosection {
+    background-color: var(--color-background-alt);
+    padding-bottom: 10px;
+  }
+
+  // Footer widget image — pull up
+  .footer-widget figure.wp-block-image.size-full {
+    margin-top: -25px;
+  }
+
+  // Soften the alt section background contrast — sections flow together
+  // BUT explicitly preserve the connect section's alt bg
+  .section--alt:not(.producer-connect-section) {
+    background: @color-background;
+  }
+
+  // No bottom border on producer identity block
+  .producer-identity {
+    border-bottom: none;
+    padding-bottom: var(--spacing-2xl);
+  }
+
+  // ===== HEADINGS — centered by default =====
+  h1, h2, h3 {
+    text-align: center;
+  }
+
+  // But NOT inside cards, connect sections, story text, left-aligned contexts, or footer
+  .wine-card,
+  .producer-card,
+  .ds-producer-card__info,
+  .producer-connect,
+  .story__text,
+  .producer-intro,
+  .producer-highlights,
+  .wine-card__expand-inner,
+  .producer-hero__identity,
+  .site-footer,
+  .widget {
+    h1, h2, h3, h4, h5, h6 {
+      text-align: left;
+    }
+  }
+
+  // ===== SECTION HEADERS — centered, looser =====
+  .section-header {
+    margin-bottom: var(--spacing-2xl);
+
+    &__label {
+      letter-spacing: 0.2em;
+      font-size: 0.75rem;
+      margin-bottom: var(--spacing-md);
+    }
+
+    &__title {
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      font-weight: 400; // Lighter weight — more elegant
+      letter-spacing: 0.02em;
+    }
+
+    &__desc {
+      font-size: var(--font-size-large);
+      font-style: italic;
+      max-width: 800px;
+    }
+  }
+
+  // ===== PRODUCER IDENTITY BLOCK — centered, larger =====
+  .producer-identity {
+    text-align: center;
+    padding-top: var(--spacing-2xl);
+
+    &__name {
+      font-size: clamp(3rem, 6vw, 5rem);
+      font-weight: 400;
+      letter-spacing: 0.02em;
+    }
+
+    &__location {
+      font-style: italic;
+      font-size: var(--font-size-xl);
+      letter-spacing: 0.04em;
+    }
+  }
+
+  // ===== CARDS — minimal, no radius, softer shadow =====
+  .wine-card {
+    box-shadow: var(--box-shadow);
+    border: none;
+  }
+
+  .producer-card {
+    border-radius: 0;
+    box-shadow: var(--box-shadow);
+
+    &:hover {
+      box-shadow: var(--box-shadow-lg);
+      transform: translateY(-1px); // Subtler lift
+    }
+  }
+
+  // ===== PRODUCER CARD — remove country badge radius =====
+  .producer-card__country {
+    border-radius: 0;
+  }
+
+  // ===== WINE GRID — slightly wider cards on V2 =====
+  --wine-card-width: 240px;
+  --producer-card-width: 360px;
+
+  // ===== WINE TYPE BADGES — no radius =====
+  .wine-card__type {
+    border-radius: 0;
+  }
+
+  // ===== PRODUCER CONNECT — centered label =====
+  .producer-connect__label {
+    font-size: clamp(1.5rem, 3vw, 2.5rem);
+    font-weight: 400;
+    font-style: italic;
+    letter-spacing: 0.02em;
+  }
+
+  // ===== STORY SECTION — full-width feel =====
+  .story__body {
+    max-height: 500px; // Slightly taller before truncating
+
+    // Fade gradient matches the non-alt background
+    &:not(.is-expanded)::after {
+      background: linear-gradient(transparent, @color-background);
+    }
+  }
+
+  // ===== BADGES — no radius =====
+  .badge {
+    border-radius: 0;
+    letter-spacing: 0.1em;
+  }
+
+  // ===== HERO tagline — larger, centered =====
+  .hero__tagline {
+    font-size: clamp(1.75rem, 4vw, 3rem);
+    max-width: 900px;
+    font-weight: 400;
+  }
+
+  // ===== FORMS — minimal styling =====
+  .form-input,
+  .form-select,
+  .form-textarea {
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    border-top: none;
+    background: transparent;
+    padding-left: 0;
+    padding-right: 0;
+
+    &:focus {
+      box-shadow: none;
+      border-color: var(--color-wine-red);
+    }
+  }
+
+  // ===== DOWNLOAD LINKS — minimal =====
+  .download-link {
+    border-radius: 0;
+  }
+
+} // end body.design-v2

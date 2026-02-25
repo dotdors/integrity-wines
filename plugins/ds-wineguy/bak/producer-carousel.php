@@ -21,7 +21,7 @@ if (!defined('ABSPATH')) {
 
 // Build query args
 $query_args = array(
-    'post_type' => 'producer',
+    'post_type' => 'dswg_producer',  // CORRECTED
     'posts_per_page' => -1,
     'post_status' => 'publish'
 );
@@ -30,7 +30,7 @@ $query_args = array(
 if (!empty($country)) {
     $query_args['tax_query'] = array(
         array(
-            'taxonomy' => 'country',
+            'taxonomy' => 'dswg_country',  // CORRECTED
             'field' => 'slug',
             'terms' => $country
         )

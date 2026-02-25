@@ -27,6 +27,7 @@
   --font-primary: 'EB Garamond', Georgia, serif;
   --font-secondary: 'EB Garamond', Georgia, serif;
   --font-heading: 'EB Garamond', Georgia, serif;
+  --font-body: 'EB Garamond', Georgia, serif;
   --font-size-base: 1rem;
   --font-size-small: 0.875rem;
   --font-size-large: 1.125rem;
@@ -88,7 +89,7 @@
   --header-nav-gap: var(--spacing-lg);
 }
 .site-footer {
-  --footer-bg: #F3E9D7;
+  --footer-bg: #FFF7E9;
   --footer-border: #E8D8C0;
   --footer-text: #2A2420;
   --footer-text-muted: #7A706A;
@@ -396,16 +397,21 @@ blockquote p {
     display: none;
   }
 }
-.section {
-  padding: var(--spacing-2xl) 0;
+.section:not(.fullwidth) {
+  padding-left: max(var(--spacing-xl), calc((100% - var(--container-max-width)) / 2));
+  padding-right: max(var(--spacing-xl), calc((100% - var(--container-max-width)) / 2));
 }
-@media (max-width: 768px) {
-  .section {
-    padding: var(--spacing-xl) 0;
-  }
+.section.section--narrow {
+  padding-left: max(var(--spacing-xl), calc((100% - var(--content-max-width)) / 2));
+  padding-right: max(var(--spacing-xl), calc((100% - var(--content-max-width)) / 2));
 }
-.section--narrow {
-  padding: var(--spacing-lg) 0;
+.front-page-content > .wp-block-group:not(.fullwidth) {
+  padding-left: max(var(--spacing-xl), calc((100% - var(--container-max-width)) / 2));
+  padding-right: max(var(--spacing-xl), calc((100% - var(--container-max-width)) / 2));
+}
+.front-page-content > .wp-block-group.section--narrow {
+  padding-left: max(var(--spacing-xl), calc((100% - var(--content-max-width)) / 2));
+  padding-right: max(var(--spacing-xl), calc((100% - var(--content-max-width)) / 2));
 }
 .button,
 .btn,
@@ -517,6 +523,7 @@ blockquote p {
   min-height: 120px;
 }
 .main-navigation a {
+  border-bottom: none !important;
   color: var(--color-text);
   font-weight: 500;
   text-transform: none;
@@ -525,6 +532,7 @@ blockquote p {
 .main-navigation a:hover,
 .main-navigation a.current-menu-item {
   color: var(--color-wine-red);
+  border-bottom: none !important;
   text-decoration: none;
 }
 .badge {
@@ -555,6 +563,10 @@ blockquote p {
 }
 .site-main {
   flex: 1;
+}
+.single-dswg_producer .site-main,
+.single-dswg_wine .site-main {
+  padding-top: 0;
 }
 .overlay-card {
   position: relative;
@@ -657,6 +669,8 @@ blockquote p {
 }
 .hero--fullbleed .hero__logo {
   filter: brightness(0) invert(1);
+  max-width: 50vw;
+  max-height: 30vh;
 }
 .hero__tagline {
   font-family: var(--font-primary);
@@ -771,14 +785,17 @@ blockquote p {
   margin: 0;
 }
 .section {
-  padding: var(--spacing-2xl) 0;
+  padding: var(--spacing-xl) 0;
 }
 @media (max-width: 768px) {
   .section {
-    padding: var(--spacing-xl) 0;
+    padding: var(--spacing-lg) 0;
   }
 }
 .section--alt {
+  background: var(--color-background-alt);
+}
+.producer-connect-section {
   background: var(--color-background-alt);
 }
 .section--dark {
@@ -922,8 +939,14 @@ blockquote p {
   color: var(--color-wine-highlight);
 }
 .producer-connect__label {
-  text-align: center;
-  margin-bottom: var(--spacing-xl);
+  display: none;
+  text-align: left;
+  font-family: var(--font-primary);
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0 0 var(--spacing-md) 0;
+  margin-bottom: var(--spacing-lg);
 }
 .producer-connect {
   display: grid;
@@ -1005,6 +1028,26 @@ blockquote p {
   display: block;
   width: 100%;
   border-radius: var(--border-radius);
+}
+.site-footer h1,
+.site-footer h2,
+.site-footer h3,
+.site-footer h4,
+.site-footer h5,
+.site-footer h6 {
+  text-align: left;
+}
+.hero--fullbleed .hero__headline {
+  text-align: center;
+}
+.hero--split {
+  align-items: stretch;
+}
+.hero__image-col {
+  height: 100%;
+}
+.site-header {
+  border-bottom: none;
 }
 .site-description {
   display: none;
@@ -1105,7 +1148,6 @@ blockquote p {
   height: max-content;
   container-type: inline-size;
   background: var(--color-surface);
-  border-radius: var(--border-radius-lg);
   box-shadow: var(--box-shadow);
   overflow: hidden;
   transition: var(--transition);
@@ -1350,6 +1392,92 @@ blockquote p {
   border-color: var(--color-wine-red);
   transform: translateY(-2px);
 }
+.wine-card__toggle {
+  display: block;
+  width: 100%;
+  background: none;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  margin: 0;
+  text-align: left;
+  cursor: pointer;
+  color: inherit;
+  font: inherit;
+  -webkit-appearance: none;
+  appearance: none;
+  box-shadow: none;
+}
+.wine-card__toggle:focus-visible {
+  outline: 2px solid var(--color-wine-red);
+  outline-offset: -2px;
+}
+.wine-card__toggle:hover .wine-card__image img {
+  transform: scale(1.05);
+}
+.wine-card--expandable:hover {
+  box-shadow: var(--box-shadow-lg);
+  transform: translateY(-2px);
+}
+.wine-card--expandable.wine-card--open {
+  transform: none;
+  box-shadow: var(--box-shadow-lg);
+}
+.wine-card__expand-hint {
+  display: block;
+  margin-top: var(--spacing-sm);
+  font-size: var(--font-size-small);
+  color: var(--color-wine-red);
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+.wine-card__meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-xs);
+  margin-bottom: var(--spacing-xs);
+}
+.wine-card__expand {
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  border-top: 1px solid var(--color-border);
+}
+.wine-card__expand-inner {
+  padding: var(--spacing-md);
+}
+.wine-card__details {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--spacing-xs) var(--spacing-md);
+  margin: 0 0 var(--spacing-sm) 0;
+  font-size: var(--font-size-small);
+}
+.wine-card__details dt {
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.wine-card__details dd {
+  margin: 0;
+  color: var(--color-text);
+}
+.wine-card__excerpt {
+  font-size: var(--font-size-small);
+  color: var(--color-text-light);
+  line-height: var(--line-height-base);
+  margin-bottom: var(--spacing-sm);
+}
+.wine-card__files {
+  margin-bottom: var(--spacing-sm);
+}
+.wine-card__full-link {
+  display: inline-block;
+  margin-top: var(--spacing-xs);
+  font-size: var(--font-size-small);
+}
 .no-image-placeholder {
   display: flex;
   align-items: center;
@@ -1592,4 +1720,488 @@ button:focus-visible {
 .container {
   width: min(90%, var(--container-max-width));
   padding-inline: clamp(1rem, 3vw, 2rem);
+}
+body.design-v2 {
+  --spacing-xl: 3rem;
+  --spacing-2xl: 4.5rem;
+  --container-max-width: 1600px;
+  --content-max-width: 1100px;
+  --font-primary: 'EB Garamond', Georgia, serif;
+  --font-secondary: 'EB Garamond', Georgia, serif;
+  font-family: var(--font-primary);
+  font-size: 1.125rem;
+  --border-radius: 0;
+  --border-radius-lg: 0;
+  --box-shadow: 0 1px 4px rgba(42, 36, 32, 0.05);
+  --box-shadow-lg: 0 2px 12px rgba(42, 36, 32, 0.08);
+  --header-nav-font-size: 1em;
+  --wine-card-width: 240px;
+  --producer-card-width: 360px;
+}
+body.design-v2 .button,
+body.design-v2 .btn,
+body.design-v2 .wp-block-button__link {
+  border-width: 1px;
+  padding: 0.65em 2.5em;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-size: 1rem;
+  font-family: var(--font-primary);
+}
+body.design-v2.header-style-overlay {
+  --header-logo-height: 20px;
+}
+body.design-v2.header-style-solid {
+  --header-logo-height: 25px;
+}
+body.design-v2 .main-navigation a {
+  letter-spacing: 0.06em;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+}
+body.design-v2 .section {
+  padding: var(--spacing-xl) 0;
+}
+@media (max-width: 768px) {
+  body.design-v2 .section {
+    padding: var(--spacing-lg) 0;
+  }
+}
+body.design-v2 footer#colophon {
+  margin-top: 0;
+  padding-top: 0;
+}
+body.design-v2 .site-main {
+  padding-bottom: 0;
+}
+body.design-v2 .wp-block-group.section.carosection {
+  background-color: var(--color-background-alt);
+  padding-bottom: 10px;
+}
+body.design-v2 .footer-widget figure.wp-block-image.size-full {
+  margin-top: -25px;
+}
+body.design-v2 .section--alt:not(.producer-connect-section) {
+  background: #FFF7E9;
+}
+body.design-v2 .producer-identity {
+  border-bottom: none;
+  padding-bottom: var(--spacing-2xl);
+}
+body.design-v2 h1,
+body.design-v2 h2,
+body.design-v2 h3 {
+  text-align: center;
+}
+body.design-v2 .wine-card h1,
+body.design-v2 .producer-card h1,
+body.design-v2 .ds-producer-card__info h1,
+body.design-v2 .producer-connect h1,
+body.design-v2 .story__text h1,
+body.design-v2 .producer-intro h1,
+body.design-v2 .producer-highlights h1,
+body.design-v2 .wine-card__expand-inner h1,
+body.design-v2 .producer-hero__identity h1,
+body.design-v2 .site-footer h1,
+body.design-v2 .widget h1,
+body.design-v2 .wine-card h2,
+body.design-v2 .producer-card h2,
+body.design-v2 .ds-producer-card__info h2,
+body.design-v2 .producer-connect h2,
+body.design-v2 .story__text h2,
+body.design-v2 .producer-intro h2,
+body.design-v2 .producer-highlights h2,
+body.design-v2 .wine-card__expand-inner h2,
+body.design-v2 .producer-hero__identity h2,
+body.design-v2 .site-footer h2,
+body.design-v2 .widget h2,
+body.design-v2 .wine-card h3,
+body.design-v2 .producer-card h3,
+body.design-v2 .ds-producer-card__info h3,
+body.design-v2 .producer-connect h3,
+body.design-v2 .story__text h3,
+body.design-v2 .producer-intro h3,
+body.design-v2 .producer-highlights h3,
+body.design-v2 .wine-card__expand-inner h3,
+body.design-v2 .producer-hero__identity h3,
+body.design-v2 .site-footer h3,
+body.design-v2 .widget h3,
+body.design-v2 .wine-card h4,
+body.design-v2 .producer-card h4,
+body.design-v2 .ds-producer-card__info h4,
+body.design-v2 .producer-connect h4,
+body.design-v2 .story__text h4,
+body.design-v2 .producer-intro h4,
+body.design-v2 .producer-highlights h4,
+body.design-v2 .wine-card__expand-inner h4,
+body.design-v2 .producer-hero__identity h4,
+body.design-v2 .site-footer h4,
+body.design-v2 .widget h4,
+body.design-v2 .wine-card h5,
+body.design-v2 .producer-card h5,
+body.design-v2 .ds-producer-card__info h5,
+body.design-v2 .producer-connect h5,
+body.design-v2 .story__text h5,
+body.design-v2 .producer-intro h5,
+body.design-v2 .producer-highlights h5,
+body.design-v2 .wine-card__expand-inner h5,
+body.design-v2 .producer-hero__identity h5,
+body.design-v2 .site-footer h5,
+body.design-v2 .widget h5,
+body.design-v2 .wine-card h6,
+body.design-v2 .producer-card h6,
+body.design-v2 .ds-producer-card__info h6,
+body.design-v2 .producer-connect h6,
+body.design-v2 .story__text h6,
+body.design-v2 .producer-intro h6,
+body.design-v2 .producer-highlights h6,
+body.design-v2 .wine-card__expand-inner h6,
+body.design-v2 .producer-hero__identity h6,
+body.design-v2 .site-footer h6,
+body.design-v2 .widget h6 {
+  text-align: left;
+}
+body.design-v2 .section-header {
+  margin-bottom: var(--spacing-2xl);
+}
+body.design-v2 .section-header__label {
+  letter-spacing: 0.2em;
+  font-size: 0.75rem;
+  margin-bottom: var(--spacing-md);
+}
+body.design-v2 .section-header__title {
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+}
+body.design-v2 .section-header__desc {
+  font-size: var(--font-size-large);
+  font-style: italic;
+  max-width: 800px;
+}
+body.design-v2 .producer-identity {
+  text-align: center;
+  padding-top: var(--spacing-2xl);
+}
+body.design-v2 .producer-identity__name {
+  font-size: clamp(3rem, 6vw, 5rem);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+}
+body.design-v2 .producer-identity__location {
+  font-style: italic;
+  font-size: var(--font-size-xl);
+  letter-spacing: 0.04em;
+}
+body.design-v2 .wine-card {
+  box-shadow: var(--box-shadow);
+  border: none;
+}
+body.design-v2 .producer-card {
+  border-radius: 0;
+  box-shadow: var(--box-shadow);
+}
+body.design-v2 .producer-card:hover {
+  box-shadow: var(--box-shadow-lg);
+  transform: translateY(-1px);
+}
+body.design-v2 .producer-card__country {
+  border-radius: 0;
+}
+body.design-v2 .wine-card__type {
+  border-radius: 0;
+}
+body.design-v2 .producer-connect__label {
+  font-size: clamp(1.5rem, 3vw, 2.5rem);
+  font-weight: 400;
+  font-style: italic;
+  letter-spacing: 0.02em;
+}
+body.design-v2 .story__body {
+  max-height: 500px;
+}
+body.design-v2 .story__body:not(.is-expanded)::after {
+  background: linear-gradient(transparent, #FFF7E9);
+}
+body.design-v2 .badge {
+  border-radius: 0;
+  letter-spacing: 0.1em;
+}
+body.design-v2 .hero__tagline {
+  font-size: clamp(1.75rem, 4vw, 3rem);
+  max-width: 900px;
+  font-weight: 400;
+}
+body.design-v2 .form-input,
+body.design-v2 .form-select,
+body.design-v2 .form-textarea {
+  border-radius: 0;
+  border-left: none;
+  border-right: none;
+  border-top: none;
+  background: transparent;
+  padding-left: 0;
+  padding-right: 0;
+}
+body.design-v2 .form-input:focus,
+body.design-v2 .form-select:focus,
+body.design-v2 .form-textarea:focus {
+  box-shadow: none;
+  border-color: var(--color-wine-red);
+}
+body.design-v2 .download-link {
+  border-radius: 0;
+}
+body.design-v1 {
+  --spacing-xl: 2rem;
+  --spacing-2xl: 3rem;
+  --container-max-width: 1280px;
+  --content-max-width: 820px;
+  --font-primary: 'EB Garamond', Georgia, serif;
+  --font-secondary: 'Lato', system-ui, sans-serif;
+  --font-body: 'Lato', system-ui, sans-serif;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  line-height: 1.65;
+  --border-radius: 2px;
+  --border-radius-lg: 3px;
+  --color-border: var(--color-gold-dark);
+  --box-shadow: 0 1px 3px rgba(42, 36, 32, 0.12);
+  --box-shadow-lg: 0 3px 10px rgba(42, 36, 32, 0.18);
+  --header-height: 52px;
+  --header-height-mobile: 48px;
+  --header-logo-height: 22px;
+}
+body.design-v1 p,
+body.design-v1 li,
+body.design-v1 td,
+body.design-v1 th,
+body.design-v1 label,
+body.design-v1 input,
+body.design-v1 select,
+body.design-v1 textarea,
+body.design-v1 address {
+  font-family: var(--font-body);
+}
+body.design-v1 .section.fullwidth,
+body.design-v1 .front-page-content > .wp-block-group.fullwidth {
+  padding-left: max(var(--spacing-xl), calc((100% - var(--content-max-width)) / 2));
+  padding-right: max(var(--spacing-xl), calc((100% - var(--content-max-width)) / 2));
+}
+body.design-v1 .site-header {
+  padding: 0;
+  border-bottom: 1px solid var(--color-border);
+}
+body.design-v1 .site-header.header--desktop-nav .header-nav {
+  height: var(--header-height);
+}
+body.design-v1 .header-nav ul {
+  height: 100%;
+  gap: 0;
+  align-items: stretch;
+}
+body.design-v1 .header-nav ul li {
+  display: flex;
+  height: 100%;
+}
+body.design-v1 .header-nav ul li + li {
+  border-left: 1px solid var(--color-border);
+}
+body.design-v1 .header-nav a {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0 1.25rem;
+  white-space: nowrap;
+  transition: background var(--transition);
+}
+body.design-v1 .header-nav a:hover {
+  opacity: 1;
+  background: var(--color-background-alt);
+}
+body.design-v1 .header-nav ul li.featured > a {
+  background: var(--color-green-dark);
+  color: #fff;
+  opacity: 1;
+}
+body.design-v1 .header-nav ul li.featured > a:hover {
+  background: var(--color-green-primary);
+}
+body.design-v1 .hero--split .hero__headline {
+  font-style: normal;
+  line-height: 1em;
+  font-size: 28px;
+}
+body.design-v1 .hero--split .hero__logo {
+  max-width: 30vh;
+  max-height: 50vw;
+}
+body.design-v1 .hero--fullbleed,
+body.design-v1 .hero--split {
+  border-bottom: 1px solid var(--color-border);
+}
+body.design-v1 .hero--split {
+  min-height: fit-content !important;
+}
+body.design-v1 .section.section--narrow,
+body.design-v1 .section.fullwidth,
+body.design-v1 .front-page-content > .wp-block-group.section--narrow,
+body.design-v1 .front-page-content > .wp-block-group.fullwidth {
+  position: relative;
+}
+body.design-v1 .section.section--narrow::before,
+body.design-v1 .section.fullwidth::before,
+body.design-v1 .front-page-content > .wp-block-group.section--narrow::before,
+body.design-v1 .front-page-content > .wp-block-group.fullwidth::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--spacing-2xl);
+  width: 2px;
+  background: var(--color-border);
+}
+body.design-v1 .section {
+  padding: var(--spacing-2xl) 0;
+}
+@media (max-width: 768px) {
+  body.design-v1 .section {
+    padding: var(--spacing-lg) 0;
+  }
+}
+body.design-v1 .section + .section {
+  border-top: 1px solid var(--color-border);
+}
+body.design-v1 .section--alt {
+  background: var(--color-background-alt);
+  border-top: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+}
+body.design-v1 .producer-connect-section {
+  border-top: 1px solid var(--color-border);
+}
+body.design-v1 h1,
+body.design-v1 h2,
+body.design-v1 h3,
+body.design-v1 h4,
+body.design-v1 h5,
+body.design-v1 h6 {
+  font-family: var(--font-primary);
+  text-align: left;
+}
+body.design-v1 .section-header {
+  text-align: left;
+  margin-bottom: var(--spacing-lg);
+}
+body.design-v1 .section-header__label {
+  letter-spacing: 0.15em;
+  font-size: 0.7rem;
+}
+body.design-v1 .section-header__title {
+  font-size: clamp(1.5rem, 3vw, 2.25rem);
+  font-weight: 600;
+}
+body.design-v1 .section-header__desc {
+  font-family: var(--font-body);
+  font-size: var(--font-size-base);
+  font-style: normal;
+}
+body.design-v1 .producer-connect__label {
+  display: none;
+}
+body.design-v1 .producer-connect-section {
+  background: var(--color-background);
+}
+body.design-v1 .producer-highlights {
+  padding-left: var(--spacing-xl);
+  border-left: 1px solid var(--color-border);
+}
+body.design-v1 .producer-identity {
+  text-align: left;
+  border-bottom: 1px solid var(--color-border);
+}
+body.design-v1 .producer-identity__name {
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 700;
+}
+body.design-v1 .producer-identity__location {
+  font-family: var(--font-body);
+  font-size: var(--font-size-base);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+body.design-v1 .button,
+body.design-v1 .btn,
+body.design-v1 .wp-block-button__link {
+  border-width: 1px;
+  border-radius: var(--border-radius);
+  padding: 0.5em 1.5em;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+body.design-v1 .wine-card {
+  border: 1px solid var(--color-border);
+  box-shadow: none;
+}
+body.design-v1 .wine-card:hover {
+  box-shadow: var(--box-shadow);
+}
+body.design-v1 .producer-card {
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  box-shadow: none;
+}
+body.design-v1 .producer-card:hover {
+  box-shadow: var(--box-shadow);
+  transform: translateY(-1px);
+}
+body.design-v1 .front-page-content {
+  padding-top: 0;
+}
+body.design-v1 .ds-producer-card__info {
+  background: #c6a64b4f;
+  backdrop-filter: blur(4px) saturate(120%);
+  border-top: 0;
+}
+body.design-v1 .producer-hero__identity {
+  background: #c6a64b4f;
+  backdrop-filter: blur(4px) saturate(120%);
+  border-top: 0;
+}
+body.design-v1 .ds-producer-carousel {
+  padding-bottom: 0;
+}
+body.design-v1 .ds-producer-carousel-wrapper {
+  margin: 1rem 0;
+}
+body.design-v1 .site-main {
+  padding-bottom: 0;
+}
+body.design-v1 .site-footer {
+  --footer-bg: var(--color-background-alt);
+  --footer-border: var(--color-text);
+  --footer-colophon-bg: var(--color-background);
+}
+body.design-v1 .site-footer figure.wp-block-image {
+  margin-top: -2em;
+}
+body.design-v1 .site-footer .widget {
+  margin-bottom: var(--spacing-lg);
+}
+body.design-v1 .site-footer h2,
+body.design-v1 .site-footer h3,
+body.design-v1 .site-footer h4 {
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--color-text-muted);
+  margin-bottom: var(--spacing-sm);
 }

@@ -81,10 +81,11 @@ $carousel_classes = apply_filters('ds_wineguy_carousel_classes', array(
                 $producer_title = get_the_title();
                 $producer_permalink = get_permalink();
                 $producer_image = get_the_post_thumbnail_url($producer_id, 'large');
-                $producer_logo = get_post_meta($producer_id, 'producer_logo', true);
+                $producer_logo_id = get_post_meta($producer_id, 'dswg_producer_logo', true);  // Get attachment ID
+                $producer_logo = $producer_logo_id ? wp_get_attachment_url($producer_logo_id) : '';  // Convert to URL
                 
-                // Get country
-                $countries = get_the_terms($producer_id, 'country');
+                // Get country - CORRECTED TAXONOMY
+                $countries = get_the_terms($producer_id, 'dswg_country');
                 $country_name = $countries && !is_wp_error($countries) ? $countries[0]->name : '';
                 
                 // Allow filtering of card data
