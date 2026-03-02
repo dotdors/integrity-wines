@@ -195,6 +195,11 @@ Theme prefix: none — BEM-style component names
 - `.producer-intro-grid` / `.producer-intro` / `.producer-highlights`
 - `.producer-connect-section` / `.producer-connect` / `.producer-connect__logo-col` / `.producer-connect__identity` / `.producer-connect__label` / `.producer-connect__col` / `.producer-connect__social` / `.producer-connect__map`
 
+**Split Hero (reusable):**
+- `.split-hero` / `.split-hero__image` / `.split-hero__image-placeholder` / `.split-hero__panel` / `.split-hero__label` / `.split-hero__title` / `.split-hero__desc`
+- Self-contained two-column layout: image left, text panel right. Does NOT depend on homepage.css.
+- Use anywhere — taxonomy pages, custom templates, etc. Collapses to stacked single column below 900px.
+
 **Cards:**
 - `.producer-card` / `.producer-card__image` / `.producer-card__content` / `.producer-card__title` / `.producer-card__country` / `.producer-card__excerpt` / `.producer-card__meta`
 - `.wine-card` / `.wine-card__image` / `.wine-card__content` / `.wine-card__title` / `.wine-card__vintage` / `.wine-card__type` / `.wine-card__meta-row` / `.wine-card__expand-hint`
@@ -308,15 +313,18 @@ plugins/
 │   ├── ds-wineguy.php                  # Main plugin, singleton class
 │   ├── includes/
 │   │   ├── post-types.php              # CPT registration + image sizes
-│   │   ├── taxonomies.php              # Taxonomy registration + defaults
+│   │   ├── taxonomies.php              # Taxonomy registration + defaults + dswg_country term meta
 │   │   ├── meta-boxes.php              # All meta box callbacks + save
 │   │   ├── template-functions.php      # Frontend helper functions
-│   │   └── search-filter.php           # Search/filter (placeholder)
+│   │   ├── shortcodes.php              # [producer_grid] shortcode + dswg_render_producer_card() + dswg_render_producer_grid()
+│   │   └── search-filter.php           # AJAX handler: dswg_filter_producers (searches title, location, short_desc, region meta)
 │   ├── admin/
 │   │   ├── settings.php                # Admin settings page
 │   │   └── importer.php                # CSV/Excel importer
 │   ├── templates/
-│   │   └── producer-carousel.php       # Swiper.js carousel shortcode
+│   │   ├── producer-carousel.php       # Swiper.js carousel shortcode
+│   │   └── partials/
+│   │       └── producer-card.php       # Shared card partial — used by archive, taxonomy, shortcode, AJAX
 │   └── assets/
 │       ├── css/admin.css               # Admin interface styles
 │       ├── css/wineguy.css             # Frontend styles
@@ -340,7 +348,9 @@ plugins/
 │       ├── _design-v2.less             # V2 "Immersive" variant (scoped to body.design-v2)
 │       └── custom.js                   # Minimal JavaScript
 │   └── templates/
-│       └── single-dswg_producer.php    # Producer single page template
+│       ├── single-dswg_producer.php    # Producer single page template
+│       ├── archive-dswg_producer.php   # Producer index (/producers/) — AJAX filter bar + card grid
+│       └── taxonomy-dswg_country.php   # Country pages (/country/{slug}/) — split-hero + card grid
 │
 └── ds-age-verification/
     └── (handles age gate + cookie popup)
@@ -461,7 +471,13 @@ integrity-wines/
 19. `.section-title-styles()` LESS mixin exists — use it instead of hardcoding heading sizes
 20. `--font-body` / `--font-heading` aliases exist for homepage.css compatibility
 21. V1 nav: `.featured` CSS class on menu item = green CTA button treatment
-22. V1 borders use `--color-gold-dark`; `--footer-border` must be set on `.site-footer` directly (not body)
+23. `dswg_country` term meta: `dswg_country_map_id` (attachment ID) — upload field on Edit Country screen in admin
+24. Producer card partial: `ds-wineguy/templates/partials/producer-card.php` — include via `dswg_render_producer_card( $id )`
+25. Producer grid helper: `dswg_render_producer_grid( $args )` — returns HTML string, used by shortcode + AJAX handler
+26. `[producer_grid]` shortcode attrs: `country`, `region`, `limit`, `orderby`, `order`
+27. AJAX action: `dswg_filter_producers` — POST country + search, returns `{html, count}`
+28. `.split-hero` — reusable self-contained two-column layout component (image | text panel), defined in `_wine-components.less`, does NOT depend on `homepage.css`
+29. `grid-template-rows: subgrid` removed from `_modern-features.less` — was collapsing `.producer-grid` rows to 0 in browsers that support subgrid
 
 ---
 

@@ -84,7 +84,8 @@ class DS_WineGuy {
         
         // Frontend functionality
         require_once DSWG_PLUGIN_DIR . 'includes/template-functions.php';
-        require_once DSWG_PLUGIN_DIR . 'includes/search-filter.php';
+        require_once DSWG_PLUGIN_DIR . 'includes/shortcodes.php';  // Producer grid shortcode + dswg_render_* helpers
+        require_once DSWG_PLUGIN_DIR . 'includes/search-filter.php'; // AJAX filter — must load after shortcodes.php
         require_once DSWG_PLUGIN_DIR . 'includes/carousel.php';
     }
     

@@ -1,12 +1,12 @@
 # Integrity Wines — Project TODO
 
-**Last updated:** February 24, 2026
+**Last updated:** March 2, 2026
 
 ---
 
-## STATUS: Active Development — Client Demo Imminent
+## STATUS: Active Development — Producer Index & Country Pages Complete
 
-Site is live on staging. Design variant demo (V1/V2) ready for client meeting.
+Producer archive, country taxonomy, card system, and AJAX filtering are built and working.
 All work tracked in GitHub: https://github.com/dotdors/integrity-wines
 
 ---
@@ -29,6 +29,11 @@ All work tracked in GitHub: https://github.com/dotdors/integrity-wines
 - [x] Wine display within producer pages (expandable accordion cards)
 - [x] Swiper.js producer carousel with country filtering + randomized order
 - [x] Wine placeholder image fallback (`assets/images/wineplaceholder.png`)
+- [x] Producer card partial (`templates/partials/producer-card.php`) — shared by archive, taxonomy, shortcode, AJAX
+- [x] `[producer_grid]` shortcode — attrs: `country`, `region`, `limit`, `orderby`, `order`
+- [x] `dswg_render_producer_card( $id )` and `dswg_render_producer_grid( $args )` helper functions (`includes/shortcodes.php`)
+- [x] AJAX filter handler `dswg_filter_producers` — searches title, `dswg_location`, `dswg_short_desc`, `dswg_region` meta (`includes/search-filter.php`)
+- [x] Country term meta: `dswg_country_map_id` (attachment ID) — upload UI on Edit Country screen (`includes/taxonomies.php`)
 
 ### Plugin: ds-theme-customizations
 - [x] Full brand color palette and CSS variable system
@@ -42,6 +47,12 @@ All work tracked in GitHub: https://github.com/dotdors/integrity-wines
 - [x] `_design-v1.less` and `_design-v2.less` fully scoped to body class
 - [x] Google Fonts: EB Garamond + Lato both enqueued
 - [x] Base theme style.css conflicts neutralized in `_components.less`
+- [x] Producer archive template (`templates/archive-dswg_producer.php`) — sticky filter bar, country dropdown, AJAX text search
+- [x] Country taxonomy template (`templates/taxonomy-dswg_country.php`) — `.split-hero` layout, producer grid
+- [x] `.split-hero` reusable component — self-contained two-column layout (image | text panel), no homepage.css dependency
+- [x] `.ds-producer-card` styles moved into `_wine-components.less` (always loaded, not carousel-only)
+- [x] `.tax-dswg_country .site-main { padding-top: 0 }` — country pages flush to header
+- [x] Removed `grid-template-rows: subgrid` from `_modern-features.less` — was collapsing producer grid rows to 0
 
 ### Theme: dandysite-jane — Header System
 - [x] Fixed-position header, logo, nav, hamburger
@@ -84,7 +95,7 @@ All work tracked in GitHub: https://github.com/dotdors/integrity-wines
 ### Code cleanup
 - [ ] Remove `footer.php-bak`, `functions2.php`, `header.cssv`, `back/` directory from repo
 - [ ] Remove any remaining `<!-- DEBUG -->` HTML comments in templates (check all templates)
-- [ ] Review `search-filter.php` placeholder — implement or remove
+- [ ] Producer archive intro text is hardcoded in `archive-dswg_producer.php` — move to a WordPress option so Daniela can edit it
 
 ---
 
@@ -97,23 +108,30 @@ All work tracked in GitHub: https://github.com/dotdors/integrity-wines
 - [ ] Build out whichever variant was NOT chosen as a starting point (or retire it)
 
 ### Content Templates Still Needed
-- [ ] Producers archive (`archive-dswg_producer.php`) with search/filter
+- [x] Producer card partial (`ds-wineguy/templates/partials/producer-card.php`) — shared by all contexts
+- [x] Producers archive (`archive-dswg_producer.php`) — AJAX search + country dropdown filter
+- [x] `[producer_grid]` shortcode — `includes/shortcodes.php`
+- [x] AJAX search/filter handler — `includes/search-filter.php`
+- [x] Country taxonomy template (`taxonomy-dswg_country.php`) — split-hero layout, term meta map image
 - [ ] Wine archive (`archive-dswg_wine.php`)
-- [ ] Country taxonomy template (`taxonomy-dswg_country.php`)
-- [ ] Country showcase pages (5 pages: France, Italy, Spain, Austria, Slovenia)
 - [ ] About page template
 - [ ] Blog/news templates (archive + single)
 - [ ] Contact page
 - [ ] Wine single page (`single-dswg_wine.php`) — currently no dedicated template
 
 ### Features Still Needed
-- [ ] Search and filtering (producer + wine archive)
-  - Filter by country
-  - Search across producers and wines
+- [x] AJAX filter by country + text search across name/location/region/short desc ✓
+- [x] Country map images — stored as `dswg_country_map_id` term meta ✓
 - [ ] Age verification popup (ds-age-verification plugin — exists, needs wiring)
 - [ ] Instagram integration (company-level feed)
-- [ ] Static country map graphics (one per country)
 - [ ] Contact form with spam protection
+- [ ] Producer archive intro text — move hardcoded copy to a WordPress option
+
+> **⚠️ REVISIT: Country pages architecture decision**
+> Currently built as taxonomy archive pages (`/country/france/`) with term meta for map image + description.
+> Considered but deferred: making them proper WordPress Pages for richer editorial control (hero, Gutenberg blocks, featured image as map).
+> Potential approach: do both — Pages for editorial content, keep tax archives for filtering/URLs. Needs URL strategy (redirect `/country/*` to pages? or coexist?).
+> Revisit when client weighs in on how much editorial control they want over these pages.
 
 ### Data Entry (Weeks 5-6)
 - [ ] All 37 producers fully built out

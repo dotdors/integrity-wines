@@ -298,15 +298,12 @@ add_action( 'created_dswg_country', 'dswg_save_country_term_meta' );
 add_action( 'edited_dswg_country',  'dswg_save_country_term_meta' );
 
 /**
- * Enqueue WordPress media library on the country taxonomy edit screens,
- * and register the footer JS callback from here while we know the screen
- * condition is met.
+ * Enqueue WordPress media library on the country taxonomy edit screens.
  *
- * KEY POINT: admin_footer does NOT pass $hook as a parameter, so we cannot
- * do the screen check there. Instead we register the footer callback from
- * within this function, which only runs when the conditions are already true.
+ * MUST run on admin_enqueue_scripts — calling wp_enqueue_media() in
+ * admin_footer is too late (scripts are already output by then).
  *
- * @param string $hook  Current admin page hook (passed by admin_enqueue_scripts).
+ * @param string $hook  Current admin page hook.
  */
 function dswg_country_term_enqueue_media( $hook ) {
     if ( ! in_array( $hook, [ 'edit-tags.php', 'term.php' ], true ) ) {
@@ -316,28 +313,29 @@ function dswg_country_term_enqueue_media( $hook ) {
     if ( ! $screen || $screen->taxonomy !== 'dswg_country' ) {
         return;
     }
-
-    // Enqueue the WP media library (must happen here, not in footer)
     wp_enqueue_media();
-
-    // Register the footer JS now that we know we're on the right screen.
-    // admin_footer doesn't pass $hook, so we can't check there — this is
-    // the correct pattern.
-    add_action( 'admin_footer', 'dswg_country_term_output_media_js' );
 }
 add_action( 'admin_enqueue_scripts', 'dswg_country_term_enqueue_media' );
 
 /**
  * Output inline JS for the Upload / Remove map image buttons.
- * Only registered (via add_action) when we're confirmed on the right screen.
+ * Runs in admin_footer — fine for inline scripts (not enqueued styles/scripts).
+ *
+ * @param string $hook  Current admin page hook.
  */
-function dswg_country_term_output_media_js() {
+function dswg_country_term_admin_scripts( $hook ) {
+    if ( ! in_array( $hook, [ 'edit-tags.php', 'term.php' ], true ) ) {
+        return;
+    }
+    $screen = get_current_screen();
+    if ( ! $screen || $screen->taxonomy !== 'dswg_country' ) {
+        return;
+    }
     ?>
     <script>
     (function($) {
-        $(document).ready(function() {
-
-            // Upload button — opens WP media library
+        function initTermMediaButtons() {
+            // Upload
             $(document).on('click', '.dswg-upload-map-btn', function(e) {
                 e.preventDefault();
                 var btn       = $(this);
@@ -354,16 +352,14 @@ function dswg_country_term_output_media_js() {
                 frame.on('select', function() {
                     var attachment = frame.state().get('selection').first().toJSON();
                     $('#' + targetId).val(attachment.id);
-                    $('#' + previewId).html(
-                        '<img src="' + attachment.url + '" style="max-width:200px;height:auto;display:block;">'
-                    );
+                    $('#' + previewId).html('<img src="' + attachment.url + '" style="max-width:200px;height:auto;display:block;">');
                     btn.siblings('.dswg-remove-map-btn').show();
                 });
 
                 frame.open();
             });
 
-            // Remove button — clears the field and preview
+            // Remove
             $(document).on('click', '.dswg-remove-map-btn', function(e) {
                 e.preventDefault();
                 var btn       = $(this);
@@ -373,9 +369,11 @@ function dswg_country_term_output_media_js() {
                 $('#' + previewId).html('');
                 btn.hide();
             });
+        }
 
-        });
+        $(document).ready(initTermMediaButtons);
     }(jQuery));
     </script>
     <?php
 }
+add_action( 'admin_footer', 'dswg_country_term_admin_scripts' );
