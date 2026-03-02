@@ -85,7 +85,7 @@
     });
     
     /**
-     * Wine Logo Upload
+     * Wine Label Upload
      */
     var logoFrame;
     
@@ -100,9 +100,9 @@
         
         // Create the media frame
         logoFrame = wp.media({
-            title: 'Select Wine Logo',
+            title: 'Select Wine Label',
             button: {
-                text: 'Use as Logo'
+                text: 'Use as Label'
             },
             multiple: false
         });

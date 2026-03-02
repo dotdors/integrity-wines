@@ -439,7 +439,7 @@ function dswg_wine_images_callback($post) {
     
     <hr style="margin: 15px 0;">
     
-    <p><strong><?php _e('Wine Logo', 'ds-wineguy'); ?></strong></p>
+    <p><strong><?php _e('Wine Label', 'ds-wineguy'); ?></strong></p>
     <div class="dswg-logo-preview">
         <?php if ($logo_id) : ?>
             <?php echo wp_get_attachment_image($logo_id, 'thumbnail'); ?>
