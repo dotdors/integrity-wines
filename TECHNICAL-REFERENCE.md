@@ -155,30 +155,13 @@ dswg_display_wine_files($post_id)
 
 ---
 
-## Design Variant System
+## Design System
 
-Two design variants are implemented, switchable via an admin-only demo switcher (fixed bottom-right, visible to `manage_options` users only). The choice persists in a 7-day cookie (`iw_design`).
+The site uses a single unified design — the "Immersive" aesthetic (formerly V2). All styles live directly in the base LESS files. No design variant switching is active.
 
-| | V1 "Editorial" | V2 "Immersive" |
-|--|--|--|
-| **Body class** | `design-v1` | `design-v2` |
-| **Character** | Dense, structured, editorial | Airy, cinematic, European |
-| **Body font** | Lato (sans-serif) | EB Garamond |
-| **Heading alignment** | Left | Centered (with exceptions) |
-| **Section dividers** | Visible border lines | None — sections flow together |
-| **Nav style** | Full-height pipe separators, `.featured` item gets green CTA | Spaced uppercase, no borders |
-| **Cards** | 1px border, sharp | Minimal, no border |
-| **Default** | No | Yes (cookie default) |
+**Typography:** EB Garamond throughout (headings and body). Body size 1.125rem. Headings centered by default, with explicit left-align exceptions inside cards, connect sections, footer, and story text.
 
-**LESS files:** `_design-v1.less`, `_design-v2.less` — both scoped to their body class.
-**Switching logic:** `ds-theme-customizations.php` → `add_design_body_class()` filter + `render_design_switcher()`.
-
-### Design variant override rules
-- Both variants load **after** base styles — load order handles most specificity
-- Base theme `style.css` conflicts must be neutralized in `_components.less` (not in variant files)
-- V2 flattens `section--alt` background to match main bg — `.producer-connect-section` is explicitly excluded via `:not()` so it always keeps its alt background
-- V1 overrides `--color-border: var(--color-gold-dark)` and `--footer-border` on `.site-footer` directly (footer.css scopes its variable to `.site-footer`, so body-level override doesn't cascade)
-- V1 overrides `--font-body: 'Lato'` — base has it pointing to Garamond. All body font references use `var(--font-body)` not hardcoded strings.
+**What happened to V1/V2:** A two-variant demo switcher existed during client review. Client selected V2 (March 2026). All V2 styles were merged into the base files. `_design-v2.less` is now a tombstone placeholder. `_design-v1.less` is preserved in repo but not imported. The switcher UI is commented out in `ds-theme-customizations.php` — re-enable by uncommenting `render_design_switcher` action hook and restoring the cookie logic in `add_design_body_class()`.
 
 ---
 
@@ -198,54 +181,45 @@ Theme prefix: none — BEM-style component names
 **Split Hero (reusable):**
 - `.split-hero` / `.split-hero__image` / `.split-hero__image-placeholder` / `.split-hero__panel` / `.split-hero__label` / `.split-hero__title` / `.split-hero__desc`
 - Self-contained two-column layout: image left, text panel right. Does NOT depend on homepage.css.
-- Use anywhere — taxonomy pages, custom templates, etc. Collapses to stacked single column below 900px.
+- Collapses to stacked single column below 900px.
 
 **Cards:**
 - `.producer-card` / `.producer-card__image` / `.producer-card__content` / `.producer-card__title` / `.producer-card__country` / `.producer-card__excerpt` / `.producer-card__meta`
 - `.wine-card` / `.wine-card__image` / `.wine-card__content` / `.wine-card__title` / `.wine-card__vintage` / `.wine-card__type` / `.wine-card__meta-row` / `.wine-card__expand-hint`
 - `.wine-card--expandable` / `.wine-card--open` / `.wine-card__toggle` / `.wine-card__expand` / `.wine-card__expand-inner` / `.wine-card__details` / `.wine-card__excerpt` / `.wine-card__files`
-- `.ds-producer-card` / `.ds-producer-card__image` / `.ds-producer-card__info` / `.ds-producer-card__name` / `.ds-producer-card__country` / `.ds-producer-card__link` (carousel cards)
+- `.ds-producer-card` / `.ds-producer-card__image` / `.ds-producer-card__info` / `.ds-producer-card__name` / `.ds-producer-card__country` / `.ds-producer-card__link` (carousel cards — gold glass info bar)
 
 **Wine type badge modifiers:**
 - `.wine-card__type--red` / `--white` / `--rose` / `--sparkling`
 
 **Sections:**
-- `.section` — base section, applies vertical padding
-- `.section--alt` — alternate background (`--color-background-alt`)
-- `.section--narrow` — constrains to `--content-max-width` via `max()` horizontal padding
-- `.fullwidth` — opts out of horizontal padding constraints (edge to edge)
-- `.producer-connect-section` — always alt background regardless of design variant
-- `.carosection` — carousel section, gets alt background in V2
+- `.section` — base section, vertical padding (`--spacing-lg`)
+- `.section--alt` — alternate background. Flattened to match main bg site-wide EXCEPT `.producer-connect-section`
+- `.section--narrow` — constrains to `--content-max-width`
+- `.fullwidth` — edge to edge, no horizontal padding
+- `.producer-connect-section` — always keeps alt background regardless of section-alt flattening
+- `.carosection` — carousel section, gets alt background
 
-**Section layout note:** Add CSS classes in the Gutenberg block editor (Additional CSS Class field) to apply these to block groups on the homepage. `.section` provides vertical padding, `.section--narrow` or `.fullwidth` controls horizontal.
+**Section layout:** Add CSS classes in Gutenberg block editor to apply to block groups. `.section` = vertical padding, `.section--narrow` or `.fullwidth` = horizontal control.
 
 **Grids:**
-- `.producer-grid`
-- `.wine-grid`
+- `.producer-grid` — `minmax(var(--producer-card-width), 1fr)`, gap `--spacing-md`
+- `.wine-grid` — `minmax(var(--wine-card-width), 1fr)`
 
 **Story:**
 - `.story` / `.story__body` / `.story__grid` / `.story__text` / `.story__photos` / `.story__toggle` / `.story__toggle-text`
 - JS toggle: `#producer-story`, `#producer-story-content`, `#story-toggle`
-- Expanded state: `.is-expanded` on content, `.is-expanded` on toggle button
+- Expanded state: `.is-expanded` on `story__body` and toggle button
 
 **Section headers:**
 - `.section-header` / `.section-header__label` / `.section-header__title` / `.section-header__desc`
-- LESS mixin: `.section-title-styles()` — use instead of hardcoding font/size/weight on any element that should match section title sizing
+- LESS mixin: `.section-title-styles()` — use instead of hardcoding heading sizes
 
-**Downloads:**
-- `.download-list` / `.download-item` / `.download-link`
+**Downloads:** `.download-list` / `.download-item` / `.download-link`
 
-**Gallery:**
-- `.photo-grid` / `.photo-grid--single-column` / `.photo-grid__item`
+**Gallery:** `.photo-grid` / `.photo-grid--single-column` / `.photo-grid__item`
 
-**Buttons:**
-- `.button` (primary - wine red)
-- `.button--secondary` (outlined)
-- `.button--accent` (gold)
-- `.button--small` / `.button--large`
-
-**Nav (V1 specific):**
-- Add `featured` CSS class to a menu item (Appearance → Menus → expand item → CSS Classes) to give it the green filled CTA treatment
+**Buttons:** `.button` / `.button--secondary` / `.button--accent` / `.button--small` / `.button--large`
 
 ---
 
@@ -253,54 +227,51 @@ Theme prefix: none — BEM-style component names
 
 ```css
 /* Colors */
---color-background: #FFF7E9;      /* Main page background (warm cream) */
---color-background-alt: #F3E9D7;  /* Alt section background (deeper parchment) */
---color-wine-red: #7A1F2B;        /* Primary brand */
---color-wine-highlight: #9B2C3A;  /* Hover state */
---color-green-primary: #3F6B3A;   /* Secondary brand */
---color-green-dark: #2E4F2A;      /* Dark accent / nav CTA */
---color-gold-primary: #C6A64B;    /* Accent gold */
---color-gold-dark: #9E7C2F;       /* Dark gold / V1 borders */
---color-text: #2A2420;            /* Warm black */
---color-text-light: #5A524D;      /* Lighter text */
---color-text-muted: #7A706A;      /* Muted text */
---color-surface: #FDFBF7;         /* Card backgrounds */
---color-border: #D4C8B5;          /* Borders (base) */
+--color-background: #FFF7E9;
+--color-background-alt: #F3E9D7;
+--color-wine-red: #7A1F2B;
+--color-wine-highlight: #9B2C3A;
+--color-green-primary: #3F6B3A;
+--color-gold-primary: #C6A64B;
+--color-text: #2A2420;
+--color-text-light: #5A524D;
+--color-text-muted: #7A706A;
+--color-surface: #FFFFFF;
+--color-border: #E8D8C0;
 
 /* Typography */
---font-primary: 'EB Garamond', Georgia, serif;   /* Headings */
---font-secondary: 'Lato', system-ui, sans-serif; /* UI elements */
+--font-primary: 'EB Garamond', Georgia, serif;  /* All text */
+--font-secondary: 'EB Garamond', Georgia, serif;
 --font-heading: var(--font-primary);             /* Alias for homepage.css */
---font-body: var(--font-primary);                /* Body text — V1 overrides to Lato */
+--font-body: var(--font-primary);                /* Alias for homepage.css */
 
 /* Spacing */
---spacing-xs: 0.25rem;
---spacing-sm: 0.5rem;
---spacing-md: 1rem;
---spacing-lg: 2rem;
---spacing-xl: 3rem;
---spacing-2xl: 4rem;  /* V2 overrides to 4.5rem */
+--spacing-xs: 0.25rem;  --spacing-sm: 0.5rem;
+--spacing-md: 1rem;     --spacing-lg: 2rem;
+--spacing-xl: 3rem;     --spacing-2xl: 4.5rem;
 
 /* Layout */
---container-max-width: 1400px;   /* V2: 1600px, V1: 1280px */
---content-max-width: 900px;      /* V2: 1100px, V1: 820px */
---sidebar-width: 300px;
-
-/* Header */
---header-height: 70px;           /* V1: 52px */
---header-logo-height: 44px;      /* V2 overlay: 20px, V2 solid: 25px, V1: 22px */
---header-nav-font-size: 0.95rem; /* V2: 1em */
-
-/* Footer */
---footer-bg: var(--color-background);      /* Was color-background-alt, corrected */
---footer-border: var(--color-border);      /* V1 overrides on .site-footer directly */
---footer-colophon-bg: var(--color-background); /* V1 sets this */
+--container-max-width: 1600px;
+--content-max-width: 1100px;
+--producer-card-width: 260px;
+--wine-card-width: 240px;
 
 /* UI */
---border-radius: 4px;   /* V1/V2: 0 or 2px */
---border-radius-lg: 8px;
---box-shadow: 0 2px 8px rgba(42, 36, 32, 0.08);
+--border-radius: 0;
+--border-radius-lg: 0;
+--box-shadow: 0 1px 4px rgba(42, 36, 32, 0.05);
+--box-shadow-lg: 0 2px 12px rgba(42, 36, 32, 0.08);
 --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+/* Header */
+--header-height: 70px;
+--header-logo-height: 44px;  /* overlay body class: 20px, solid: 25px */
+--header-nav-font-size: 0.85rem;
+
+/* Footer */
+--footer-bg: var(--color-background);
+--footer-border: var(--color-border);
+--footer-colophon-bg: var(--color-surface);
 ```
 
 ---
@@ -333,20 +304,19 @@ plugins/
 │       └── images/wineplaceholder.png  # Fallback bottle image (upload to server)
 │
 ├── ds-theme-customizations/
-│   ├── ds-theme-customizations.php     # Main plugin (incl. design switcher)
+│   ├── ds-theme-customizations.php     # Main plugin — switcher preserved but inactive
 │   └── assets/
 │       ├── plugin-style.less           # Main import — COMPILE THIS
 │       ├── plugin-style.css            # Compiled output (enqueued)
-│       ├── _variables.less             # All CSS variables + font-body alias
-│       ├── _typography.less            # Type styling
+│       ├── _variables.less             # All CSS variables, spacing, layout, card widths
+│       ├── _typography.less            # Type styling + heading alignment rules
 │       ├── _layout.less                # Containers, grids, section layout
-│       ├── _components.less            # Buttons, cards, forms + .section-title-styles() mixin
-│       ├── _wine-components.less       # Wine-specific components
+│       ├── _components.less            # Buttons, nav, forms, sections, producer-identity, story, etc.
+│       ├── _wine-components.less       # Wine/producer cards, grids, carousel card, connect section
 │       ├── _accessibility.less         # Reduced motion, focus
 │       ├── _modern-features.less       # Container queries, :has()
-│       ├── _design-v1.less             # V1 "Editorial" variant (scoped to body.design-v1)
-│       ├── _design-v2.less             # V2 "Immersive" variant (scoped to body.design-v2)
-│       └── custom.js                   # Minimal JavaScript
+│       ├── _design-v1.less             # NOT imported — preserved in repo only
+│       └── _design-v2.less             # Tombstone — styles merged into base files March 2026
 │   └── templates/
 │       ├── single-dswg_producer.php    # Producer single page template
 │       ├── archive-dswg_producer.php   # Producer index (/producers/) — AJAX filter bar + card grid
@@ -367,55 +337,36 @@ plugins/
 - `solid` (default) → name/location rendered in `.producer-identity` section below hero
 
 **Section structure** (in order):
-1. `.producer-hero` — full-width hero image + logo (all content widths)
+1. `.producer-hero` — full-width hero image + logo
 2. `.producer-identity` — name + location (solid header only)
 3. `#producer-intro-section .section` → `.container--narrow` — short desc + highlights grid
-4. `.section` → `.container--narrow` — The Story (with expandable JS toggle)
+4. `.section` → `.container--narrow` — The Story (expandable JS toggle)
 5. `.section` → `.container--narrow` — The Wines grid (expandable wine cards)
 6. `.section.section--alt.producer-connect-section` → `.container` (wider) — Connect section
 
 **Key template decisions:**
-- All content sections use `.container.container--narrow` except Connect (intentionally wider)
+- All content sections use `.container--narrow` except Connect (intentionally wider)
 - `.section-header > h2.section-header__title` used consistently on Story and Wines sections
-- All debug output removed — clean production template
 - Gallery IDs read from `dswg_gallery_ids` meta (comma-separated attachment IDs)
-- Wine placeholder image: `WP_PLUGIN_URL . '/ds-wineguy/assets/images/wineplaceholder.png'`
-- Connect logo uses `full` image size (not `thumbnail`) to avoid WordPress crop on non-square logos
+- Wine placeholder: `WP_PLUGIN_URL . '/ds-wineguy/assets/images/wineplaceholder.png'`
+- Connect logo uses `full` image size (not `thumbnail`) to avoid crop on non-square logos
 
 ---
 
 ## Section Layout System
 
-Horizontal padding is managed in `_layout.less` using `max()`:
+Horizontal padding managed in `_layout.less` using `max()`:
 
 ```css
-/* Default — padded, max-width constrained */
 .section:not(.fullwidth) {
   padding-left:  max(--spacing-xl, calc((100% - --container-max-width) / 2));
-  padding-right: max(--spacing-xl, calc((100% - --container-max-width) / 2));
 }
-
-/* Narrow — constrained to content-max-width */
-.section.section--narrow { /* double-class for specificity */
+.section.section--narrow {
   padding-left:  max(--spacing-xl, calc((100% - --content-max-width) / 2));
 }
-
-/* Full-width — edge to edge, no horizontal padding */
-.fullwidth { /* just add class, overrides via section:not(.fullwidth) absence */ }
 ```
 
-Front-page block groups get the same treatment automatically:
-```css
-.front-page-content > .wp-block-group:not(.fullwidth) { /* same as default */ }
-.front-page-content > .wp-block-group.section--narrow  { /* same as narrow */ }
-```
-
-**In the block editor**, add these CSS classes to Gutenberg Group blocks:
-- `section` → vertical padding
-- `section--narrow` → narrow content width
-- `fullwidth` → edge-to-edge (carousel, full-bleed images)
-- `carosection` → carousel section (gets alt background in V2)
-- `section--alt` → alternate background
+Front-page block groups get the same treatment automatically via `.front-page-content > .wp-block-group`.
 
 ---
 
@@ -424,7 +375,6 @@ Front-page block groups get the same treatment automatically:
 - **37 producers** (filtered from 54 total in inventory)
 - **228 wines** (filtered from 306 total)
 - **5 countries:** France (111 wines), Italy (75), Spain (32), Austria (7), Slovenia (3)
-- Wines linked to producers via `dswg_producer_id` meta key
 
 ---
 
@@ -432,7 +382,6 @@ Front-page block groups get the same treatment automatically:
 
 **URL:** https://github.com/dotdors/integrity-wines (public)
 
-**Structure:**
 ```
 integrity-wines/
 ├── themes/dandysite-jane/
@@ -440,46 +389,45 @@ integrity-wines/
 ├── plugins/ds-theme-customizations/
 ├── plugins/ds-age-verification/
 ├── PROJECT-TODO.md
-├── FRONTEND-DEVELOPMENT-PLAN.md
-└── TECHNICAL-REFERENCE.md (this file)
+└── TECHNICAL-REFERENCE.md
 ```
 
 ---
 
 ## Level-Set Checklist for New Chats
 
-**At the start of any new chat, I should know:**
-
 1. CPT names: `dswg_producer`, `dswg_wine`
 2. Taxonomy names: `dswg_country`, `dswg_region`, `dswg_wine_type`
 3. URL slugs: `/producers/`, `/wines/`, `/country/`, `/wine-type/`
 4. Producer→Wine relationship: `dswg_producer_id` meta key on wine
-5. Template naming: `single-dswg_producer.php`, `archive-dswg_wine.php`, etc.
+5. Template naming: `single-dswg_producer.php`, `archive-dswg_producer.php`, etc.
 6. Producer page template is in `ds-theme-customizations/templates/` not the theme
-7. New producer fields: `dswg_location`, `dswg_short_desc`, `dswg_highlights`
+7. Producer fields: `dswg_location`, `dswg_short_desc`, `dswg_highlights`
 8. Hero layout driven by `_dsp_header_style` meta (`overlay` vs `solid`)
 9. CSS prefix: component classes (no prefix), admin classes (`dswg-`)
 10. LESS compilation: edit `.less` files, save, Easy LESS compiles to `.css`
-11. Fonts: EB Garamond (headings), Lato (V1 body) — both in Google Fonts enqueue
-12. `--font-body` variable exists — V1 sets it to Lato, base/V2 = Garamond
+11. Fonts: EB Garamond everywhere — single font, no Lato in production
+12. `--font-body` / `--font-heading` aliases exist for homepage.css compatibility
 13. Background: `#FFF7E9` (main), alt: `#F3E9D7`
-14. Producer logos must be PNG with transparent background
-15. Story section: CSS max-height collapse with JS toggle (`#producer-story-content`)
+14. Producer logos: PNG with transparent bg — rendered white via `brightness(0) invert(1)`
+15. Story section: CSS max-height 500px collapse with JS toggle (`#producer-story-content`)
 16. Wine cards: inline accordion expand (`.wine-card--expandable`, JS in producer template)
-17. Design variants: `body.design-v1` / `body.design-v2` — cookie-switched, admin only
+17. Design variant system retired March 2026 — single unified style, no body class switching
 18. Section layout: add CSS classes in block editor — `section`, `section--narrow`, `fullwidth`
 19. `.section-title-styles()` LESS mixin exists — use it instead of hardcoding heading sizes
-20. `--font-body` / `--font-heading` aliases exist for homepage.css compatibility
-21. V1 nav: `.featured` CSS class on menu item = green CTA button treatment
-23. `dswg_country` term meta: `dswg_country_map_id` (attachment ID) — upload field on Edit Country screen in admin
-24. Producer card partial: `ds-wineguy/templates/partials/producer-card.php` — include via `dswg_render_producer_card( $id )`
-25. Producer grid helper: `dswg_render_producer_grid( $args )` — returns HTML string, used by shortcode + AJAX handler
-26. `[producer_grid]` shortcode attrs: `country`, `region`, `limit`, `orderby`, `order`
-27. AJAX action: `dswg_filter_producers` — POST country + search, returns `{html, count}`
-28. `.split-hero` — reusable self-contained two-column layout component (image | text panel), defined in `_wine-components.less`, does NOT depend on `homepage.css`
-29. `grid-template-rows: subgrid` removed from `_modern-features.less` — was collapsing `.producer-grid` rows to 0 in browsers that support subgrid
+20. `dswg_country` term meta: `dswg_country_map_id` (attachment ID) — upload on Edit Country screen
+21. Producer card partial: include via `dswg_render_producer_card( $id )`
+22. Producer grid helper: `dswg_render_producer_grid( $args )` — used by shortcode + AJAX
+23. `[producer_grid]` shortcode attrs: `country`, `region`, `limit`, `orderby`, `order`
+24. AJAX action: `dswg_filter_producers` — POST country + search, returns `{html, count}`
+25. `.split-hero` — reusable two-column layout, defined in `_wine-components.less`, no homepage.css dependency
+26. `grid-template-rows: subgrid` removed from `_modern-features.less` — was collapsing producer-grid rows to 0
+27. Archive page uses `<div class="producer-archive">` not `<main>` — header.php owns `<main id="primary">`
+28. `.section--alt` flattened to main bg site-wide EXCEPT `.producer-connect-section`
+29. Meta box registration ID must never match input field IDs within it (jQuery selector bug)
+30. URL fields use `esc_url_raw()` not `sanitize_text_field()`
 
 ---
 
-*Last updated: February 2026*
+*Last updated: March 2026*
 *Plugin version: ds-wineguy v1.1, ds-theme-customizations v1.1*

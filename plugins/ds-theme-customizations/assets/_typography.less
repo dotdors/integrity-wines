@@ -5,7 +5,7 @@
 // ===== BASE =====
 body {
   font-family: var(--font-primary);  // EB Garamond for all text
-  font-size: var(--font-size-base);
+  font-size: 1.125rem;               // Slightly larger than 1rem base — more editorial
   line-height: var(--line-height-base);
   color: var(--color-text);
   background-color: var(--color-background);
@@ -35,6 +35,29 @@ h6 {
   text-transform: uppercase;
   letter-spacing: 0.1em;
   color: var(--color-text-muted);
+}
+
+// ===== HEADING ALIGNMENT =====
+// Centered by default — the site has a European, editorial feel.
+// Explicitly left-aligned inside components where left-align is correct.
+h1, h2, h3 {
+  text-align: center;
+}
+
+.wine-card,
+.producer-card,
+.ds-producer-card__info,
+.producer-connect,
+.story__text,
+.producer-intro,
+.producer-highlights,
+.wine-card__expand-inner,
+.producer-hero__identity,
+.site-footer,
+.widget {
+  h1, h2, h3, h4, h5, h6 {
+    text-align: left;
+  }
 }
 
 // ===== BODY TEXT =====

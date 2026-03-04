@@ -86,7 +86,6 @@
   height: max-content; // Ensure card height matches content
   container-type: inline-size;
   background: var(--color-surface);
-  border-radius: var(--border-radius-lg);
   box-shadow: var(--box-shadow);
   overflow: hidden;
   transition: var(--transition);
@@ -227,7 +226,7 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(var(--producer-card-width), 1fr));
   gap: var(--spacing-lg);
-  
+
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
   }
@@ -387,12 +386,21 @@
   width: 100%;
   background: none;
   border: none;
+  border-radius: 0;
   padding: 0;
   margin: 0;
   text-align: left;
   cursor: pointer;
   color: inherit;
   font: inherit;
+  -webkit-appearance: none;
+  appearance: none;
+  box-shadow: none;
+  
+  &:focus-visible {
+    outline: 2px solid var(--color-wine-red);
+    outline-offset: -2px;
+  }
   
   // Keep the image scale-on-hover behavior
   &:hover .wine-card__image img {
@@ -484,13 +492,6 @@
   margin-top: var(--spacing-xs);
   font-size: var(--font-size-small);
 }
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, var(--color-surface) 0%, var(--color-border) 100%);
-  color: var(--color-text-muted);
-  font-size: var(--font-size-3xl);
-}
 
 // Placeholder for no image
 .no-image-placeholder {
@@ -500,4 +501,334 @@
   background: linear-gradient(135deg, var(--color-surface) 0%, var(--color-border) 100%);
   color: var(--color-text-muted);
   font-size: var(--font-size-3xl);
+}
+
+// =============================================================================
+// Producer Card  (.ds-producer-card)
+// =============================================================================
+// These styles are here (not in producer-carousel.css) so the card renders
+// correctly everywhere it's used — archive, taxonomy, shortcode, search results.
+// producer-carousel.css is only loaded when the Swiper carousel is present;
+// the card itself is a shared component that needs to always be available.
+//
+// Card structure:
+//   .ds-producer-card
+//     .ds-producer-card__image   (bg image div)
+//       .ds-producer-card__logo  (white logo, centered)
+//       .ds-producer-card__info  (country + name bar, bottom)
+//     .ds-producer-card__link    (full-cover anchor)
+
+.ds-producer-card {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  border-radius: 0;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  }
+}
+
+.ds-producer-card__image {
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+
+  // Light gradient over entire image
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.1) 0%,
+      rgba(0, 0, 0, 0.2) 50%,
+      rgba(0, 0, 0, 0.4) 100%
+    );
+    pointer-events: none;
+    z-index: 1;
+  }
+}
+
+.ds-producer-card__logo {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  width: 60%;
+  height: 40%;
+  max-width: 60%;
+  max-height: 40%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  img {
+    max-width: 100%;
+    max-height: 100%;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    filter: brightness(0) invert(1);
+  }
+}
+
+.ds-producer-card__info {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  padding: 1.25rem 1.5rem;
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(12px) saturate(120%);
+  -webkit-backdrop-filter: blur(12px) saturate(120%);
+  text-align: left;
+  z-index: 2;
+  border-top: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.ds-producer-card__country {
+  display: block;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: rgba(255, 255, 255, 0.95);
+  margin-bottom: 0.35rem;
+  font-weight: 600;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  font-family: var(--font-secondary);
+}
+
+.ds-producer-card__name {
+  color: #ffffff;
+  font-size: 1.5rem;
+  margin: 0;
+  font-weight: 600;
+  line-height: 1.2;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.ds-producer-card__link {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  cursor: pointer;
+
+  &:focus {
+    outline: 3px solid rgba(255, 255, 255, 0.8);
+    outline-offset: -4px;
+  }
+}
+
+// =============================================================================
+// Producer Archive & Country Archive
+// =============================================================================
+
+// ---- Producer card: no-image fallback -----------------------------------
+.ds-producer-card--no-image {
+    .ds-producer-card__image {
+        background: linear-gradient(
+            145deg,
+            var(--color-wine-red) 0%,
+            color-mix(in srgb, var(--color-wine-red) 60%, #000) 100%
+        );
+    }
+}
+
+// ---- Producer archive layout --------------------------------------------
+.producer-archive {
+    padding-top: 0;
+}
+
+.producer-archive__results {
+    // Add a gentle transition so the opacity flicker during AJAX is smooth
+    .container {
+        transition: opacity 0.2s ease;
+    }
+}
+
+// Empty state message
+.producer-grid__empty {
+    color: var(--color-text-muted);
+    font-style: italic;
+    padding: var(--spacing-xl) 0;
+    text-align: center;
+    grid-column: 1 / -1;
+}
+
+// Loading spinner (minimal — CSS-only, no library needed)
+// IMPORTANT: don't set display on the base element — that overrides the
+// HTML `hidden` attribute's display:none. Use :not([hidden]) instead.
+.producer-archive__loading {
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-lg);
+
+    &:not([hidden]) {
+        display: flex;
+    }
+}
+
+.producer-archive__spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid var(--color-border);
+    border-top-color: var(--color-wine-red);
+    border-radius: 50%;
+    animation: dswg-spin 0.7s linear infinite;
+}
+
+@keyframes dswg-spin {
+    to { transform: rotate(360deg); }
+}
+
+// ---- Filter bar ---------------------------------------------------------
+.producer-filter {
+    position: sticky;
+    top: var(--header-height);
+    z-index: 90;
+    padding-top: var(--spacing-md);
+    padding-bottom: var(--spacing-md);
+}
+
+.producer-filter__inner {
+    display: flex;
+    align-items: flex-end;
+    gap: var(--spacing-md);
+    flex-wrap: wrap;
+}
+
+.producer-filter__field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1 1 200px;
+    max-width: 320px;
+}
+
+.producer-filter__label {
+    font-size: var(--font-size-small, 0.8rem);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-text-muted);
+    font-family: var(--font-secondary);
+}
+
+.producer-filter__input,
+.producer-filter__select {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--color-border);
+    background: var(--color-surface);
+    color: var(--color-text);
+    font-family: var(--font-body);
+    font-size: 1rem;
+    border-radius: var(--border-radius);
+    transition: border-color 0.2s ease;
+
+    &:focus {
+        outline: none;
+        border-color: var(--color-wine-red);
+        box-shadow: 0 0 0 2px rgba(122, 31, 43, 0.15);
+    }
+}
+
+.producer-filter__count {
+    font-size: var(--font-size-small, 0.8rem);
+    color: var(--color-text-muted);
+    font-family: var(--font-secondary);
+    padding-bottom: 0.6rem; // align with inputs
+    white-space: nowrap;
+    flex: 0 0 auto;
+}
+
+// Mobile: stack filter fields
+@media (max-width: 600px) {
+    .producer-filter__inner {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .producer-filter__field {
+        max-width: 100%;
+    }
+}
+
+// ---- Country archive page -----------------------------------------------
+// Self-contained split layout — image left, text panel right.
+// Does NOT rely on homepage.css hero classes (that sheet is front-page only).
+
+.split-hero {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    min-height: 480px;
+
+    @media (max-width: 900px) {
+        grid-template-columns: 1fr;
+    }
+}
+
+.split-hero__image {
+    position: relative;
+    overflow: hidden;
+    min-height: 360px;
+
+    img {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+        display: block;
+    }
+}
+
+.split-hero__image-placeholder {
+    position: absolute;
+    inset: 0;
+    background: var(--color-background-alt);
+}
+
+.split-hero__panel {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background: var(--color-background);
+    padding: var(--spacing-2xl) var(--spacing-xl);
+}
+
+.split-hero__label {
+    display: block;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--color-text-muted);
+    font-family: var(--font-secondary);
+    margin-bottom: var(--spacing-sm);
+}
+
+.split-hero__title {
+    font-family: var(--font-primary);
+    color: var(--color-text);
+    margin: 0 0 var(--spacing-md);
+    line-height: 1.15;
+}
+
+.split-hero__desc {
+    color: var(--color-text-light);
+    line-height: 1.7;
+    max-width: 48ch;
+
+    p { margin-bottom: var(--spacing-sm); }
+    p:last-child { margin-bottom: 0; }
 }

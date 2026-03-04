@@ -18,13 +18,15 @@
 .wp-block-button__link {
   color: var(--color-button-text);
   background-color: var(--color-button-bg);
-  border: 2px solid var(--color-button-border);
+  border: 1px solid var(--color-button-border);
   border-radius: 0;
   box-shadow: none;
-  padding: calc(0.4em + 2px) calc(1.333em + 2px);
-  font-size: var(--font-size-base);
+  padding: 0.65em 2.5em;
+  font-size: 1rem;
   font-weight: 400;
   font-family: var(--font-primary);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
   text-decoration: none;
   text-align: center;
   display: inline-block;
@@ -114,19 +116,20 @@
 .form-select,
 .form-textarea {
   width: 100%;
-  padding: var(--spacing-sm) var(--spacing-md);
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius);
+  padding: var(--spacing-sm) 0;
+  border: none;
+  border-bottom: 1px solid var(--color-border);
+  border-radius: 0;
   font-family: var(--font-primary);
   font-size: var(--font-size-base);
   color: var(--color-text);
-  background: var(--color-surface);
+  background: transparent;
   transition: var(--transition);
   
   &:focus {
     outline: none;
     border-color: var(--color-wine-red);
-    box-shadow: 0 0 0 3px rgba(122, 31, 43, 0.1);
+    box-shadow: none;
   }
 }
 
@@ -150,7 +153,9 @@
     border-bottom: none !important;
     color: var(--color-text);
     font-weight: 500;
-    text-transform: none;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
     padding: var(--spacing-sm) var(--spacing-md);
 
     &:hover,
@@ -170,7 +175,7 @@
   font-size: var(--font-size-small);
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.1em;
 }
 
 .badge--primary {
@@ -197,13 +202,15 @@
 
 .site-main {
   flex: 1;
+  padding-bottom: 0; // Footer owns its own top spacing
 }
 
 // Producer and wine singles start with a full-width hero — kill the default
 // padding-top that style.css applies to .site-main globally.
 .single-dswg_producer .site-main,
 .single-dswg_wine .site-main,
-.tax-dswg_country .site-main {
+.tax-dswg_country .site-main,
+.post-type-archive-dswg_producer .site-main {
   padding-top: 0;
 }
 
@@ -467,25 +474,27 @@
 // Producer name/location block below hero
 .producer-identity {
   background: var(--color-background);
-  padding: var(--spacing-xl) var(--spacing-md) var(--spacing-lg);
+  padding: var(--spacing-lg) var(--spacing-md);
   text-align: center;
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: none;
 
   &__name {
     font-family: var(--font-primary);
-    font-size: clamp(2.5rem, 5vw, 4rem);
-    font-weight: 700;
+    font-size: clamp(3rem, 6vw, 5rem);
+    font-weight: 400;
     color: var(--color-text);
     margin: 0 0 var(--spacing-xs) 0;
     line-height: 1.1;
+    letter-spacing: 0.02em;
   }
 
   &__location {
     font-family: var(--font-primary);
-    font-size: var(--font-size-large);
+    font-style: italic;
+    font-size: var(--font-size-xl);
     font-weight: 400;
     color: var(--color-text-light);
-    letter-spacing: 0.05em;
+    letter-spacing: 0.04em;
     margin: 0;
   }
 }
@@ -493,15 +502,27 @@
 // ===== SECTION PATTERNS =====
 // Alternating section backgrounds
 .section {
-  padding: var(--spacing-xl) 0;
+  padding: var(--spacing-lg) 0;
 
   @media (max-width: 768px) {
-    padding: var(--spacing-lg) 0;
+    padding: var(--spacing-md) 0;
   }
 }
 
 .section--alt {
   background: var(--color-background-alt);
+}
+
+// Sections flow together — alt sections use same bg as main.
+// Connect section is explicitly excluded so it always keeps its alt background.
+.section--alt:not(.producer-connect-section) {
+  background: var(--color-background);
+}
+
+// Carousel section — alt background, tight bottom
+.wp-block-group.section.carosection {
+  background-color: var(--color-background-alt);
+  padding-bottom: 10px;
 }
 
 // Connect section always uses alt background — explicit override so design
@@ -521,28 +542,32 @@
 // Section header - label + heading pattern from mockups
 .section-header {
   text-align: center;
-  margin-bottom: var(--spacing-xl);
+  margin-bottom: var(--spacing-2xl);
 
   &__label {
     font-family: var(--font-primary);
-    font-size: var(--font-size-small);
+    font-size: 0.75rem;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.15em;
+    letter-spacing: 0.2em;
     color: var(--color-text-muted);
     display: block;
-    margin-bottom: var(--spacing-sm);
+    margin-bottom: var(--spacing-md);
   }
 
   &__title {
     .section-title-styles();
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 400;
+    letter-spacing: 0.02em;
   }
 
   &__desc {
-    max-width: 700px;
+    max-width: 800px;
     margin: 0 auto;
     color: var(--color-text-light);
     font-size: var(--font-size-large);
+    font-style: italic;
   }
 }
 
@@ -626,7 +651,7 @@
 
   &__body {
     position: relative;
-    max-height: 600px; // Taller since it includes both columns
+    max-height: 500px;
     overflow: hidden;
     transition: max-height 0.5s ease;
 
@@ -679,8 +704,12 @@
 
 // ===== PRODUCER CONNECT SECTION =====
 .producer-connect__label {
-  display: none; // Hidden in V2 — V1 shows it
-  text-align: left;
+  display: block;
+  text-align: center;
+  font-size: clamp(1.5rem, 3vw, 2.5rem);
+  font-weight: 400;
+  font-style: italic;
+  letter-spacing: 0.02em;
   .section-title-styles();
   margin-bottom: var(--spacing-lg);
 }
@@ -786,6 +815,24 @@
   h1, h2, h3, h4, h5, h6 {
     text-align: left;
   }
+}
+
+// Colophon — flush against footer, no gap
+footer#colophon {
+  margin-top: 0;
+  padding-top: 0;
+}
+
+// Footer widget image — pull up to reduce gap
+.footer-widget figure.wp-block-image.size-full {
+  margin-top: -25px;
+}
+
+// Hero tagline — larger, centered, Garamond weight
+.hero__tagline {
+  font-size: clamp(1.75rem, 4vw, 3rem);
+  max-width: 900px;
+  font-weight: 400;
 }
 
 // Hero headline always centered on fullbleed (dark overlay, cinematic feel)

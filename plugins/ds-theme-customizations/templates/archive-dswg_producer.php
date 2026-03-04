@@ -25,9 +25,9 @@ $countries = get_terms( [
 ] );
 
 ?>
-<main id="primary" class="site-main producer-archive">
+<div class="producer-archive">
 
-    <!-- Page Header -->
+    <!-- Page Header + Filters -->
     <div class="producer-archive__header section section--narrow">
         <div class="section-header">
             <span class="section-header__label"><?php esc_html_e( 'Integrity Wines', 'ds-wineguy' ); ?></span>
@@ -36,45 +36,45 @@ $countries = get_terms( [
                 <?php esc_html_e( 'Small-scale farmers and winemakers united by a commitment to the land, traditional methods, and wines of genuine character.', 'ds-wineguy' ); ?>
             </p>
         </div>
+
+        <!-- Filter Bar -->
+        <div class="producer-filter">
+            <div class="producer-filter__inner">
+
+                <div class="producer-filter__field">
+                    <label for="producer-search" class="producer-filter__label">
+                        <?php esc_html_e( 'Search', 'ds-wineguy' ); ?>
+                    </label>
+                    <input type="text"
+                           id="producer-search"
+                           class="producer-filter__input"
+                           placeholder="<?php esc_attr_e( 'Producer name, region, location…', 'ds-wineguy' ); ?>"
+                           autocomplete="off">
+                </div>
+
+                <div class="producer-filter__field">
+                    <label for="producer-country" class="producer-filter__label">
+                        <?php esc_html_e( 'Country', 'ds-wineguy' ); ?>
+                    </label>
+                    <select id="producer-country" class="producer-filter__select">
+                        <option value=""><?php esc_html_e( 'All Countries', 'ds-wineguy' ); ?></option>
+                        <?php if ( $countries && ! is_wp_error( $countries ) ) : ?>
+                            <?php foreach ( $countries as $country ) : ?>
+                                <option value="<?php echo esc_attr( $country->slug ); ?>">
+                                    <?php echo esc_html( $country->name ); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </select>
+                </div>
+
+                <div class="producer-filter__count" id="producer-count" aria-live="polite"></div>
+
+            </div>
+        </div>
     </div>
 
-    <!-- Filter Bar -->
-    <div class="producer-filter section section--alt">
-        <div class="producer-filter__inner container">
-
-            <div class="producer-filter__field">
-                <label for="producer-search" class="producer-filter__label">
-                    <?php esc_html_e( 'Search', 'ds-wineguy' ); ?>
-                </label>
-                <input type="text"
-                       id="producer-search"
-                       class="producer-filter__input"
-                       placeholder="<?php esc_attr_e( 'Producer name, region, location…', 'ds-wineguy' ); ?>"
-                       autocomplete="off">
-            </div>
-
-            <div class="producer-filter__field">
-                <label for="producer-country" class="producer-filter__label">
-                    <?php esc_html_e( 'Country', 'ds-wineguy' ); ?>
-                </label>
-                <select id="producer-country" class="producer-filter__select">
-                    <option value=""><?php esc_html_e( 'All Countries', 'ds-wineguy' ); ?></option>
-                    <?php if ( $countries && ! is_wp_error( $countries ) ) : ?>
-                        <?php foreach ( $countries as $country ) : ?>
-                            <option value="<?php echo esc_attr( $country->slug ); ?>">
-                                <?php echo esc_html( $country->name ); ?>
-                            </option>
-                        <?php endforeach; ?>
-                    <?php endif; ?>
-                </select>
-            </div>
-
-            <div class="producer-filter__count" id="producer-count" aria-live="polite"></div>
-
-        </div>
-    </div><!-- .producer-filter -->
-
-    <!-- Results -->
+        <!-- Results -->
     <div class="producer-archive__results section">
         <div class="container" id="producer-grid-container">
 
@@ -92,7 +92,7 @@ $countries = get_terms( [
         <span class="screen-reader-text"><?php esc_html_e( 'Loading producers…', 'ds-wineguy' ); ?></span>
     </div>
 
-</main><!-- .producer-archive -->
+</div><!-- .producer-archive -->
 
 <script>
 /**

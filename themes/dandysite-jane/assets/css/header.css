@@ -83,6 +83,7 @@
     align-items: center;
     justify-content: space-between;
     height: 100%;
+    gap: 1em;
     padding: var(--header-padding-v) var(--header-padding-h);
     max-width: var(--container-max-width, 1400px);
     margin: 0 auto;
@@ -183,6 +184,7 @@ body.header-style-overlay .header-spacer {
 
 .site-logo {
     height: var(--header-logo-height);
+    max-height: var(--header-logo-height);
     width: auto;
     display: block;
     transition: filter 0.3s ease;
@@ -210,6 +212,8 @@ body.header-style-overlay .header-spacer {
 @media (max-width: 768px) {
     .site-logo {
         height: var(--header-logo-height-mobile);
+        max-height: var(--header-logo-height-mobile);
+        width: auto;
     }
 }
 

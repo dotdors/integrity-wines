@@ -72,18 +72,18 @@
 @spacing-md: 1rem;
 @spacing-lg: 2rem;
 @spacing-xl: 3rem;
-@spacing-2xl: 4rem;
+@spacing-2xl: 4.5rem;
 
 // ===== LAYOUT =====
-@container-max-width: 1400px;
-@content-max-width: 900px;
+@container-max-width: 1600px;
+@content-max-width: 1100px;
 @sidebar-width: 300px;
 
 // ===== UI ELEMENTS =====
-@border-radius: 4px;               // Subtle, classic corners
-@border-radius-lg: 8px;
-@box-shadow: 0 2px 8px rgba(42, 36, 32, 0.08);  // Subtle warm shadow
-@box-shadow-lg: 0 4px 16px rgba(42, 36, 32, 0.12);
+@border-radius: 0;                 // V2: flat, no radius
+@border-radius-lg: 0;
+@box-shadow: 0 1px 4px rgba(42, 36, 32, 0.05);   // V2: very subtle
+@box-shadow-lg: 0 2px 12px rgba(42, 36, 32, 0.08);
 @transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
 // ===== DARK MODE COLORS =====
@@ -103,8 +103,8 @@
 @color-wine-type-sparkling: @color-gold-primary;
 
 // Component Sizing
-@wine-card-width: 280px;
-@producer-card-width: 320px;
+@wine-card-width: 240px;
+@producer-card-width: 260px;
 @bottle-aspect-ratio: 0.75;        // Width/height ratio for bottle images
 
 // ===== CSS CUSTOM PROPERTIES (runtime variables) =====
@@ -184,7 +184,7 @@
   --header-height:              70px;
   --header-height-mobile:       60px;
   --header-logo-height:         44px;
-  --header-logo-height-mobile:  36px;
+  --header-logo-height-mobile:  30px;
   --header-padding-v:           0;
   --header-padding-h:           var(--spacing-lg);
   --header-z-index:             1000;
@@ -216,7 +216,7 @@
   --header-mobile-menu-shadow:  -4px 0 24px rgba(42, 36, 32, 0.3);
 
   // Nav link style
-  --header-nav-font-size:       0.9rem;
+  --header-nav-font-size:       1rem;
   --header-nav-font-weight:     500;
   --header-nav-letter-spacing:  0.08em;
   --header-nav-gap:             var(--spacing-lg);
@@ -251,4 +251,12 @@ body.footer-dark .site-footer {
 
   --footer-colophon-bg:   @color-dark-bg-deep;
   --footer-colophon-text: @color-text-muted;
+}
+
+// ===== HEADER LOGO HEIGHT — per layout type =====
+body.header-style-overlay {
+  --header-logo-height: 20px;
+}
+body.header-style-solid {
+  --header-logo-height: 25px;
 }

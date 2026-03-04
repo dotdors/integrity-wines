@@ -1,6 +1,17 @@
 // out: false
 // Base Components - Buttons, Cards, Forms, etc.
 
+// ===== MIXINS =====
+// Reusable style blocks. Use .mixin-name() to apply.
+
+.section-title-styles() {
+  font-family: var(--font-primary);
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0 0 var(--spacing-md) 0;
+}
+
 // ===== BUTTONS =====
 .button,
 .btn,
@@ -191,7 +202,9 @@
 // Producer and wine singles start with a full-width hero — kill the default
 // padding-top that style.css applies to .site-main globally.
 .single-dswg_producer .site-main,
-.single-dswg_wine .site-main {
+.single-dswg_wine .site-main,
+.tax-dswg_country .site-main,
+.post-type-archive-dswg_producer .site-main {
   padding-top: 0;
 }
 
@@ -455,7 +468,7 @@
 // Producer name/location block below hero
 .producer-identity {
   background: var(--color-background);
-  padding: var(--spacing-xl) var(--spacing-md) var(--spacing-lg);
+  padding: var(--spacing-lg) var(--spacing-md);
   text-align: center;
   border-bottom: 1px solid var(--color-border);
 
@@ -481,10 +494,10 @@
 // ===== SECTION PATTERNS =====
 // Alternating section backgrounds
 .section {
-  padding: var(--spacing-xl) 0;
+  padding: var(--spacing-lg) 0;
 
   @media (max-width: 768px) {
-    padding: var(--spacing-lg) 0;
+    padding: var(--spacing-md) 0;
   }
 }
 
@@ -523,11 +536,7 @@
   }
 
   &__title {
-    font-family: var(--font-primary);
-    font-size: clamp(2rem, 4vw, 3rem);
-    font-weight: 600;
-    color: var(--color-text);
-    margin: 0 0 var(--spacing-md) 0;
+    .section-title-styles();
   }
 
   &__desc {
@@ -671,8 +680,10 @@
 
 // ===== PRODUCER CONNECT SECTION =====
 .producer-connect__label {
-  text-align: center;
-  margin-bottom: var(--spacing-xl);
+  display: none; // Hidden in V2 — V1 shows it
+  text-align: left;
+  .section-title-styles();
+  margin-bottom: var(--spacing-lg);
 }
 
 .producer-connect {
@@ -778,7 +789,23 @@
   }
 }
 
-// ===== HEADER =====
+// Hero headline always centered on fullbleed (dark overlay, cinematic feel)
+.hero--fullbleed .hero__headline {
+  text-align: center;
+}
+
+// Hero split: ensure image column stretches to full grid height.
+// The image is position:absolute/inset:0, so it needs the col to have
+// a defined height — grid stretch + height:100% on the col provides that.
+.hero--split {
+  align-items: stretch;
+}
+
+.hero__image-col {
+  height: 100%;
+}
+
+
 // dandysite-jane base style.css sets:
 //   border-bottom: 2px solid var(--color-primary) on .site-header
 // This conflicts with the header system which manages its own border via

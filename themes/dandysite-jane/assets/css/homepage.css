@@ -339,6 +339,9 @@
     align-items: center;
     justify-content: center;
     /* height set via inline style from meta field */
+    max-height: 100vh;   /* Fallback */
+    max-height: 100svh;  /* Small viewport height — excludes browser chrome. Fixes Edge/Windows
+                            where 100vh is calculated to include tab/address bar height. */
 }
 
 .hero--fullbleed .hero__bg {

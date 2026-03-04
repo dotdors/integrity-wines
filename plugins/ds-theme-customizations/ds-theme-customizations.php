@@ -56,18 +56,20 @@ final class DS_Theme_Customizations {
         add_action('wp_enqueue_scripts', [$this, 'enqueue_scripts']);
         add_filter('template_include', [$this, 'load_custom_templates'], 11);
         add_filter('body_class', [$this, 'add_design_body_class']);
-        add_action('wp_footer', [$this, 'render_design_switcher']);
+        // add_action('wp_footer', [$this, 'render_design_switcher']); // DEMO SWITCHER — re-enable to restore multi-variant testing
     }
 
     /**
-     * Add design variant body class based on cookie.
-     * Defaults to design-v2 if no cookie set.
+     * Add design variant body class.
+     * LOCKED TO V2 — multi-variant demo phase complete.
+     * To re-enable switcher: restore cookie logic below and uncomment render_design_switcher action above.
+     *
+     * Original cookie logic:
+     *   $design = isset($_COOKIE['iw_design']) ? sanitize_key($_COOKIE['iw_design']) : 'design-v2';
+     *   if (in_array($design, ['design-v1', 'design-v2'])) { $classes[] = $design; }
      */
     public function add_design_body_class($classes) {
-        $design = isset($_COOKIE['iw_design']) ? sanitize_key($_COOKIE['iw_design']) : 'design-v2';
-        if (in_array($design, ['design-v1', 'design-v2'])) {
-            $classes[] = $design;
-        }
+        $classes[] = 'design-v2';
         return $classes;
     }
 
