@@ -66,12 +66,21 @@ function ds_age_gate_render_popup() {
     ?>
     <div id="age-gate-overlay" role="dialog" aria-modal="true" aria-labelledby="age-gate-title">
         <div id="age-gate-popup">
+            <?php
+            $ag_logo_id  = (int) get_option( 'dsp_logo_full', 0 );
+            $ag_logo_url = $ag_logo_id ? wp_get_attachment_image_url( $ag_logo_id, 'full' ) : '';
+            $ag_logo_alt = $ag_logo_id ? ( get_post_meta( $ag_logo_id, '_wp_attachment_image_alt', true ) ?: get_bloginfo( 'name' ) ) : '';
+            if ( $ag_logo_url ) : ?>
+                <div class="age-gate-logo">
+                    <img src="<?php echo esc_url( $ag_logo_url ); ?>" alt="<?php echo esc_attr( $ag_logo_alt ); ?>">
+                </div>
+            <?php endif; ?>
             <h2 id="age-gate-title"><?php echo esc_html($title); ?></h2>
             <p class="subtitle"><?php echo esc_html($subtitle); ?></p>
 
             <div class="age-buttons">
-                <button id="age-gate-enter" class="primary">I'm 21 or Older</button>
-                <button id="age-gate-decline" class="secondary">I'm Under 21</button>
+                <button id="age-gate-enter" class="primary">I'm of Legal Drinking Age</button>
+                <button id="age-gate-decline" class="secondary">Not Quite Yet</button>
             </div>
 
             <div id="cookie-preferences" style="display: none;">

@@ -13,7 +13,7 @@
     const declinedMsg = document.getElementById('age-gate-declined');
 
     // Show overlay with fade-in
-    overlay.style.display = 'block';
+    overlay.style.display = 'flex';
     setTimeout(() => overlay.classList.add('active'), 10);
 
     // Trap focus within popup

@@ -23,7 +23,7 @@ $description = $term->description;
 
 ?>
 <!-- Split hero: image left | title + description right -->
-    <div class="split-hero">
+    <div class="split-hero section--alt">
 
         <div class="split-hero__image">
             <?php if ( $map_url ) : ?>
@@ -49,21 +49,19 @@ $description = $term->description;
 
     <!-- Producer grid — straight in, no section header -->
     <div class="country-archive__producers section">
-        <div class="container">
-            <?php
-            echo dswg_render_producer_grid( [
-                'country' => $term->slug,
-                'orderby' => 'title',
-                'order'   => 'ASC',
-            ] );
-            ?>
-        </div>
+        <?php
+        echo dswg_render_producer_grid( [
+            'country' => $term->slug,
+            'orderby' => 'title',
+            'order'   => 'ASC',
+        ] );
+        ?>
     </div>
 
     <!-- Back link -->
-    <div class="section section--narrow">
+    <div class="country-archive__back section section--narrow">
         <a href="<?php echo esc_url( get_post_type_archive_link( 'dswg_producer' ) ); ?>" class="button button--secondary">
-            &larr; <?php esc_html_e( 'All Producers', 'ds-wineguy' ); ?>
+            <?php esc_html_e( 'Explore All Producers', 'ds-wineguy' ); ?>
         </a>
     </div>
 

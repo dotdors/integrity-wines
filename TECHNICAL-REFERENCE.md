@@ -194,11 +194,12 @@ Theme prefix: none — BEM-style component names
 
 **Sections:**
 - `.section` — base section, vertical padding (`--spacing-lg`)
-- `.section--alt` — alternate background. Flattened to match main bg site-wide EXCEPT `.producer-connect-section`
+- `.section--alt` — alternate background (`--color-background-alt`). Active site-wide.
 - `.section--narrow` — constrains to `--content-max-width`
 - `.fullwidth` — edge to edge, no horizontal padding
-- `.producer-connect-section` — always keeps alt background regardless of section-alt flattening
+- `.producer-connect-section` — always keeps alt background; gets `padding-top/bottom: --spacing-2xl`
 - `.carosection` — carousel section, gets alt background
+- `.country-archive__back` — back link section on country pages (centered)
 
 **Section layout:** Add CSS classes in Gutenberg block editor to apply to block groups. `.section` = vertical padding, `.section--narrow` or `.fullwidth` = horizontal control.
 
@@ -368,6 +369,12 @@ Horizontal padding managed in `_layout.less` using `max()`:
 
 Front-page block groups get the same treatment automatically via `.front-page-content > .wp-block-group`.
 
+**Vertical spacing at color boundaries** — handled via sibling + `:has()` selectors in `_components.less`:
+- Same-color sections: default `--spacing-lg` top and bottom (total gap = `2 × --spacing-lg`)
+- Color change boundary: both the outgoing and incoming section get `--spacing-2xl` (`padding-bottom` via `:has()`, `padding-top` via sibling selector)
+- `.site-main` has `padding-bottom: --spacing-2xl` globally; overridden to `0` on `.single-dswg_producer` (connect section sits directly on footer)
+- `.wp-block-group` gets `padding: --spacing-lg 0` (matches `.section`); color-boundary rules come after in source order to win
+
 ---
 
 ## Data Scope
@@ -426,8 +433,15 @@ integrity-wines/
 28. `.section--alt` flattened to main bg site-wide EXCEPT `.producer-connect-section`
 29. Meta box registration ID must never match input field IDs within it (jQuery selector bug)
 30. URL fields use `esc_url_raw()` not `sanitize_text_field()`
+31. Full-color logo: `get_option('dsp_logo_full')` — stored as WP option, NOT `get_theme_mod()`
+32. Nav overlay: full-page cream overlay injected via `wp_body_open` hook in `ds-theme-customizations.php`; class `.nav-overlay`, menu class `.nav-overlay__menu`; controlled by `body.mobile-menu-open` (same JS as before)
+33. Old slide-in panel permanently suppressed (`transition: none !important`) — nav overlay replaces it entirely
+34. Age gate: `ds-age-verification/age-gate-renamed/` — popup styled with brand CSS vars, cream bg, glass overlay, full-color logo via `get_option('dsp_logo_full')`
+35. Color-boundary spacing: `section + section--alt` → `padding-top: --spacing-2xl`; `:has(+ .section--alt)` → `padding-bottom: --spacing-2xl`
+36. `.container` (bare, no modifier) inside a `.section` is redundant — removed from country, archive, connect section templates; `.container--narrow` inside a section is still correct and intentional
+37. `.split-hero` gets `.section--alt` class on country pages — panel background must be `transparent` so alt bg shows through
 
 ---
 
-*Last updated: March 2026*
+*Last updated: March 5, 2026*
 *Plugin version: ds-wineguy v1.1, ds-theme-customizations v1.1*

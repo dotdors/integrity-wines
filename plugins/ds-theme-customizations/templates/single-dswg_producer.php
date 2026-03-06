@@ -160,7 +160,6 @@ while (have_posts()) : the_post();
                     </button>
                 </div>
 
-            </div>
         </section>
         <?php endif; ?>
 
@@ -289,14 +288,12 @@ while (have_posts()) : the_post();
                     <?php endwhile; wp_reset_postdata(); ?>
                 </div>
 
-            </div>
         </section>
         <?php endif; ?>
 
         <!-- Connect -->
         <?php if ($has_connect) : ?>
         <section class="section section--alt producer-connect-section">
-            <div class="container">
 
                 <h2 class="producer-connect__label">Connect with <?php the_title(); ?></h2>
 
@@ -372,7 +369,6 @@ while (have_posts()) : the_post();
 
                 </div>
 
-            </div>
         </section>
         <?php endif; ?>
 

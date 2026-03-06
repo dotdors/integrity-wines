@@ -298,11 +298,13 @@ while (have_posts()) : the_post();
         <section class="section section--alt producer-connect-section">
             <div class="container">
 
+                <h2 class="producer-connect__label">Connect with <?php the_title(); ?></h2>
+
                 <div class="producer-connect">
 
                     <div class="producer-connect__logo-col">
                         <?php if ($logo_id) : ?>
-                            <?php echo wp_get_attachment_image($logo_id, 'thumbnail', false, ['class' => 'producer-connect__logo']); ?>
+                            <?php echo wp_get_attachment_image($logo_id, 'full', false, ['class' => 'producer-connect__logo']); ?>
                         <?php endif; ?>
                     </div>
 

@@ -652,7 +652,52 @@
     padding-top: 0;
 }
 
-.producer-archive__results {
+// Hero header - full-bleed background image with dark overlay + centered content
+.producer-archive__header {
+    position: relative;
+    background-color: var(--color-wine-red); // fallback when no image set
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+// 20% dark overlay so text stays legible regardless of image choice
+.producer-archive__overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.2);
+    z-index: 0;
+}
+
+// Inner content wrapper - sits above overlay, no max-width constraint
+.producer-archive__header-inner {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    padding: 0;
+
+    // All section-header text goes white inside the hero
+    .section-header__label {
+        color: rgba(255, 255, 255, 0.75);
+    }
+    .section-header__title,
+    .section-header__desc {
+        color: #fff;
+    }
+
+    // Section header spacing inside hero
+    .section-header {
+        margin: var(--spacing-2xl) var(--spacing-2xl) var(--spacing-xl);
+    }
+}
+
+
+.producer-archive__results.section {
+    padding: var(--spacing-2xl) 0;
+
     // Add a gentle transition so the opacity flicker during AJAX is smooth
     .container {
         transition: opacity 0.2s ease;
@@ -695,8 +740,14 @@
 }
 
 // ---- Filter bar ---------------------------------------------------------
+// Base styles (used inside hero — glass treatment)
 .producer-filter {
-    margin-top: var(--spacing-lg);
+    padding: var(--spacing-md);
+    background: fade(@color-background, 39%);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(4px) saturate(120%);
+    width: auto;
+    margin: 0 auto;
 }
 
 .producer-filter__inner {
@@ -718,7 +769,7 @@
     font-size: var(--font-size-small, 0.8rem);
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    color: var(--color-text-muted);
+    color: rgba(255, 255, 255, 0.75);
     font-family: var(--font-secondary);
 }
 
@@ -726,24 +777,34 @@
 .producer-filter__select {
     padding: 0.4rem 0;
     border: none;
-    border-bottom: 1px solid var(--color-border);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.5);
     background: transparent;
-    color: var(--color-text);
+    color: #fff;
     font-family: var(--font-primary);
     font-size: 1rem;
     border-radius: 0;
     transition: border-color 0.2s ease;
 
+    &::placeholder {
+        color: rgba(255, 255, 255, 0.5);
+    }
+
+    // Dropdown options need dark text (browser-rendered)
+    option {
+        color: var(--color-text);
+        background: var(--color-background);
+    }
+
     &:focus {
         outline: none;
-        border-color: var(--color-wine-red);
+        border-bottom-color: rgba(255, 255, 255, 0.9);
         box-shadow: none;
     }
 }
 
 .producer-filter__count {
     font-size: var(--font-size-small, 0.8rem);
-    color: var(--color-text-muted);
+    color: rgba(255, 255, 255, 0.7);
     font-family: var(--font-secondary);
     padding-bottom: 0.4rem;
     white-space: nowrap;
@@ -762,6 +823,11 @@
 }
 
 // ---- Country archive page -----------------------------------------------
+// Back link section — centered button
+.country-archive__back {
+    text-align: center;
+}
+
 // Self-contained split layout — image left, text panel right.
 // Does NOT rely on homepage.css hero classes (that sheet is front-page only).
 
@@ -801,16 +867,16 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    background: var(--color-background);
+    background: transparent;
     padding: var(--spacing-2xl) var(--spacing-xl);
 }
 
 .split-hero__label {
     display: block;
-    font-size: 0.75rem;
+    font-size: var(--font-size-small);
     text-transform: uppercase;
     letter-spacing: 0.15em;
-    color: var(--color-text-muted);
+    color: var(--color-text-light);
     font-family: var(--font-secondary);
     margin-bottom: var(--spacing-sm);
 }
@@ -820,6 +886,7 @@
     color: var(--color-text);
     margin: 0 0 var(--spacing-md);
     line-height: 1.15;
+    text-align: left;
 }
 
 .split-hero__desc {

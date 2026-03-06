@@ -1,91 +1,124 @@
+/* ============================================================
+   DS Age Verification — Integrity Wines styles
+   Uses site CSS custom properties from _variables.less —
+   no hardcoded brand values here.
+   ============================================================ */
+
 :root {
-    --age-gate-overlay-bg: rgba(31, 31, 31, 0.92);
-    --age-gate-popup-bg: #1f1f1f;
-    --age-gate-text: #ffffff;
-    --age-gate-text-muted: #cccccc;
-    --age-gate-border: rgba(255, 255, 255, 0.15);
-    --age-gate-primary: #ff6b35;
-    --age-gate-primary-hover: #ff8555;
+    --age-gate-overlay-bg:    rgba(42, 36, 32, 0.60); /* warm dark — no variable for raw rgba */
+    --age-gate-primary:       var(--color-wine-red);
+    --age-gate-primary-hover: var(--color-wine-highlight);
+    --age-gate-popup-bg:      var(--color-background);
+    --age-gate-text:          var(--color-text);
+    --age-gate-text-muted:    var(--color-text-muted);
+    --age-gate-border:        var(--color-border);
+    --age-gate-gold:          var(--color-gold-primary);
+    --age-gate-font:          var(--font-primary);
 }
 
+/* Overlay — warm glass blur over the page */
 #age-gate-overlay {
     display: none;
     position: fixed;
     inset: 0;
     background: var(--age-gate-overlay-bg);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     z-index: 999999;
     opacity: 0;
-    transition: opacity 0.3s ease;
+    transition: opacity 0.35s ease;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-lg);
+    box-sizing: border-box;
 }
 
 #age-gate-overlay.active {
+    display: flex;
     opacity: 1;
 }
 
+/* Popup card */
 #age-gate-popup {
-    width: 90%;
-    max-width: 420px;
-    margin: 12vh auto 0;
-    padding: 32px;
+    width: 100%;
+    max-width: 560px;
+    padding: var(--spacing-2xl) var(--spacing-2xl) var(--spacing-xl);
     background: var(--age-gate-popup-bg);
     color: var(--age-gate-text);
-    border-radius: 12px;
     border: 1px solid var(--age-gate-border);
-    box-shadow: 0 12px 45px rgba(0, 0, 0, 0.65);
-    animation: slideUp 0.3s ease;
+    box-shadow: 0 8px 40px rgba(42, 36, 32, 0.25);
+    animation: agSlideUp 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    font-family: var(--age-gate-font);
+    text-align: center;
+    box-sizing: border-box;
 }
 
-@keyframes slideUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+@keyframes agSlideUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
 }
 
+/* Logo */
+.age-gate-logo {
+    margin-bottom: var(--spacing-lg);
+    text-align: center;
+}
+
+.age-gate-logo img {
+    display: block;
+    margin: 0 auto;
+    height: auto;
+    max-height: 30vh;
+    max-width: 280px;
+    width: auto;
+    object-fit: contain;
+}
+
+/* Heading */
 #age-gate-popup h2 {
-    margin: 0 0 12px;
-    font-size: 24px;
-    font-weight: 700;
+    display: none;
+}
+
+/* Subtitle */
+#age-gate-popup .subtitle {
+    margin: 0 0 var(--spacing-lg);
+    font-size: var(--font-size-xl);
+    line-height: 1.6;
+    font-style: italic;
     color: var(--age-gate-text);
 }
 
-#age-gate-popup .subtitle {
-    margin: 0 0 24px;
-    font-size: 16px;
-    line-height: 1.5;
-    color: var(--age-gate-text-muted);
+/* Gold rule */
+.age-gate-rule {
+    width: 48px;
+    height: 1px;
+    background: var(--age-gate-gold);
+    margin: 0 auto var(--spacing-lg);
 }
 
-/* Age verification buttons */
+/* Buttons */
 .age-buttons {
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    margin-bottom: 20px;
+    gap: var(--spacing-sm);
 }
 
 .age-buttons button {
     width: 100%;
-    padding: 14px 20px;
-    font-size: 16px;
-    font-weight: 600;
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-family: var(--age-gate-font);
+    font-size: var(--font-size-large);
+    font-weight: 400;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
-    border: 2px solid;
-    border-radius: 6px;
+    letter-spacing: 0.12em;
+    border: 1px solid;
     cursor: pointer;
     transition: all 0.2s ease;
 }
 
 .age-buttons button.primary {
     background: var(--age-gate-primary);
-    color: var(--age-gate-popup-bg);
+    color: var(--color-background);
     border-color: var(--age-gate-primary);
 }
 
@@ -93,8 +126,6 @@
 .age-buttons button.primary:focus {
     background: var(--age-gate-primary-hover);
     border-color: var(--age-gate-primary-hover);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
 }
 
 .age-buttons button.secondary {
@@ -109,92 +140,90 @@
     border-color: var(--age-gate-text-muted);
 }
 
-/* Cookie preferences section */
+/* Cookie preferences */
 #cookie-preferences {
-    animation: fadeIn 0.3s ease;
+    animation: agFadeIn 0.3s ease;
+    margin-top: var(--spacing-md);
 }
 
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
+@keyframes agFadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
 }
 
 .cookie-info {
-    font-size: 14px;
+    font-size: var(--font-size-base);
     line-height: 1.6;
-    margin: 0 0 16px;
+    margin: 0 0 var(--spacing-md);
     color: var(--age-gate-text-muted);
 }
 
 .cookie-options {
-    margin-bottom: 20px;
+    margin-bottom: var(--spacing-md);
+    text-align: left;
 }
 
 .cookie-options label {
     display: flex;
     align-items: center;
-    padding: 12px;
-    margin-bottom: 8px;
-    background: rgba(255, 255, 255, 0.05);
+    padding: var(--spacing-sm) var(--spacing-md);
+    margin-bottom: var(--spacing-xs);
+    background: rgba(42, 36, 32, 0.04);
     border: 1px solid var(--age-gate-border);
-    border-radius: 6px;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: border-color 0.2s ease;
 }
 
 .cookie-options label:hover {
-    background: rgba(255, 255, 255, 0.08);
-    border-color: rgba(255, 255, 255, 0.25);
+    border-color: var(--age-gate-gold);
 }
 
 .cookie-options input[type="radio"] {
-    margin: 0 12px 0 0;
+    margin: 0 var(--spacing-sm) 0 0;
     cursor: pointer;
+    accent-color: var(--age-gate-primary);
 }
 
 .cookie-options label span {
-    font-size: 15px;
+    font-size: var(--font-size-base);
     flex: 1;
+    color: var(--age-gate-text);
 }
 
 .cookie-options label strong {
-    font-weight: 700;
-    color: var(--age-gate-text);
+    font-weight: 600;
 }
 
 .cookie-link {
     text-align: center;
-    margin: 16px 0;
-    font-size: 13px;
+    margin: var(--spacing-md) 0;
+    font-size: var(--font-size-small);
 }
 
 .cookie-link a {
-    color: var(--age-gate-primary);
+    color: var(--age-gate-text-muted);
     text-decoration: none;
-    border-bottom: 1px solid transparent;
-    transition: border-color 0.2s ease;
+    border-bottom: 1px solid var(--age-gate-border);
+    transition: color 0.2s ease, border-color 0.2s ease;
 }
 
 .cookie-link a:hover,
 .cookie-link a:focus {
-    border-bottom-color: var(--age-gate-primary);
+    color: var(--age-gate-primary);
+    border-color: var(--age-gate-primary);
 }
 
 #age-gate-confirm {
     width: 100%;
-    padding: 14px 20px;
-    font-size: 16px;
-    font-weight: 600;
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-family: var(--age-gate-font);
+    font-size: var(--font-size-large);
+    font-weight: 400;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.12em;
     background: var(--age-gate-primary);
-    color: var(--age-gate-popup-bg);
-    border: 2px solid var(--age-gate-primary);
-    border-radius: 6px;
+    color: var(--color-background);
+    border: 1px solid var(--age-gate-primary);
     cursor: pointer;
     transition: all 0.2s ease;
 }
@@ -203,56 +232,44 @@
 #age-gate-confirm:focus {
     background: var(--age-gate-primary-hover);
     border-color: var(--age-gate-primary-hover);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
 }
 
-/* Declined message */
+/* Declined state */
 #age-gate-declined {
     text-align: center;
-    animation: fadeIn 0.3s ease;
+    animation: agFadeIn 0.3s ease;
+    margin-top: var(--spacing-md);
 }
 
 #age-gate-declined .declined-message {
-    font-size: 18px;
-    font-weight: 600;
-    margin: 0 0 12px;
+    font-size: var(--font-size-large);
+    font-weight: 400;
+    font-style: italic;
+    margin: 0 0 var(--spacing-xs);
     color: var(--age-gate-text);
 }
 
 #age-gate-declined p:last-child {
-    font-size: 14px;
+    font-size: var(--font-size-small);
     color: var(--age-gate-text-muted);
     margin: 0;
 }
 
-/* Focus styles for accessibility */
-button:focus,
-input:focus,
-a:focus {
+/* Focus styles */
+button:focus-visible,
+input:focus-visible,
+a:focus-visible {
     outline: 2px solid var(--age-gate-primary);
     outline-offset: 2px;
 }
 
-/* Mobile adjustments */
+/* Mobile */
 @media (max-width: 480px) {
     #age-gate-popup {
-        margin-top: 8vh;
-        padding: 24px;
-        max-width: 95%;
+        padding: var(--spacing-xl) var(--spacing-lg) var(--spacing-lg);
     }
 
-    #age-gate-popup h2 {
-        font-size: 20px;
-    }
-
-    #age-gate-popup .subtitle {
-        font-size: 14px;
-    }
-
-    .age-buttons button,
-    #age-gate-confirm {
-        padding: 12px 16px;
-        font-size: 14px;
+    .age-gate-logo img {
+        max-height: 20vh;
     }
 }

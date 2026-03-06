@@ -202,16 +202,21 @@
 
 .site-main {
   flex: 1;
-  padding-bottom: 0; // Footer owns its own top spacing
+  padding-bottom: var(--spacing-2xl); // Consistent bottom breathing room before footer
 }
 
 // Producer and wine singles start with a full-width hero — kill the default
 // padding-top that style.css applies to .site-main globally.
-.single-dswg_producer .site-main,
 .single-dswg_wine .site-main,
 .tax-dswg_country .site-main,
 .post-type-archive-dswg_producer .site-main {
   padding-top: 0;
+}
+
+// Producer single: hero starts at top, connect section sits directly on footer
+.single-dswg_producer .site-main {
+  padding-top: 0;
+  padding-bottom: 0;
 }
 
 // ===== GLASS/OVERLAY CARD PATTERN =====
@@ -513,11 +518,6 @@
   background: var(--color-background-alt);
 }
 
-// Sections flow together — alt sections use same bg as main.
-// Connect section is explicitly excluded so it always keeps its alt background.
-.section--alt:not(.producer-connect-section) {
-  background: var(--color-background);
-}
 
 // Carousel section — alt background, tight bottom
 .wp-block-group.section.carosection {
@@ -525,10 +525,44 @@
   padding-bottom: 10px;
 }
 
+// Carousel wrapper — full bleed (no side padding)
+.ds-producer-carousel-wrapper {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+// Carousel section intro text — centered
+.carosection p {
+  text-align: center;
+}
+
+// Block groups used as page sections get consistent vertical padding
+.wp-block-group {
+  padding: var(--spacing-lg) 0;
+}
+
+// Color-change boundary spacing — must come after .wp-block-group rule so
+// padding values win over the shorthand padding reset above.
+// padding-top on the incoming section + padding-bottom on the outgoing section
+// = 2xl on both sides of every visual break.
+.section + .section--alt,
+.section--alt + .section,
+.section + .producer-connect-section,
+.section--alt + .producer-connect-section {
+  padding-top: var(--spacing-2xl);
+}
+
+.section:has(+ .section--alt),
+.section:has(+ .producer-connect-section) {
+  padding-bottom: var(--spacing-2xl);
+}
+
 // Connect section always uses alt background — explicit override so design
 // variants that flatten section--alt don't lose this distinction.
 .producer-connect-section {
   background: var(--color-background-alt);
+  padding-top: var(--spacing-2xl);
+  padding-bottom: var(--spacing-2xl);
 }
 
 .section--dark {
@@ -704,7 +738,7 @@
 
 // ===== PRODUCER CONNECT SECTION =====
 .producer-connect__label {
-  display: block;
+  display: none;
   text-align: center;
   font-size: clamp(1.5rem, 3vw, 2.5rem);
   font-weight: 400;
@@ -890,4 +924,216 @@ footer#colophon {
   z-index: 9999;
 
   &:focus { top: 0; }
+}
+
+
+// ===== MOBILE / SLIDEOUT NAV OVERRIDES =====
+// Overrides dandysite-jane header.css defaults.
+// Hamburger fires at 1024px — covers tablet + mobile.
+
+// Variable overrides — warm dark overlay instead of cold black,
+// translucent wine-red panel instead of flat solid.
+:root {
+  --header-mobile-menu-bg:     rgba(122, 31, 43, 0.82);
+  --header-mobile-menu-color:  @color-background;  // cream, not white
+  --header-mobile-menu-shadow: -4px 0 32px rgba(42, 36, 32, 0.4);
+}
+
+// Page overlay — warm blur instead of flat black dim
+body.mobile-menu-open::before {
+  background: rgba(42, 36, 32, 0.55) !important;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+// Panel — glass depth on the wine-red
+.site-header.header--mobile-nav .header-nav {
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+
+  // Tablet: wider panel, links a bit more generous
+  @media (min-width: 768px) {
+    width: min(400px, 50vw);
+  }
+}
+
+// Nav links — cream color, larger Garamond, gold dividers
+.site-header.header--mobile-nav .header-nav a {
+  font-family: var(--font-primary);
+  font-size: 1.5rem;
+  letter-spacing: 0.02em;
+  color: var(--color-background) !important;
+  border-bottom-color: fade(@color-gold-primary, 25%) !important;
+  padding: var(--spacing-md) 0;
+}
+
+// Sub-menu links — slightly smaller, same cream
+.site-header.header--mobile-nav .header-nav li ul a {
+  font-size: 1.1rem;
+  color: var(--color-background) !important;
+  padding: var(--spacing-sm) 0;
+}
+
+// Hamburger bars — use currentColor when overlay is open so they're visible on cream
+body.mobile-menu-open .hamburger-bar {
+    background-color: currentColor;
+}
+
+// Mobile: tighter panel, more padding for tap targets
+@media (max-width: 767px) {
+  .site-header.header--mobile-nav .header-nav {
+    padding: var(--spacing-xl) var(--spacing-lg);
+    width: min(320px, 85vw);
+  }
+}
+
+
+// ===== FULL-PAGE NAV OVERLAY =====
+// Cream background, full-color logo centered, large Garamond nav links.
+// Triggered by body.mobile-menu-open (same class the base theme JS uses).
+// Injected via wp_body_open in ds-theme-customizations.php.
+
+.nav-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: calc(var(--header-z-index) + 4); // just below the header itself
+    background: var(--color-background);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden; // prevent scrollbars from overlay content
+
+    // Hidden by default — fades in when menu opens
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                visibility 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body.mobile-menu-open {
+    overflow: hidden; // prevent page scroll behind overlay
+}
+
+body.mobile-menu-open .nav-overlay {
+    opacity: 1;
+    visibility: visible;
+}
+
+// Make overlay links accessible only when open
+body:not(.mobile-menu-open) .nav-overlay a {
+    tabindex: -1;
+}
+
+.nav-overlay__inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-xl);
+    padding: var(--spacing-2xl) var(--spacing-xl);
+    width: 100%;
+    max-width: 600px;
+    max-height: 100dvh;
+    overflow-y: auto;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+.nav-overlay__logo-link {
+    display: block;
+}
+
+.nav-overlay__logo {
+    height: auto;
+    max-height: 30vh;
+    width: auto;
+    max-width: 320px;
+    object-fit: contain;
+    // Green logo — no filter, show full color
+}
+
+// Nav links
+.nav-overlay__menu {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    width: 100%;
+
+    li {
+        width: 100%;
+        text-align: center;
+    }
+
+    a {
+        display: block;
+        font-family: var(--font-primary);
+        font-size: clamp(2rem, 4vw, 3rem);
+        font-weight: 400;
+        letter-spacing: 0.04em;
+        color: var(--color-text);
+        padding: var(--spacing-md) 0;
+        border-bottom: 1px solid var(--color-border);
+        text-decoration: none;
+        transition: color 0.2s ease;
+        width: 100%;
+
+        &:hover {
+            color: var(--color-wine-red);
+        }
+    }
+
+    // Remove border from last item
+    li:last-child a {
+        border-bottom: none;
+    }
+
+    // Sub-menu — smaller, indented
+    ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+
+        a {
+            font-size: 1.1rem;
+            color: var(--color-text-light);
+            padding: var(--spacing-sm) 0;
+            border-bottom: none;
+        }
+    }
+}
+
+// Permanently suppress the old slide-in panel — our overlay replaces it entirely.
+// Kill transition too so it never flashes during resize/nav-mode switches.
+.site-header.header--mobile-nav .header-nav {
+    transform: translateX(100%) !important;
+    transition: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+}
+
+// Also suppress the base theme's dark page dim — overlay replaces it
+body.mobile-menu-open::before {
+    display: none !important;
+}
+
+// Mobile: tighten logo
+@media (max-width: 600px) {
+    .nav-overlay__logo {
+        max-width: 220px;
+    }
+}
+
+// Header and hamburger must sit above the overlay
+body.mobile-menu-open .site-header {
+    z-index: calc(var(--header-z-index) + 5);
+    position: relative;
+}
+
+// Hide the header logo when overlay is open — logo is shown inside the overlay
+body.mobile-menu-open .header-logo {
+    opacity: 0;
+    pointer-events: none;
 }

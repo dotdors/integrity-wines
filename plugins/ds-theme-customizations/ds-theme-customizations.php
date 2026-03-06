@@ -56,6 +56,7 @@ final class DS_Theme_Customizations {
         add_action('wp_enqueue_scripts', [$this, 'enqueue_scripts']);
         add_filter('template_include', [$this, 'load_custom_templates'], 11);
         add_filter('body_class', [$this, 'add_design_body_class']);
+        add_action('wp_body_open', [$this, 'render_nav_overlay']);
         // add_action('wp_footer', [$this, 'render_design_switcher']); // DEMO SWITCHER — re-enable to restore multi-variant testing
     }
 
@@ -160,6 +161,42 @@ final class DS_Theme_Customizations {
     /**
      * Enqueue custom styles
      */
+    /**
+     * Render full-page nav overlay — injected right after <body> via wp_body_open.
+     * Controlled by body.mobile-menu-open class toggled by the base theme JS.
+     * Logo pulled from WP site identity (Appearance > Customize > Site Identity).
+     */
+    public function render_nav_overlay() {
+        $logo_id  = (int) get_option( 'dsp_logo_full', 0 );
+        $logo_url = $logo_id ? wp_get_attachment_image_url( $logo_id, 'full' ) : '';
+        $logo_alt = $logo_id ? ( get_post_meta( $logo_id, '_wp_attachment_image_alt', true ) ?: get_bloginfo( 'name' ) ) : get_bloginfo( 'name' );
+        ?>
+        <div class="nav-overlay" id="nav-overlay" aria-hidden="true">
+            <div class="nav-overlay__inner">
+
+                <?php if ( $logo_url ) : ?>
+                    <a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="nav-overlay__logo-link" tabindex="-1">
+                        <img src="<?php echo esc_url( $logo_url ); ?>"
+                             alt="<?php echo esc_attr( $logo_alt ); ?>"
+                             class="nav-overlay__logo">
+                    </a>
+                <?php endif; ?>
+
+                <?php
+                wp_nav_menu( [
+                    'theme_location' => 'primary',
+                    'menu_id'        => 'nav-overlay-menu',
+                    'menu_class'     => 'nav-overlay__menu',
+                    'container'      => false,
+                    'fallback_cb'    => false,
+                ] );
+                ?>
+
+            </div>
+        </div><!-- .nav-overlay -->
+        <?php
+    }
+
     public function enqueue_styles() {
         // Google Fonts - EB Garamond + Lato (Lato used for V1 body text)
         wp_enqueue_style(

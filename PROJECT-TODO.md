@@ -1,6 +1,6 @@
 # Integrity Wines — Project TODO
 
-**Last updated:** March 2, 2026
+**Last updated:** March 5, 2026
 
 ---
 
@@ -83,12 +83,26 @@ All work tracked in GitHub: https://github.com/dotdors/integrity-wines
 
 ---
 
+### Session: March 5, 2026
+- [x] Section vertical spacing system — `--spacing-lg` default, `--spacing-2xl` at color boundaries via sibling + `:has()` selectors
+- [x] `.site-main padding-bottom: --spacing-2xl` globally; `0` on producer single (connect sits on footer)
+- [x] `.producer-connect-section` explicit `padding-top/bottom: --spacing-2xl`
+- [x] `.producer-connect__label` hidden (`display: none`)
+- [x] `.section--alt` restored — removed V2 flattening rule; alt bg active site-wide again
+- [x] Customizer rules migrated to `_components.less`: carousel wrapper full-bleed, `.carosection p` centered, `.wp-block-group` padding
+- [x] Bare `.container` removed from country, archive, and connect section templates (redundant inside `.section`)
+- [x] Country template: `.section--alt` added to `.split-hero`, "Explore All Producers" button centered + arrow removed
+- [x] `.split-hero__panel` background → transparent; title → `text-align: left`; label → `--font-size-small`, `--color-text-light`
+- [x] Full-page nav overlay (`.nav-overlay`) — cream bg, full-color green logo, large Garamond links, fades in on `body.mobile-menu-open`
+- [x] Old slide-in panel permanently suppressed; no flash on resize
+- [x] Age gate (`ds-age-verification`) — full restyle: cream popup, warm glass overlay, full-color logo, brand CSS variables throughout, `display:flex` centering fix
+
 ## NEEDS ATTENTION — Before / After Demo
 
 ### Demo cleanup (low priority, do after client confirms direction)
 - [ ] **Remove design switcher** once client selects V1 or V2 (or keep for client to toggle themselves)
 - [ ] **V1 `.fullwidth` = `.section--narrow` padding** — this is a demo hack, revisit proper fullwidth behavior post-decision
-- [ ] **V1 `.producer-connect__label`** — hidden for now, decide whether to show "Connect with [name]" heading
+- [x] **`.producer-connect__label`** — hidden via `display: none` in `_components.less` (decided: label not needed, logo identifies the producer)
 - [ ] **`--spacing-2xl` V2 override** — currently 4.5rem, was changed multiple times, confirm final value
 - [ ] **Review hardcoded `min-height: fit-content !important`** on `.hero--split` in V1 — only needed because PHP outputs inline style, consider fixing at the PHP level instead
 
@@ -96,6 +110,11 @@ All work tracked in GitHub: https://github.com/dotdors/integrity-wines
 - [ ] Remove `footer.php-bak`, `functions2.php`, `header.cssv`, `back/` directory from repo
 - [ ] Remove any remaining `<!-- DEBUG -->` HTML comments in templates (check all templates)
 - [ ] Producer archive intro text is hardcoded in `archive-dswg_producer.php` — move to a WordPress option so Daniela can edit it
+
+### CSS audit (do once layout is stable)
+- [ ] **`.eyebrow` LESS mixin** — create shared mixin for eyebrow/label text (uppercase, tracked, small) and apply to `.section-header__label`, `.split-hero__label`, and any other instances. Currently these are near-duplicates drifting apart.
+- [ ] **Full mixin audit** — scan all LESS files for repeated property groups (font stacks, text treatments, spacing patterns) and consolidate into mixins
+- [ ] **Review front-page-specific rules in `_layout.less`** — may be fully redundant now that block groups use `.section` class consistently; verify and remove if so
 
 ---
 
@@ -122,7 +141,7 @@ All work tracked in GitHub: https://github.com/dotdors/integrity-wines
 ### Features Still Needed
 - [x] AJAX filter by country + text search across name/location/region/short desc ✓
 - [x] Country map images — stored as `dswg_country_map_id` term meta ✓
-- [ ] Age verification popup (ds-age-verification plugin — exists, needs wiring)
+- [x] Age verification popup — restyled with brand CSS: cream popup, glass overlay, full-color logo, EB Garamond, brand colors throughout
 - [ ] Instagram integration (company-level feed)
 - [ ] Contact form with spam protection
 - [ ] Producer archive intro text — move hardcoded copy to a WordPress option

@@ -86,6 +86,7 @@
   height: max-content; // Ensure card height matches content
   container-type: inline-size;
   background: var(--color-surface);
+  border: none;
   box-shadow: var(--box-shadow);
   overflow: hidden;
   transition: var(--transition);
@@ -225,7 +226,7 @@
 .producer-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(var(--producer-card-width), 1fr));
-  gap: var(--spacing-lg);
+  gap: var(--spacing-md);
 
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
@@ -590,12 +591,12 @@
   right: 0;
   width: 100%;
   padding: 1.25rem 1.5rem;
-  background: rgba(255, 255, 255, 0.25);
-  backdrop-filter: blur(12px) saturate(120%);
-  -webkit-backdrop-filter: blur(12px) saturate(120%);
+  background: #c6a64b4f;
+  backdrop-filter: blur(4px) saturate(120%);
+  -webkit-backdrop-filter: blur(4px) saturate(120%);
   text-align: left;
   z-index: 2;
-  border-top: 1px solid rgba(255, 255, 255, 0.3);
+  border-top: 0;
 }
 
 .ds-producer-card__country {
@@ -651,7 +652,52 @@
     padding-top: 0;
 }
 
-.producer-archive__results {
+// Hero header - full-bleed background image with dark overlay + centered content
+.producer-archive__header {
+    position: relative;
+    background-color: var(--color-wine-red); // fallback when no image set
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+// 20% dark overlay so text stays legible regardless of image choice
+.producer-archive__overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.2);
+    z-index: 0;
+}
+
+// Inner content wrapper - sits above overlay, no max-width constraint
+.producer-archive__header-inner {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    padding: 0;
+
+    // All section-header text goes white inside the hero
+    .section-header__label {
+        color: rgba(255, 255, 255, 0.75);
+    }
+    .section-header__title,
+    .section-header__desc {
+        color: #fff;
+    }
+
+    // Section header spacing inside hero
+    .section-header {
+        margin: var(--spacing-2xl) var(--spacing-2xl) var(--spacing-xl);
+    }
+}
+
+
+.producer-archive__results.section {
+    padding: var(--spacing-2xl) 0;
+
     // Add a gentle transition so the opacity flicker during AJAX is smooth
     .container {
         transition: opacity 0.2s ease;
@@ -694,18 +740,26 @@
 }
 
 // ---- Filter bar ---------------------------------------------------------
+// Base styles (used inside hero — glass treatment)
 .producer-filter {
+    padding: var(--spacing-md);
+    background: fade(@color-background, 39%);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(4px) saturate(120%);
+    width: auto;
+    margin: 0 auto;
+    // Sticky: negative margin pulls bar up over hero bottom edge
     position: sticky;
     top: var(--header-height);
-    z-index: 90;
-    padding-top: var(--spacing-md);
-    padding-bottom: var(--spacing-md);
+    z-index: 200;
+    margin-top: -5.5rem;
 }
 
 .producer-filter__inner {
     display: flex;
     align-items: flex-end;
-    gap: var(--spacing-md);
+    justify-content: center;
+    gap: var(--spacing-lg);
     flex-wrap: wrap;
 }
 
@@ -713,41 +767,51 @@
     display: flex;
     flex-direction: column;
     gap: 4px;
-    flex: 1 1 200px;
-    max-width: 320px;
+    flex: 0 1 240px;
 }
 
 .producer-filter__label {
     font-size: var(--font-size-small, 0.8rem);
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    color: var(--color-text-muted);
+    color: rgba(255, 255, 255, 0.75);
     font-family: var(--font-secondary);
 }
 
 .producer-filter__input,
 .producer-filter__select {
-    padding: 0.5rem 0.75rem;
-    border: 1px solid var(--color-border);
-    background: var(--color-surface);
-    color: var(--color-text);
-    font-family: var(--font-body);
+    padding: 0.4rem 0;
+    border: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+    background: transparent;
+    color: #fff;
+    font-family: var(--font-primary);
     font-size: 1rem;
-    border-radius: var(--border-radius);
+    border-radius: 0;
     transition: border-color 0.2s ease;
+
+    &::placeholder {
+        color: rgba(255, 255, 255, 0.5);
+    }
+
+    // Dropdown options need dark text (browser-rendered)
+    option {
+        color: var(--color-text);
+        background: var(--color-background);
+    }
 
     &:focus {
         outline: none;
-        border-color: var(--color-wine-red);
-        box-shadow: 0 0 0 2px rgba(122, 31, 43, 0.15);
+        border-bottom-color: rgba(255, 255, 255, 0.9);
+        box-shadow: none;
     }
 }
 
 .producer-filter__count {
     font-size: var(--font-size-small, 0.8rem);
-    color: var(--color-text-muted);
+    color: rgba(255, 255, 255, 0.7);
     font-family: var(--font-secondary);
-    padding-bottom: 0.6rem; // align with inputs
+    padding-bottom: 0.4rem;
     white-space: nowrap;
     flex: 0 0 auto;
 }
@@ -759,7 +823,7 @@
         align-items: stretch;
     }
     .producer-filter__field {
-        max-width: 100%;
+        flex: 1 1 auto;
     }
 }
 

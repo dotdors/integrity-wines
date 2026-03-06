@@ -7,7 +7,10 @@
  * a page reload.
  *
  * Loaded by ds-theme-customizations template loader (load_custom_templates).
- * Located: ds-wineguy/templates/archive-dswg_producer.php
+ * Located: ds-theme-customizations/templates/archive-dswg_producer.php
+ *
+ * Hero image and intro text are set in Wine Producers > Settings.
+ * Options: dswg_archive_hero_id, dswg_archive_intro_text
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -24,59 +27,74 @@ $countries = get_terms( [
     'order'      => 'ASC',
 ] );
 
+// Archive hero + intro text from settings
+$hero_id    = (int) get_option( 'dswg_archive_hero_id', 0 );
+$intro_text = get_option( 'dswg_archive_intro_text', '' );
+$hero_url   = $hero_id ? wp_get_attachment_image_url( $hero_id, 'full' ) : '';
+
+// Build inline style for hero background
+$hero_style = $hero_url
+    ? ' style="background-image: url(\'' . esc_url( $hero_url ) . '\');"'
+    : '';
+
 ?>
 <div class="producer-archive">
 
     <!-- Page Header + Filters -->
-    <div class="producer-archive__header section section--narrow">
-        <div class="section-header">
-            <span class="section-header__label"><?php esc_html_e( 'Integrity Wines', 'ds-wineguy' ); ?></span>
-            <h1 class="section-header__title"><?php esc_html_e( 'Our Producers', 'ds-wineguy' ); ?></h1>
-            <p class="section-header__desc">
-                <?php esc_html_e( 'Small-scale farmers and winemakers united by a commitment to the land, traditional methods, and wines of genuine character.', 'ds-wineguy' ); ?>
-            </p>
-        </div>
+    <div class="producer-archive__header fullwidth"<?php echo $hero_style; ?>>
+        <div class="producer-archive__overlay"></div>
+        <div class="producer-archive__header-inner">
 
-        <!-- Filter Bar -->
-        <div class="producer-filter">
-            <div class="producer-filter__inner">
-
-                <div class="producer-filter__field">
-                    <label for="producer-search" class="producer-filter__label">
-                        <?php esc_html_e( 'Search', 'ds-wineguy' ); ?>
-                    </label>
-                    <input type="text"
-                           id="producer-search"
-                           class="producer-filter__input"
-                           placeholder="<?php esc_attr_e( 'Producer name, region, location…', 'ds-wineguy' ); ?>"
-                           autocomplete="off">
-                </div>
-
-                <div class="producer-filter__field">
-                    <label for="producer-country" class="producer-filter__label">
-                        <?php esc_html_e( 'Country', 'ds-wineguy' ); ?>
-                    </label>
-                    <select id="producer-country" class="producer-filter__select">
-                        <option value=""><?php esc_html_e( 'All Countries', 'ds-wineguy' ); ?></option>
-                        <?php if ( $countries && ! is_wp_error( $countries ) ) : ?>
-                            <?php foreach ( $countries as $country ) : ?>
-                                <option value="<?php echo esc_attr( $country->slug ); ?>">
-                                    <?php echo esc_html( $country->name ); ?>
-                                </option>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
-                    </select>
-                </div>
-
-                <div class="producer-filter__count" id="producer-count" aria-live="polite"></div>
-
+            <div class="section-header">
+                <span class="section-header__label"><?php esc_html_e( 'Integrity Wines', 'ds-wineguy' ); ?></span>
+                <h1 class="section-header__title"><?php esc_html_e( 'Our Producers', 'ds-wineguy' ); ?></h1>
+                <?php if ( $intro_text ) : ?>
+                    <p class="section-header__desc"><?php echo esc_html( $intro_text ); ?></p>
+                <?php endif; ?>
             </div>
-        </div>
-    </div>
 
-        <!-- Results -->
+            <!-- Filter Bar -->
+            <div class="producer-filter">
+                <div class="producer-filter__inner">
+
+                    <div class="producer-filter__field">
+                        <label for="producer-search" class="producer-filter__label">
+                            <?php esc_html_e( 'Search', 'ds-wineguy' ); ?>
+                        </label>
+                        <input type="text"
+                               id="producer-search"
+                               class="producer-filter__input"
+                               placeholder="<?php esc_attr_e( 'Producer name, region, location…', 'ds-wineguy' ); ?>"
+                               autocomplete="off">
+                    </div>
+
+                    <div class="producer-filter__field">
+                        <label for="producer-country" class="producer-filter__label">
+                            <?php esc_html_e( 'Country', 'ds-wineguy' ); ?>
+                        </label>
+                        <select id="producer-country" class="producer-filter__select">
+                            <option value=""><?php esc_html_e( 'All Countries', 'ds-wineguy' ); ?></option>
+                            <?php if ( $countries && ! is_wp_error( $countries ) ) : ?>
+                                <?php foreach ( $countries as $country ) : ?>
+                                    <option value="<?php echo esc_attr( $country->slug ); ?>">
+                                        <?php echo esc_html( $country->name ); ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </select>
+                    </div>
+
+                    <div class="producer-filter__count" id="producer-count" aria-live="polite"></div>
+
+                </div>
+            </div>
+
+        </div><!-- .producer-archive__header-inner -->
+    </div><!-- .producer-archive__header -->
+
+    <!-- Results -->
     <div class="producer-archive__results section">
-        <div class="container" id="producer-grid-container">
+        <div id="producer-grid-container">
 
             <?php
             // Initial load — all producers, alphabetical
