@@ -897,3 +897,295 @@
     p { margin-bottom: var(--spacing-sm); }
     p:last-child { margin-bottom: 0; }
 }
+
+
+// =============================================================================
+// Wine Single Page
+// =============================================================================
+
+.wine-single {
+
+    // Three-column layout: bottle | details | sidebar
+    &__layout {
+        display: grid;
+        grid-template-columns: minmax(160px, 240px) 1fr 200px;
+        grid-template-areas: "bottle details sidebar";
+        gap: var(--spacing-xl);
+        align-items: start;
+
+        // No sidebar variant (no label, no files)
+        &--no-sidebar {
+            grid-template-columns: minmax(160px, 240px) 1fr;
+            grid-template-areas: "bottle details";
+        }
+
+        @media (max-width: 900px) {
+            grid-template-columns: minmax(140px, 180px) 1fr;
+            grid-template-areas:
+                "bottle details"
+                "sidebar sidebar";
+        }
+
+        @media (max-width: 600px) {
+            grid-template-columns: 1fr;
+            grid-template-areas:
+                "bottle"
+                "details"
+                "sidebar";
+        }
+    }
+
+    &__bottle {
+        grid-area: bottle;
+        // Sharp circle — soft fade alt: radial-gradient(circle, #ffffff 45%, transparent 55%)
+        background: radial-gradient(circle, #ffffff 55%, transparent 55%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    &__bottle-img {
+        display: block;
+        width: 100%;
+        height: auto;
+        max-height: 520px;
+        object-fit: contain;
+        mix-blend-mode: multiply; // blends white bg into gradient circle
+
+        &--placeholder {
+            opacity: 0.4;
+            mix-blend-mode: normal;
+        }
+    }
+
+    &__details {
+        grid-area: details;
+        padding-top: var(--spacing-sm);
+    }
+
+    &__producer-logo-wrap {
+        margin-bottom: var(--spacing-md);
+    }
+
+    &__producer-logo {
+        max-width: none;
+        max-height: 100px;
+        width: auto;
+        height: auto;
+        display: block;
+        // No filter — full color logo, same as connect section
+    }
+
+    &__title {
+        font-family: var(--font-primary);
+        font-size: var(--font-size-2xl);
+        font-weight: 400;
+        margin: 0 0 var(--spacing-xs) 0;
+        text-align: left;
+        line-height: 1.2;
+
+        @media (min-width: 600px) {
+            font-size: clamp(1.5rem, 3vw, 2.25rem);
+        }
+    }
+
+    &__producer-name {
+        font-size: var(--font-size-small);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--color-text-light);
+        margin: 0 0 var(--spacing-md) 0;
+
+        a {
+            color: inherit;
+            text-decoration: none;
+            &:hover { color: var(--color-gold-primary, #C6A64B); }
+        }
+    }
+
+    &__vintage-subtitle {
+        font-family: var(--font-primary);
+        font-size: var(--font-size-xl);
+        font-weight: 400;
+        color: var(--color-text-light);
+        margin: 0 0 var(--spacing-lg) 0;
+    }
+
+    // Eyebrow label (Varietal / Blend, Tasting Notes, ABV)
+    &__eyebrow {
+        display: block;
+        font-size: var(--font-size-small);
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: var(--color-text-muted);
+        font-family: var(--font-secondary, sans-serif);
+        margin-bottom: var(--spacing-xs);
+    }
+
+    &__field {
+        margin-bottom: var(--spacing-md);
+        padding-bottom: var(--spacing-md);
+        border-bottom: 1px solid fade(@color-gold-primary, 25%);
+
+        &:last-child {
+            border-bottom: none;
+        }
+    }
+
+    &__field-value {
+        font-family: var(--font-primary);
+        font-size: 1.05rem;
+        color: var(--color-text);
+        margin: 0;
+        line-height: 1.5;
+    }
+
+    &__description {
+        color: var(--color-text);
+        line-height: 1.75;
+        font-size: var(--font-size-base);
+
+        p { margin-bottom: var(--spacing-sm); }
+        p:last-child { margin-bottom: 0; }
+    }
+
+    // Sidebar meta: wine type, producer, location
+    &__meta {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-xs);
+        padding-bottom: var(--spacing-md);
+        border-bottom: 1px solid var(--color-border);
+        margin-bottom: var(--spacing-md);
+    }
+
+    &__meta-type {
+        font-size: var(--font-size-small);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--color-text-muted);
+        font-family: var(--font-secondary, sans-serif);
+    }
+
+    &__meta-producer {
+        font-family: var(--font-primary);
+        font-size: 1.05rem;
+        color: var(--color-text);
+        margin: 0;
+
+        a {
+            color: inherit;
+            text-decoration: none;
+            &:hover { color: var(--color-gold-primary, #C6A64B); }
+        }
+    }
+
+    &__meta-location {
+        font-size: var(--font-size-small);
+        color: var(--color-text-muted);
+        margin: 0;
+    }
+
+    // Sidebar: label image + downloads
+    &__sidebar {
+        grid-area: sidebar;
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-md);
+    }
+
+    &__label-image {
+        text-align: center;
+    }
+
+    &__label-img {
+        display: block;
+        width: auto;
+        max-width: fit-content;
+        height: auto;
+        margin: 0 auto;
+        border-radius: 2px;
+    }
+
+    &__downloads {
+        // No border-top — __meta already has border-bottom above this
+        padding-top: 0;
+    }
+
+    &__downloads-heading {
+        font-size: var(--font-size-small);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--color-text-muted);
+        margin: 0 0 var(--spacing-sm) 0;
+        font-family: var(--font-secondary, sans-serif);
+    }
+
+    &__download-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-xs);
+    }
+
+    &__download-item {
+        display: block;
+    }
+
+    &__download-link {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-xs);
+        font-size: var(--font-size-small);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        line-height: 1.2em;
+        color: var(--color-text);
+        text-decoration: none;
+        padding: var(--spacing-xs) 0;
+
+        &:hover {
+            color: var(--color-gold-primary, #C6A64B);
+        }
+    }
+
+    &__download-icon {
+        display: inline-flex;
+        align-items: center;
+        flex-shrink: 0;
+        width: auto;
+        height: 2rem;
+        color: var(--color-gold-dark, #9E7C2F);
+
+        svg {
+            width: auto;
+            height: 100%;
+            display: block;
+            fill: currentColor;
+        }
+    }
+
+    // If client uses headings inside tasting notes, left-align and scale down
+    &__description {
+        h2, h3, h4, h5, h6 {
+            text-align: left;
+            font-size: 1.3em;
+            margin-top: var(--spacing-md);
+            margin-bottom: var(--spacing-xs);
+        }
+    }
+
+    // More from producer section
+    &__more {
+        .section-header {
+            margin-bottom: var(--spacing-lg);
+        }
+    }
+
+    &__back-link {
+        text-align: center;
+        margin-top: var(--spacing-xl);
+    }
+}

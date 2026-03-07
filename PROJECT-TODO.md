@@ -1,10 +1,10 @@
 # Integrity Wines — Project TODO
 
-**Last updated:** March 5, 2026
+**Last updated:** March 6, 2026
 
 ---
 
-## STATUS: Active Development — Producer Index & Country Pages Complete
+## STATUS: Active Development — Wine Single Page Complete, Data Import Underway
 
 Producer archive, country taxonomy, card system, and AJAX filtering are built and working.
 All work tracked in GitHub: https://github.com/dotdors/integrity-wines
@@ -83,6 +83,22 @@ All work tracked in GitHub: https://github.com/dotdors/integrity-wines
 
 ---
 
+### Session: March 6, 2026 — Data Import + Wine Single Page
+- [x] `dswg_inventory_no` meta field added to wines (admin meta box + importer) — used as unique key for import deduplication
+- [x] `dswg_wine_active` meta field added (checkbox, defaults active) — hides wines from front end without deleting
+- [x] Wine importer overhauled: update-if-exists by inv number, skip empty cells on update, new wines default active, `get_page_by_title` deprecation fixed
+- [x] Importer: `%` stripped from alcohol values, UTF-8/Windows-1252 encoding fix for Excel CSVs, UTF-8 BOM strip
+- [x] Importer: accent-tolerant wine type matching (Rose = Rosé), partial matching (White = White Wine)
+- [x] Wine list view enhancements (`admin/wine-list.php`): Inv Number + Producer + Active columns, filter dropdowns by producer and active status, Mark Active / Mark Inactive bulk actions
+- [x] Front-end wine queries updated to exclude inactive wines in both `dswg_get_producer_wines()` and `single-dswg_producer.php`
+- [x] `single-dswg_wine.php` built — three-column layout: bottle image | wine details | sidebar
+- [x] Wine single: producer logo (full color, no filter), wine name h1, vintage subtitle, Varietal/Blend eyebrow, Tasting Notes eyebrow, description
+- [x] Wine single sidebar: wine type, producer name (link), location, ABV, downloads (bottle/label/tech sheets with SVG icons), label image
+- [x] SVG download icons created (`icon-bottle.svg`, `icon-document.svg`, `icon-label.svg`) — `currentColor` fill, stored in `ds-theme-customizations/assets/images/`
+- [x] "More from [Producer]" wine grid at bottom of wine single — excludes current wine, links through to wine singles
+- [x] Bottle image: radial gradient white circle on `__bottle` div + `mix-blend-mode: multiply` on img — dissolves rectangular white bg, white labels still readable
+- [x] Gold-line dividers between tasting notes fields; description headings left-aligned at 1.3em
+
 ### Session: March 5, 2026
 - [x] Section vertical spacing system — `--spacing-lg` default, `--spacing-2xl` at color boundaries via sibling + `:has()` selectors
 - [x] `.site-main padding-bottom: --spacing-2xl` globally; `0` on producer single (connect sits on footer)
@@ -136,7 +152,7 @@ All work tracked in GitHub: https://github.com/dotdors/integrity-wines
 - [ ] About page template
 - [ ] Blog/news templates (archive + single)
 - [ ] Contact page
-- [ ] Wine single page (`single-dswg_wine.php`) — currently no dedicated template
+- [x] Wine single page (`single-dswg_wine.php`) — three-column layout: bottle | details | sidebar
 
 ### Features Still Needed
 - [x] AJAX filter by country + text search across name/location/region/short desc ✓
@@ -160,7 +176,12 @@ All work tracked in GitHub: https://github.com/dotdors/integrity-wines
 - [ ] Producer → Wine relationships established
 - [ ] Upload `wineplaceholder.png` to `ds-wineguy/assets/images/` on server
 
-### Performance & Polish
+### Wine Lifecycle / Data Management (future)
+- [ ] **Bulk inactive wine cleanup** — once Mark Inactive bulk action has been used end-of-season, decide on a cleanup workflow: export inactive wines to a record, then delete? Or archive indefinitely? Consider building a "Delete all inactive wines" tool in the importer UI to make this one-click.
+- [ ] **Season rollover workflow** — document the process: import new vintage spreadsheet → review updated/created count → bulk mark old vintages inactive as needed
+
+### Producer Page
+- [ ] **File downloads** — `dswg_producer_files` exists but not surfaced on the front end yet. Decide where it lives on the producer page (Connect section? After the story? Separate section?) then add download links using the same SVG icon pattern as the wine single page.
 - [ ] Image optimization (lazy loading, compression)
 - [ ] Cloudflare CDN configuration
 - [ ] Caching strategy
@@ -185,7 +206,6 @@ All work tracked in GitHub: https://github.com/dotdors/integrity-wines
 - **`.featured` nav class** — V1 green CTA nav button requires adding "featured" CSS class to the menu item in Appearance → Menus. Document in client training.
 - **Hero split min-height** — PHP outputs `style="min-height: 90vh"` inline. V1 overrides with `min-height: fit-content !important`. Long-term: fix at PHP level so the inline style isn't output at all for V1, or make it a template variable.
 - **Dark footer** — infrastructure complete but not used. Easy to revisit.
-- **Wine single page** — no template yet. Currently falls back to WP default single.php.
 
 ---
 

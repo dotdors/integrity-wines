@@ -373,10 +373,14 @@ function dswg_producer_files_callback($post) {
 function dswg_wine_details_callback($post) {
     wp_nonce_field('dswg_save_wine_meta', 'dswg_wine_nonce');
     
-    $producer_id = get_post_meta($post->ID, 'dswg_producer_id', true);
-    $vintage = get_post_meta($post->ID, 'dswg_vintage', true);
-    $varietal = get_post_meta($post->ID, 'dswg_varietal', true);
-    $alcohol = get_post_meta($post->ID, 'dswg_alcohol', true);
+    $producer_id  = get_post_meta($post->ID, 'dswg_producer_id', true);
+    $inv_number   = get_post_meta($post->ID, 'dswg_inventory_no', true);
+    $vintage      = get_post_meta($post->ID, 'dswg_vintage', true);
+    $varietal     = get_post_meta($post->ID, 'dswg_varietal', true);
+    $alcohol      = get_post_meta($post->ID, 'dswg_alcohol', true);
+    // Default active = 1 for new posts (meta not yet set)
+    $active_raw   = get_post_meta($post->ID, 'dswg_wine_active', true);
+    $is_active    = ($active_raw === '') ? 1 : (int) $active_raw;
     
     // Get all producers for dropdown
     $producers = get_posts([
@@ -388,6 +392,23 @@ function dswg_wine_details_callback($post) {
     
     ?>
     <table class="form-table">
+        <tr>
+            <th><label for="dswg_inventory_no"><?php _e('Inv Number', 'ds-wineguy'); ?></label></th>
+            <td>
+                <input type="text" id="dswg_inventory_no" name="dswg_inventory_no" value="<?php echo esc_attr($inv_number); ?>" class="regular-text" placeholder="e.g. IW1042" />
+                <p class="description"><?php _e('Client inventory number — used as the unique identifier for import matching.', 'ds-wineguy'); ?></p>
+            </td>
+        </tr>
+        <tr>
+            <th><label for="dswg_wine_active"><?php _e('Active', 'ds-wineguy'); ?></label></th>
+            <td>
+                <label>
+                    <input type="checkbox" id="dswg_wine_active" name="dswg_wine_active" value="1" <?php checked($is_active, 1); ?> />
+                    <?php _e('This wine is currently available / in the catalog', 'ds-wineguy'); ?>
+                </label>
+                <p class="description"><?php _e('Uncheck to hide this wine from the front end without deleting it.', 'ds-wineguy'); ?></p>
+            </td>
+        </tr>
         <tr>
             <th><label for="dswg_producer_id"><?php _e('Producer', 'ds-wineguy'); ?> <span class="required">*</span></label></th>
             <td>
@@ -419,7 +440,7 @@ function dswg_wine_details_callback($post) {
         <tr>
             <th><label for="dswg_alcohol"><?php _e('Alcohol %', 'ds-wineguy'); ?></label></th>
             <td>
-                <input type="text" id="dswg_alcohol" name="dswg_alcohol" value="<?php echo esc_attr($alcohol); ?>" class="small-text" placeholder="13.5" />
+                <input type="text" id="dswg_alcohol" name="dswg_alcohol" value="<?php echo esc_attr($alcohol); ?>" class="small-text" placeholder="0.0" />
                 <p class="description"><?php _e('Alcohol by volume', 'ds-wineguy'); ?></p>
             </td>
         </tr>
@@ -601,6 +622,7 @@ function dswg_save_wine_meta($post_id) {
     // Save fields
     $fields = [
         'dswg_producer_id',
+        'dswg_inventory_no',
         'dswg_vintage',
         'dswg_varietal',
         'dswg_alcohol',
@@ -613,5 +635,9 @@ function dswg_save_wine_meta($post_id) {
             update_post_meta($post_id, $field, sanitize_text_field($_POST[$field]));
         }
     }
+
+    // Checkbox — explicitly save 0 when unchecked (not in $_POST)
+    $active = isset($_POST['dswg_wine_active']) ? 1 : 0;
+    update_post_meta($post_id, 'dswg_wine_active', $active);
 }
 add_action('save_post_dswg_wine', 'dswg_save_wine_meta');

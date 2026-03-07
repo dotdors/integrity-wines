@@ -11,6 +11,26 @@ if (!defined('ABSPATH')) {
 }
 
 /**
+ * Normalize a string for loose matching — lowercase, strip accents.
+ * Used so "Rose" matches "Rosé", "Xarel.lo" matches "Xarel·lo", etc.
+ */
+function dswg_normalize_for_match($str) {
+    // Transliterate accented characters to ASCII equivalents
+    $str = mb_strtolower($str, 'UTF-8');
+    $map = [
+        'á'=>'a','à'=>'a','â'=>'a','ä'=>'a','ã'=>'a','å'=>'a','æ'=>'ae',
+        'é'=>'e','è'=>'e','ê'=>'e','ë'=>'e',
+        'í'=>'i','ì'=>'i','î'=>'i','ï'=>'i',
+        'ó'=>'o','ò'=>'o','ô'=>'o','ö'=>'o','õ'=>'o','ø'=>'o',
+        'ú'=>'u','ù'=>'u','û'=>'u','ü'=>'u',
+        'ý'=>'y','ÿ'=>'y',
+        'ñ'=>'n','ç'=>'c','ß'=>'ss',
+        '·'=>'.', // middle dot → period (Xarel·lo → Xarel.lo)
+    ];
+    return strtr($str, $map);
+}
+
+/**
  * Add importer page to admin menu
  */
 function dswg_add_importer_page() {
@@ -98,16 +118,16 @@ function dswg_render_importer_page() {
             <h3><?php _e('Wines Spreadsheet Columns:', 'ds-wineguy'); ?></h3>
             <ul>
                 <li><strong>Wine Name</strong> (required) - Name of the wine</li>
-                <li><strong>Producer</strong> (required) - Producer name (must match existing producer)</li>
+                <li><strong>Producer</strong> (required) - Producer name (must match existing producer exactly)</li>
+                <li><strong>Inv Number</strong> - Client inventory number — used to match existing wines on re-import (update instead of duplicate)</li>
                 <li><strong>Vintage</strong> - Year (or leave blank for NV)</li>
                 <li><strong>Description</strong> - Tasting notes</li>
                 <li><strong>Varietal</strong> - Grape varieties</li>
                 <li><strong>Alcohol</strong> - Alcohol percentage</li>
                 <li><strong>Wine Type</strong> - Red Wine, White Wine, Rosé, Sparkling, etc.</li>
             </ul>
-            
             <p class="description">
-                <?php _e('Note: Images and files must be added manually after import.', 'ds-wineguy'); ?>
+                <?php _e('Column order does not matter. Empty cells are skipped on update — existing values are preserved.', 'ds-wineguy'); ?>
             </p>
         </div>
     </div>
@@ -167,7 +187,12 @@ function dswg_process_import() {
         
         // Show results
         echo '<div class="notice notice-success"><p>';
-        printf(__('Import complete! Created %d items. Skipped %d rows.', 'ds-wineguy'), $results['created'], $results['skipped']);
+        printf(
+            __('Import complete! Created %d, updated %d. Skipped %d rows.', 'ds-wineguy'),
+            $results['created'],
+            isset($results['updated']) ? $results['updated'] : 0,
+            $results['skipped']
+        );
         echo '</p></div>';
         
         if (!empty($results['errors'])) {
@@ -190,12 +215,24 @@ function dswg_process_csv_import($file_path, $import_type) {
     $data = [];
     
     if (($handle = fopen($file_path, 'r')) !== false) {
+        $first_row = true;
         while (($row = fgetcsv($handle)) !== false) {
+            // Strip UTF-8 BOM from first cell of first row (Excel adds this)
+            if ($first_row && !empty($row[0])) {
+                $row[0] = ltrim($row[0], "\xEF\xBB\xBF");
+                $first_row = false;
+            }
             $data[] = $row;
         }
         fclose($handle);
     }
-    
+
+    // Convert encoding if not valid UTF-8 (Excel CSVs default to Windows-1252)
+    array_walk_recursive($data, function(&$value) {
+        if (!mb_detect_encoding($value, 'UTF-8', true)) {
+            $value = mb_convert_encoding($value, 'UTF-8', 'Windows-1252');
+        }
+    });
     if (empty($data)) {
         echo '<div class="notice notice-error"><p>' . __('No data found in CSV file', 'ds-wineguy') . '</p></div>';
         return;
@@ -314,7 +351,7 @@ function dswg_import_producers($data) {
  * Import wines from spreadsheet data
  */
 function dswg_import_wines($data) {
-    $results = ['created' => 0, 'skipped' => 0, 'errors' => []];
+    $results = ['created' => 0, 'updated' => 0, 'skipped' => 0, 'errors' => []];
     
     // Get header row
     $headers = array_shift($data);
@@ -343,53 +380,136 @@ function dswg_import_wines($data) {
             continue;
         }
         
-        // Find producer
-        $producer = get_page_by_title($wine_data['Producer'], OBJECT, 'dswg_producer');
-        if (!$producer) {
+        // Find producer by title (modern replacement for deprecated get_page_by_title)
+        $producer_posts = get_posts([
+            'post_type'      => 'dswg_producer',
+            'title'          => $wine_data['Producer'],
+            'posts_per_page' => 1,
+            'fields'         => 'ids',
+            'no_found_rows'  => true,
+            'post_status'    => 'publish',
+        ]);
+        
+        if (empty($producer_posts)) {
             $results['errors'][] = sprintf(__('Row %d: Producer "%s" not found', 'ds-wineguy'), $row_num + 2, $wine_data['Producer']);
             $results['skipped']++;
             continue;
         }
+        $producer_id = $producer_posts[0];
         
-        // Create wine
-        $post_data = [
-            'post_title' => sanitize_text_field($wine_data['Wine Name']),
-            'post_content' => !empty($wine_data['Description']) ? wp_kses_post($wine_data['Description']) : '',
-            'post_type' => 'dswg_wine',
-            'post_status' => 'publish',
-        ];
+        // Check for existing wine by inventory number
+        $existing_id = null;
+        $inv_number  = isset($wine_data['Inv Number']) ? trim($wine_data['Inv Number']) : '';
         
-        $post_id = wp_insert_post($post_data);
-        
-        if (is_wp_error($post_id)) {
-            $results['errors'][] = sprintf(__('Row %d: Error creating wine', 'ds-wineguy'), $row_num + 2);
-            $results['skipped']++;
-            continue;
-        }
-        
-        // Link to producer
-        update_post_meta($post_id, 'dswg_producer_id', $producer->ID);
-        
-        // Add meta fields
-        if (!empty($wine_data['Vintage'])) {
-            update_post_meta($post_id, 'dswg_vintage', sanitize_text_field($wine_data['Vintage']));
-        }
-        if (!empty($wine_data['Varietal'])) {
-            update_post_meta($post_id, 'dswg_varietal', sanitize_text_field($wine_data['Varietal']));
-        }
-        if (!empty($wine_data['Alcohol'])) {
-            update_post_meta($post_id, 'dswg_alcohol', sanitize_text_field($wine_data['Alcohol']));
-        }
-        
-        // Assign wine type
-        if (!empty($wine_data['Wine Type'])) {
-            $term = term_exists($wine_data['Wine Type'], 'dswg_wine_type');
-            if ($term) {
-                wp_set_object_terms($post_id, (int)$term['term_id'], 'dswg_wine_type');
+        if ($inv_number !== '') {
+            $existing = get_posts([
+                'post_type'      => 'dswg_wine',
+                'posts_per_page' => 1,
+                'fields'         => 'ids',
+                'no_found_rows'  => true,
+                'meta_query'     => [[
+                    'key'   => 'dswg_inventory_no',
+                    'value' => $inv_number,
+                ]],
+            ]);
+            if (!empty($existing)) {
+                $existing_id = $existing[0];
             }
         }
         
-        $results['created']++;
+        if ($existing_id) {
+            // --- UPDATE PATH ---
+            // Only update post_title and post_content if the cell is non-empty
+            $update_args = ['ID' => $existing_id];
+            if (!empty($wine_data['Wine Name'])) {
+                $update_args['post_title'] = sanitize_text_field($wine_data['Wine Name']);
+            }
+            if (isset($wine_data['Description']) && $wine_data['Description'] !== '') {
+                $update_args['post_content'] = wp_kses_post($wine_data['Description']);
+            }
+            if (count($update_args) > 1) {
+                wp_update_post($update_args);
+            }
+            
+            $post_id = $existing_id;
+            $results['updated']++;
+            
+        } else {
+            // --- CREATE PATH ---
+            $post_data = [
+                'post_title'   => sanitize_text_field($wine_data['Wine Name']),
+                'post_content' => !empty($wine_data['Description']) ? wp_kses_post($wine_data['Description']) : '',
+                'post_type'    => 'dswg_wine',
+                'post_status'  => 'publish',
+            ];
+            
+            $post_id = wp_insert_post($post_data);
+            
+            if (is_wp_error($post_id)) {
+                $results['errors'][] = sprintf(__('Row %d: Error creating wine', 'ds-wineguy'), $row_num + 2);
+                $results['skipped']++;
+                continue;
+            }
+            
+            // New wines default to active
+            update_post_meta($post_id, 'dswg_wine_active', 1);
+            
+            $results['created']++;
+        }
+        
+        // --- META: only update if cell is non-empty ---
+        // Link to producer (always update — producer is required)
+        update_post_meta($post_id, 'dswg_producer_id', $producer_id);
+        
+        if ($inv_number !== '') {
+            update_post_meta($post_id, 'dswg_inventory_no', sanitize_text_field($inv_number));
+        }
+        if (isset($wine_data['Vintage']) && $wine_data['Vintage'] !== '') {
+            update_post_meta($post_id, 'dswg_vintage', sanitize_text_field($wine_data['Vintage']));
+        }
+        if (isset($wine_data['Varietal']) && $wine_data['Varietal'] !== '') {
+            update_post_meta($post_id, 'dswg_varietal', sanitize_text_field($wine_data['Varietal']));
+        }
+        if (isset($wine_data['Alcohol']) && $wine_data['Alcohol'] !== '') {
+            // Strip % sign if present (e.g. "12.50%" → "12.50")
+            $alcohol_val = trim(str_replace('%', '', $wine_data['Alcohol']));
+            update_post_meta($post_id, 'dswg_alcohol', sanitize_text_field($alcohol_val));
+        }
+        
+        // Assign wine type — accent-tolerant, partial match (e.g. "White" matches "White Wine")
+        if (!empty($wine_data['Wine Type'])) {
+            $input_normalized = dswg_normalize_for_match($wine_data['Wine Type']);
+            $all_terms = get_terms(['taxonomy' => 'dswg_wine_type', 'hide_empty' => false]);
+            $matched_term = null;
+            // Pass 1: exact normalized match
+            foreach ($all_terms as $t) {
+                if (dswg_normalize_for_match($t->name) === $input_normalized) {
+                    $matched_term = $t;
+                    break;
+                }
+            }
+            // Pass 2: partial match — "White" matches "White Wine", "White Wine" matches "White"
+            if (!$matched_term) {
+                foreach ($all_terms as $t) {
+                    $term_normalized = dswg_normalize_for_match($t->name);
+                    if (str_starts_with($term_normalized, $input_normalized) ||
+                        str_starts_with($input_normalized, $term_normalized)) {
+                        $matched_term = $t;
+                        break;
+                    }
+                }
+            }
+            if ($matched_term) {
+                wp_set_object_terms($post_id, (int)$matched_term->term_id, 'dswg_wine_type');
+            } else {
+                $results['errors'][] = sprintf(
+                    __('Row %d (%s): Wine Type "%s" not found — wine saved without type. Check spelling against existing terms.', 'ds-wineguy'),
+                    $row_num + 2,
+                    $wine_data['Wine Name'],
+                    $wine_data['Wine Type']
+                );
+            }
+        }
     }
     
     return $results;

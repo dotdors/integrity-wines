@@ -105,6 +105,8 @@ ds-age-verification (age gate + cookie popup)
 | Field | Meta Key | Type | Notes |
 |-------|----------|------|-------|
 | Producer (relationship) | `dswg_producer_id` | int | Post ID of parent `dswg_producer` |
+| Inv Number | `dswg_inventory_no` | text | Client inventory number — unique identifier for import deduplication |
+| Active | `dswg_wine_active` | int | `1` = active (shown on front end), `0` = inactive (hidden). Missing meta treated as active. |
 | Vintage | `dswg_vintage` | text | Year or "NV" |
 | Varietal/Blend | `dswg_varietal` | text | |
 | Alcohol % | `dswg_alcohol` | text | |
@@ -441,7 +443,15 @@ integrity-wines/
 36. `.container` (bare, no modifier) inside a `.section` is redundant — removed from country, archive, connect section templates; `.container--narrow` inside a section is still correct and intentional
 37. `.split-hero` gets `.section--alt` class on country pages — panel background must be `transparent` so alt bg shows through
 
+38. `dswg_inventory_no` — wine meta key for client inventory number (e.g. `IW1042`); used as unique identifier for import deduplication
+39. `dswg_wine_active` — wine meta key, `1` = active (shown front end), `0` = inactive (hidden). Missing meta treated as active. Bulk actions: Mark Active / Mark Inactive in wine list view.
+40. Wine importer: column `Inv Number` triggers update-if-exists logic; empty cells skipped on update; `%` stripped from alcohol; accent-tolerant wine type matching; UTF-8/Windows-1252 encoding handled automatically. Export CSV from Google Sheets directly to avoid Excel encoding issues.
+41. Wine single template: `single-dswg_wine.php` in `ds-theme-customizations/templates/` — three-column grid (bottle | details | sidebar)
+42. SVG download icons in `ds-theme-customizations/assets/images/`: `icon-bottle.svg`, `icon-document.svg`, `icon-label.svg` — `currentColor` fill, inlined via `dsp_inline_svg()` helper in template
+43. Bottle image: `mix-blend-mode: multiply` on `__bottle-img` + `radial-gradient(circle, #ffffff 45%, transparent 55%)` on `__bottle` div — sharp circle alt: `radial-gradient(circle, #ffffff 55%, transparent 55%)`
+44. `admin/wine-list.php` — wine list view columns, filter dropdowns, bulk actions; loaded via `ds-wineguy.php`
+
 ---
 
-*Last updated: March 5, 2026*
+*Last updated: March 6, 2026*
 *Plugin version: ds-wineguy v1.1, ds-theme-customizations v1.1*

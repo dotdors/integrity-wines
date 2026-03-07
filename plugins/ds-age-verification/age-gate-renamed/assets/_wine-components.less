@@ -748,11 +748,6 @@
     backdrop-filter: blur(4px) saturate(120%);
     width: auto;
     margin: 0 auto;
-    // Sticky: negative margin pulls bar up over hero bottom edge
-    position: sticky;
-    top: var(--header-height);
-    z-index: 200;
-    margin-top: -5.5rem;
 }
 
 .producer-filter__inner {
@@ -828,6 +823,11 @@
 }
 
 // ---- Country archive page -----------------------------------------------
+// Back link section — centered button
+.country-archive__back {
+    text-align: center;
+}
+
 // Self-contained split layout — image left, text panel right.
 // Does NOT rely on homepage.css hero classes (that sheet is front-page only).
 
@@ -867,16 +867,16 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    background: var(--color-background);
+    background: transparent;
     padding: var(--spacing-2xl) var(--spacing-xl);
 }
 
 .split-hero__label {
     display: block;
-    font-size: 0.75rem;
+    font-size: var(--font-size-small);
     text-transform: uppercase;
     letter-spacing: 0.15em;
-    color: var(--color-text-muted);
+    color: var(--color-text-light);
     font-family: var(--font-secondary);
     margin-bottom: var(--spacing-sm);
 }
@@ -886,6 +886,7 @@
     color: var(--color-text);
     margin: 0 0 var(--spacing-md);
     line-height: 1.15;
+    text-align: left;
 }
 
 .split-hero__desc {
@@ -895,4 +896,240 @@
 
     p { margin-bottom: var(--spacing-sm); }
     p:last-child { margin-bottom: 0; }
+}
+
+
+// =============================================================================
+// Wine Single Page
+// =============================================================================
+
+.wine-single {
+
+    // Three-column layout: bottle | details | sidebar
+    &__layout {
+        display: grid;
+        grid-template-columns: minmax(160px, 240px) 1fr 200px;
+        grid-template-areas: "bottle details sidebar";
+        gap: var(--spacing-xl);
+        align-items: start;
+
+        // No sidebar variant (no label, no files)
+        &--no-sidebar {
+            grid-template-columns: minmax(160px, 240px) 1fr;
+            grid-template-areas: "bottle details";
+        }
+
+        @media (max-width: 900px) {
+            grid-template-columns: minmax(140px, 180px) 1fr;
+            grid-template-areas:
+                "bottle details"
+                "sidebar sidebar";
+        }
+
+        @media (max-width: 600px) {
+            grid-template-columns: 1fr;
+            grid-template-areas:
+                "bottle"
+                "details"
+                "sidebar";
+        }
+    }
+
+    &__bottle {
+        grid-area: bottle;
+        position: sticky;
+        top: calc(var(--header-height, 80px) + var(--spacing-lg));
+    }
+
+    &__bottle-img {
+        display: block;
+        width: 100%;
+        height: auto;
+        max-height: 520px;
+        object-fit: contain;
+
+        &--placeholder {
+            opacity: 0.4;
+        }
+    }
+
+    &__details {
+        grid-area: details;
+        padding-top: var(--spacing-sm);
+    }
+
+    &__producer-logo-wrap {
+        margin-bottom: var(--spacing-md);
+    }
+
+    &__producer-logo {
+        max-width: 120px;
+        max-height: 80px;
+        width: auto;
+        height: auto;
+        display: block;
+        // No filter — full color logo, same as connect section
+    }
+
+    &__title {
+        font-family: var(--font-primary);
+        font-size: var(--font-size-2xl);
+        font-weight: 400;
+        margin: 0 0 var(--spacing-xs) 0;
+        text-align: left;
+        line-height: 1.2;
+
+        @media (min-width: 600px) {
+            font-size: clamp(1.5rem, 3vw, 2.25rem);
+        }
+    }
+
+    &__producer-name {
+        font-size: var(--font-size-small);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--color-text-light);
+        margin: 0 0 var(--spacing-md) 0;
+
+        a {
+            color: inherit;
+            text-decoration: none;
+            &:hover { color: var(--color-gold-primary, #C6A64B); }
+        }
+    }
+
+    // Specs: gold-divided rows, no labels (except ABV)
+    &__specs {
+        margin: 0 0 var(--spacing-lg) 0;
+        padding: 0;
+        border-top: 1px solid fade(@color-gold-primary, 25%);
+    }
+
+    &__spec {
+        display: flex;
+        align-items: baseline;
+        gap: var(--spacing-sm);
+        padding: var(--spacing-sm) 0;
+        border-bottom: 1px solid fade(@color-gold-primary, 25%);
+    }
+
+    &__spec-label {
+        font-size: var(--font-size-small);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--color-text-muted);
+        font-family: var(--font-secondary, sans-serif);
+        min-width: 3rem;
+        flex-shrink: 0;
+    }
+
+    &__spec-value {
+        font-family: var(--font-primary);
+        font-size: 1.05rem;
+        color: var(--color-text);
+        margin: 0;
+    }
+
+    &__description {
+        color: var(--color-text-light);
+        line-height: 1.75;
+        font-size: var(--font-size-base);
+
+        p { margin-bottom: var(--spacing-sm); }
+        p:last-child { margin-bottom: 0; }
+    }
+
+    // Sidebar: label image + downloads
+    &__sidebar {
+        grid-area: sidebar;
+        position: sticky;
+        top: calc(var(--header-height, 80px) + var(--spacing-lg));
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-md);
+    }
+
+    &__label-image {
+        text-align: center;
+    }
+
+    &__label-img {
+        display: block;
+        width: 100%;
+        max-width: 180px;
+        height: auto;
+        margin: 0 auto;
+        border-radius: 2px;
+    }
+
+    &__downloads {
+        border-top: 1px solid var(--color-border);
+        padding-top: var(--spacing-md);
+    }
+
+    &__downloads-heading {
+        font-size: var(--font-size-small);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--color-text-muted);
+        margin: 0 0 var(--spacing-sm) 0;
+        font-family: var(--font-secondary, sans-serif);
+    }
+
+    &__download-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-xs);
+    }
+
+    &__download-item {
+        display: block;
+    }
+
+    &__download-link {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-xs);
+        font-size: var(--font-size-small);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--color-text);
+        text-decoration: none;
+        padding: var(--spacing-xs) 0;
+
+        &:hover {
+            color: var(--color-gold-primary, #C6A64B);
+        }
+    }
+
+    &__download-icon {
+        display: inline-flex;
+        align-items: center;
+        flex-shrink: 0;
+        width: 1.1rem;
+        height: 1.1rem;
+        color: var(--color-gold-dark, #9E7C2F);
+
+        svg {
+            width: 100%;
+            height: 100%;
+            display: block;
+            fill: currentColor;
+        }
+    }
+
+    // More from producer section
+    &__more {
+        .section-header {
+            margin-bottom: var(--spacing-lg);
+        }
+    }
+
+    &__back-link {
+        text-align: center;
+        margin-top: var(--spacing-xl);
+    }
 }

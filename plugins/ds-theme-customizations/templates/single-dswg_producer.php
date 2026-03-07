@@ -168,11 +168,26 @@ while (have_posts()) : the_post();
         $wines = new WP_Query([
             'post_type'      => 'dswg_wine',
             'posts_per_page' => -1,
-            'meta_query'     => [[
-                'key'     => 'dswg_producer_id',
-                'value'   => get_the_ID(),
-                'compare' => '=',
-            ]],
+            'meta_query'     => [
+                'relation' => 'AND',
+                [
+                    'key'     => 'dswg_producer_id',
+                    'value'   => get_the_ID(),
+                    'compare' => '=',
+                ],
+                [
+                    'relation' => 'OR',
+                    [
+                        'key'     => 'dswg_wine_active',
+                        'value'   => '1',
+                        'compare' => '=',
+                    ],
+                    [
+                        'key'     => 'dswg_wine_active',
+                        'compare' => 'NOT EXISTS',
+                    ],
+                ],
+            ],
             'orderby' => 'title',
             'order'   => 'ASC',
         ]);

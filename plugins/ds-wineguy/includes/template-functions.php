@@ -23,10 +23,23 @@ function dswg_get_producer_wines($producer_id) {
         'orderby' => 'title',
         'order' => 'ASC',
         'meta_query' => [
+            'relation' => 'AND',
             [
                 'key' => 'dswg_producer_id',
                 'value' => $producer_id,
-            ]
+            ],
+            [
+                'relation' => 'OR',
+                [
+                    'key'     => 'dswg_wine_active',
+                    'value'   => '1',
+                    'compare' => '=',
+                ],
+                [
+                    'key'     => 'dswg_wine_active',
+                    'compare' => 'NOT EXISTS',
+                ],
+            ],
         ],
     ];
     
