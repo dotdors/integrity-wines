@@ -449,9 +449,31 @@ integrity-wines/
 41. Wine single template: `single-dswg_wine.php` in `ds-theme-customizations/templates/` — three-column grid (bottle | details | sidebar)
 42. SVG download icons in `ds-theme-customizations/assets/images/`: `icon-bottle.svg`, `icon-document.svg`, `icon-label.svg` — `currentColor` fill, inlined via `dsp_inline_svg()` helper in template
 43. Bottle image: `mix-blend-mode: multiply` on `__bottle-img` + `radial-gradient(circle, #ffffff 45%, transparent 55%)` on `__bottle` div — sharp circle alt: `radial-gradient(circle, #ffffff 55%, transparent 55%)`
-44. `admin/wine-list.php` — wine list view columns, filter dropdowns, bulk actions; loaded via `ds-wineguy.php`
+45. **Wine card redesign (March 2026):** Cards are now transparent/floating — no box, no shadow. `.wine-card__bottle` holds a `radial-gradient` white circle (50% stop, sharp edge) with `mix-blend-mode: multiply` on the bottle image. `aspect-ratio: 2/3` on the bottle div ensures the circle is portrait-proportioned. `.wine-card__info` holds centered title (wine-red) and subtitle (vintage · type). NO transforms on bottle or image — transforms create isolation stacking context and break `mix-blend-mode`. Hover effect is circle expansion (50→55%) via background swap only.
+
+46. **Wine card active state:** `.wine-card--active` applies `filter: grayscale(0.5)` to `.wine-card__bottle-img`. Gold ring approach was abandoned (can't outline a gradient background cleanly).
+
+47. **Wine card hover/focus overrides:** `_accessibility.less` and `_modern-features.less` both apply `transform + box-shadow` to `.wine-card` via `:is(:hover,:focus-within)`. Wine cards opt out via overrides in `_wine-components.less`. This works because `_wine-components.less` now loads **after** both files (see item 48).
+
+48. **CSS import order in `plugin-style.less`:** `_wine-components.less` moved to position 7, after `_accessibility.less` (5) and `_modern-features.less` (6). This ensures wine-card overrides win the cascade without specificity hacks.
+
+49. **Wine card row-panel expand (producer page):** Clicking a wine card on the producer page injects a `.wine-row-panel` element with `grid-column: 1/-1` after the last card in the same visual row (detected via `offsetTop` comparison). Panel has three columns: bottle (circle treatment) | details (varietal, tasting notes trimmed to 40 words, "View Full Details" link) | sidebar (wine type, ABV, downloads). A gold caret (`::before`) points back to the active card using `--caret-x` CSS variable set by JS. Card data stored in `<template class="wine-card__panel-data">` — invisible until JS clones it. JS lives in `single-dswg_producer.php` inline script.
+
+50. **`dsp_inline_svg_producer()` helper:** Defined at the top of `single-dswg_producer.php` (with `function_exists` guard), not inside conditional blocks. Used for SVG icons in both wine panel downloads and producer connect downloads. Must remain at top level of the while loop — not nested inside `if ($wines->have_posts())`.
+
+51. **Producer connect section — downloads:** `dswg_producer_files` meta is now loaded and parsed in `single-dswg_producer.php`. Downloads appear as a new `producer-connect__col--downloads` column using `producer-connect__download-link/icon/list` styles (same pattern as `wine-single__` downloads, defined in `_components.less`). Socials moved into the contact column with a `border-top` divider, eliminating the separate social column.
+
+52. **Single wine `$has_sidebar` fix:** Was only checking `$label_id || $bottle_full || !empty($files)` — missed `$wine_type`, `$producer`, `$producer_loc`, `$alcohol`. Now matches the actual sidebar render condition so `wine-single__layout--no-sidebar` is not incorrectly applied.
+
+53. **"More from Producer" grid (single wine page):** Updated to use the same `.wine-card__bottle` / `.wine-card__info` markup as the producer page. Cards are `<a>` tags (not buttons) so click goes directly to the single wine page. No expand panel. `section--alt` removed from this section. Button text changed to "← Explore [Producer Name]".
+
+54. **Story section expanded layout:** When `.story__body.is-expanded` is toggled, `.story__grid` switches to `grid-template-columns: 1fr` (text full-width above, photos full-width below) and `.story__photos .photo-grid` switches to `repeat(auto-fill, minmax(220px, 1fr))` multi-column grid. Pure CSS — no JS changes. The `photo-grid--single-column` class stays on the HTML element but is overridden by the expanded-state selector.
+
+55. **`--wine-card-width` variable:** Changed to `235px` (was `240px`) in `_variables.less`.
+
+56. **`.producer-archive__results.section` padding fix:** Was `padding: var(--spacing-2xl) 0` which zeroed the left/right padding inherited from `.section:not(.fullwidth)`. Changed to `padding-top` + `padding-bottom` only.
 
 ---
 
-*Last updated: March 6, 2026*
-*Plugin version: ds-wineguy v1.1, ds-theme-customizations v1.1*
+*Last updated: March 9, 2026*
+*Plugin version: ds-wineguy v1.1, ds-theme-customizations v1.2*
