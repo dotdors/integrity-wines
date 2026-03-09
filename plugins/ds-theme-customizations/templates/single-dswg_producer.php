@@ -38,11 +38,33 @@ while (have_posts()) : the_post();
     $address       = get_post_meta(get_the_ID(), 'dswg_address', true);
     $latitude      = get_post_meta(get_the_ID(), 'dswg_latitude', true);
     $longitude     = get_post_meta(get_the_ID(), 'dswg_longitude', true);
+    $producer_files_str = get_post_meta(get_the_ID(), 'dswg_producer_files', true);
+
+    // Build producer files list
+    $producer_files = [];
+    if ($producer_files_str) {
+        foreach (array_filter(array_map('trim', explode(',', $producer_files_str))) as $fid) {
+            $furl  = wp_get_attachment_url($fid);
+            $fname = get_the_title($fid);
+            if ($furl) $producer_files[] = ['url' => $furl, 'name' => $fname ?: 'Download'];
+        }
+    }
     $hero_image    = get_the_post_thumbnail_url(get_the_ID(), 'full');
+
+    // SVG icon helper — defined here so it's available everywhere in this template
+    if (!function_exists('dsp_inline_svg_producer')) {
+        function dsp_inline_svg_producer($filename) {
+            $path = plugin_dir_path(__FILE__) . '../assets/images/' . $filename;
+            if (file_exists($path)) {
+                echo file_get_contents($path); // phpcs:ignore
+            }
+        }
+    }
 
     $has_connect = $contact_email || $contact_phone || $website
                    || $instagram || $facebook || $twitter
-                   || $address || ($latitude && $longitude);
+                   || $address || ($latitude && $longitude)
+                   || !empty($producer_files);
     ?>
 
     <!-- HERO -->
@@ -200,102 +222,144 @@ while (have_posts()) : the_post();
                     <h2 class="section-header__title">The Wines</h2>
                 </div>
 
-                <div class="wine-grid">
+                <div class="wine-grid" id="wine-grid">
                     <?php
                     $placeholder_url = WP_PLUGIN_URL . '/ds-wineguy/assets/images/wineplaceholder.png';
 
                     while ($wines->have_posts()) : $wines->the_post();
-                        $wine_id    = get_the_ID();
-                        $vintage    = get_post_meta($wine_id, 'dswg_vintage', true);
-                        $varietal   = get_post_meta($wine_id, 'dswg_varietal', true);
-                        $alcohol    = get_post_meta($wine_id, 'dswg_alcohol', true);
-                        $wine_files = get_post_meta($wine_id, 'dswg_wine_files', true);
-                        $excerpt    = get_the_excerpt();
-                        $wine_types = get_the_terms($wine_id, 'dswg_wine_type');
-                        $wine_type  = ($wine_types && !is_wp_error($wine_types)) ? $wine_types[0] : null;
-                        $type_class = $wine_type ? 'wine-card__type--' . strtolower(str_replace([' ', 'é'], ['-', 'e'], $wine_type->name)) : '';
-                        $has_expand = $varietal || $alcohol || $excerpt || $wine_files;
+                        $wine_id      = get_the_ID();
+                        $vintage      = get_post_meta($wine_id, 'dswg_vintage',   true);
+                        $varietal     = get_post_meta($wine_id, 'dswg_varietal',  true);
+                        $alcohol      = get_post_meta($wine_id, 'dswg_alcohol',   true);
+                        $wine_files   = get_post_meta($wine_id, 'dswg_wine_files', true);
+                        $label_id     = get_post_meta($wine_id, 'dswg_wine_logo', true);
+                        $excerpt      = get_the_excerpt();
+                        $bottle_url   = get_the_post_thumbnail_url($wine_id, 'dswg-bottle-large');
+                        $bottle_full  = get_the_post_thumbnail_url($wine_id, 'full');
+                        $label_url    = $label_id ? wp_get_attachment_url($label_id) : null;
+                        $wine_types   = get_the_terms($wine_id, 'dswg_wine_type');
+                        $wine_type    = ($wine_types && !is_wp_error($wine_types)) ? $wine_types[0] : null;
+
+                        // Build subtitle: "2024 · Red Wine" — only parts that exist
+                        $subtitle_parts = array_filter([$vintage, $wine_type ? $wine_type->name : '']);
+                        $subtitle = implode(' · ', $subtitle_parts);
+
+                        // Trim tasting notes to ~40 words
+                        $tasting_notes = $excerpt ? wp_trim_words($excerpt, 40, '&hellip;') : '';
+
+                        // Build file list (same pattern as single wine template)
+                        $files = [];
+                        if ($wine_files) {
+                            foreach (array_filter(array_map('trim', explode(',', $wine_files))) as $fid) {
+                                $furl  = wp_get_attachment_url($fid);
+                                $fname = get_the_title($fid);
+                                if ($furl) $files[] = ['id' => $fid, 'url' => $furl, 'name' => $fname ?: 'Download'];
+                            }
+                        }
+
+                        $has_expand = $varietal || $alcohol || $tasting_notes || !empty($files) || $bottle_url || $bottle_full || $label_url;
                     ?>
 
-                    <article class="wine-card <?php echo $has_expand ? 'wine-card--expandable' : ''; ?>">
+                    <article class="wine-card <?php echo $has_expand ? 'wine-card--expandable' : ''; ?>"
+                             data-wine-id="<?php echo esc_attr($wine_id); ?>">
 
                         <button type="button" class="wine-card__toggle" aria-expanded="false"
-                            <?php if (!$has_expand) : ?>style="cursor:default;"<?php endif; ?>>
+                                <?php if (!$has_expand) : ?>style="cursor:default;"<?php endif; ?>>
 
-                            <div class="wine-card__image">
-                                <?php if (has_post_thumbnail()) : ?>
-                                    <?php the_post_thumbnail('dswg-bottle-large'); ?>
-                                <?php else : ?>
-                                    <img src="<?php echo esc_url($placeholder_url); ?>"
-                                         alt="<?php echo esc_attr(get_the_title()); ?>"
-                                         class="wine-card__placeholder">
-                                <?php endif; ?>
+                            <div class="wine-card__bottle">
+                                <img src="<?php echo esc_url($bottle_url ?: $placeholder_url); ?>"
+                                     alt="<?php echo esc_attr(get_the_title()); ?>"
+                                     class="wine-card__bottle-img<?php echo !$bottle_url ? ' wine-card__bottle-img--placeholder' : ''; ?>">
                             </div>
 
-                            <div class="wine-card__content">
+                            <div class="wine-card__info">
                                 <h3 class="wine-card__title"><?php the_title(); ?></h3>
-                                <div class="wine-card__meta-row">
-                                    <?php if ($vintage) : ?>
-                                        <span class="wine-card__vintage"><?php echo esc_html($vintage); ?></span>
-                                    <?php endif; ?>
-                                    <?php if ($wine_type) : ?>
-                                        <span class="wine-card__type <?php echo esc_attr($type_class); ?>">
-                                            <?php echo esc_html($wine_type->name); ?>
-                                        </span>
-                                    <?php endif; ?>
-                                </div>
-                                <?php if ($has_expand) : ?>
-                                    <span class="wine-card__expand-hint" aria-hidden="true">More info ↓</span>
+                                <?php if ($subtitle) : ?>
+                                    <p class="wine-card__subtitle"><?php echo esc_html($subtitle); ?></p>
                                 <?php endif; ?>
                             </div>
 
                         </button>
 
                         <?php if ($has_expand) : ?>
-                        <div class="wine-card__expand" hidden>
-                            <div class="wine-card__expand-inner">
+                        <template class="wine-card__panel-data">
+                            <div class="wine-panel__bottle">
+                                <img src="<?php echo esc_url($bottle_url ?: $placeholder_url); ?>"
+                                     alt="<?php echo esc_attr(get_the_title()); ?>"
+                                     class="wine-panel__bottle-img<?php echo !$bottle_url ? ' wine-panel__bottle-img--placeholder' : ''; ?>">
+                            </div>
+                            <div class="wine-panel__details">
+                                <h3 class="wine-panel__title"><?php the_title(); ?></h3>
+                                <?php if ($vintage || ($wine_type && $wine_type->name)) : ?>
+                                    <p class="wine-panel__subtitle"><?php echo esc_html($subtitle); ?></p>
+                                <?php endif; ?>
 
-                                <?php if ($varietal || $alcohol) : ?>
-                                <dl class="wine-card__details">
-                                    <?php if ($varietal) : ?>
-                                        <dt>Varietal</dt>
-                                        <dd><?php echo esc_html($varietal); ?></dd>
+                                <?php if ($varietal) : ?>
+                                <div class="wine-panel__field">
+                                    <span class="wine-panel__eyebrow">Varietal / Blend</span>
+                                    <p class="wine-panel__field-value"><?php echo esc_html($varietal); ?></p>
+                                </div>
+                                <?php endif; ?>
+
+                                <?php if ($tasting_notes) : ?>
+                                <div class="wine-panel__field">
+                                    <span class="wine-panel__eyebrow">Tasting Notes</span>
+                                    <p class="wine-panel__field-value"><?php echo esc_html($tasting_notes); ?></p>
+                                </div>
+                                <?php endif; ?>
+
+                                <a href="<?php the_permalink(); ?>" class="button button--secondary wine-panel__full-link">
+                                    View Full Details &rarr;
+                                </a>
+                            </div>
+                            <div class="wine-panel__sidebar">
+                                <?php if ($wine_type || $alcohol) : ?>
+                                <div class="wine-panel__meta">
+                                    <?php if ($wine_type) : ?>
+                                        <span class="wine-panel__meta-type"><?php echo esc_html($wine_type->name); ?></span>
                                     <?php endif; ?>
                                     <?php if ($alcohol) : ?>
-                                        <dt>Alcohol</dt>
-                                        <dd><?php echo esc_html($alcohol); ?>%</dd>
+                                        <p class="wine-panel__meta-abv"><?php echo esc_html($alcohol); ?>% ABV</p>
                                     <?php endif; ?>
-                                </dl>
+                                </div>
                                 <?php endif; ?>
 
-                                <?php if ($excerpt) : ?>
-                                    <p class="wine-card__excerpt"><?php echo esc_html($excerpt); ?></p>
+                                <?php if ($bottle_full || $label_url || !empty($files)) : ?>
+                                <div class="wine-panel__downloads">
+                                    <p class="wine-panel__downloads-heading">Download</p>
+                                    <ul class="wine-panel__download-list">
+                                        <?php if ($bottle_full) : ?>
+                                        <li class="wine-panel__download-item">
+                                            <a href="<?php echo esc_url($bottle_full); ?>"
+                                               class="wine-panel__download-link" target="_blank" rel="noopener" download>
+                                                <span class="wine-panel__download-icon"><?php dsp_inline_svg_producer('icon-bottle.svg'); ?></span>
+                                                Bottle Image
+                                            </a>
+                                        </li>
+                                        <?php endif; ?>
+                                        <?php if ($label_url) : ?>
+                                        <li class="wine-panel__download-item">
+                                            <a href="<?php echo esc_url($label_url); ?>"
+                                               class="wine-panel__download-link" target="_blank" rel="noopener" download>
+                                                <span class="wine-panel__download-icon"><?php dsp_inline_svg_producer('icon-label.svg'); ?></span>
+                                                Label Image
+                                            </a>
+                                        </li>
+                                        <?php endif; ?>
+                                        <?php foreach ($files as $f) : ?>
+                                        <li class="wine-panel__download-item">
+                                            <a href="<?php echo esc_url($f['url']); ?>"
+                                               class="wine-panel__download-link" target="_blank" rel="noopener">
+                                                <span class="wine-panel__download-icon"><?php dsp_inline_svg_producer('icon-document.svg'); ?></span>
+                                                <?php echo esc_html($f['name']); ?>
+                                            </a>
+                                        </li>
+                                        <?php endforeach; ?>
+                                    </ul>
+                                </div>
                                 <?php endif; ?>
-
-                                <?php if ($wine_files) : ?>
-                                <ul class="download-list wine-card__files">
-                                    <?php foreach (explode(',', $wine_files) as $file_id) :
-                                        $file_id   = trim($file_id);
-                                        if (!$file_id) continue;
-                                        $file_url  = wp_get_attachment_url($file_id);
-                                        $file_name = get_the_title($file_id);
-                                        if ($file_url) : ?>
-                                    <li class="download-item">
-                                        <a href="<?php echo esc_url($file_url); ?>" class="download-link"
-                                           target="_blank" rel="noopener">
-                                            <?php echo esc_html($file_name ?: 'Download'); ?>
-                                        </a>
-                                    </li>
-                                    <?php endif; endforeach; ?>
-                                </ul>
-                                <?php endif; ?>
-
-                                <a href="<?php the_permalink(); ?>" class="button button--secondary wine-card__full-link">
-                                    View full details →
-                                </a>
-
                             </div>
-                        </div>
+                        </template>
                         <?php endif; ?>
 
                     </article>
@@ -330,7 +394,7 @@ while (have_posts()) : the_post();
                         <?php endif; ?>
                     </div>
 
-                    <?php if ($contact_email || $contact_phone || $website) : ?>
+                    <?php if ($contact_email || $contact_phone || $website || $instagram || $facebook || $twitter) : ?>
                     <div class="producer-connect__col">
                         <?php if ($website) : ?>
                             <p><a href="<?php echo esc_url($website); ?>" target="_blank" rel="noopener">
@@ -343,11 +407,8 @@ while (have_posts()) : the_post();
                         <?php if ($contact_phone) : ?>
                             <p><a href="tel:<?php echo esc_attr($contact_phone); ?>"><?php echo esc_html($contact_phone); ?></a></p>
                         <?php endif; ?>
-                    </div>
-                    <?php endif; ?>
 
-                    <?php if ($instagram || $facebook || $twitter) : ?>
-                    <div class="producer-connect__col producer-connect__col--social">
+                        <?php if ($instagram || $facebook || $twitter) : ?>
                         <div class="producer-connect__social">
                             <?php if ($instagram) : ?>
                                 <a href="<?php echo esc_url($instagram); ?>" target="_blank" rel="noopener" aria-label="Instagram">Instagram</a>
@@ -359,6 +420,25 @@ while (have_posts()) : the_post();
                                 <a href="<?php echo esc_url($twitter); ?>" target="_blank" rel="noopener" aria-label="Twitter/X">Twitter/X</a>
                             <?php endif; ?>
                         </div>
+                        <?php endif; ?>
+                    </div>
+                    <?php endif; ?>
+
+                    <?php if (!empty($producer_files)) : ?>
+                    <div class="producer-connect__col producer-connect__col--downloads">
+                        <p class="producer-connect__downloads-heading">Downloads</p>
+                        <ul class="producer-connect__download-list">
+                            <?php foreach ($producer_files as $f) : ?>
+                            <li class="producer-connect__download-item">
+                                <a href="<?php echo esc_url($f['url']); ?>"
+                                   class="producer-connect__download-link"
+                                   target="_blank" rel="noopener">
+                                    <span class="producer-connect__download-icon"><?php dsp_inline_svg_producer('icon-document.svg'); ?></span>
+                                    <?php echo esc_html($f['name']); ?>
+                                </a>
+                            </li>
+                            <?php endforeach; ?>
+                        </ul>
                     </div>
                     <?php endif; ?>
 
@@ -409,43 +489,118 @@ while (have_posts()) : the_post();
             }
         }
 
-        // Wine card expand/collapse
-        document.querySelectorAll('.wine-card--expandable .wine-card__toggle').forEach(function(btn) {
-            btn.addEventListener('click', function() {
-                var card   = btn.closest('.wine-card');
-                var panel  = card.querySelector('.wine-card__expand');
-                var hint   = btn.querySelector('.wine-card__expand-hint');
-                var isOpen = btn.getAttribute('aria-expanded') === 'true';
+        // Wine card row-panel expand
+        (function() {
+            var grid       = document.getElementById('wine-grid');
+            var activeCard = null;
+            var rowPanel   = null;
 
-                if (isOpen) {
-                    panel.style.maxHeight = panel.scrollHeight + 'px';
-                    requestAnimationFrame(function() { panel.style.maxHeight = '0'; });
-                    btn.setAttribute('aria-expanded', 'false');
-                    card.classList.remove('wine-card--open');
-                    if (hint) hint.textContent = 'More info ↓';
-                    panel.addEventListener('transitionend', function handler() {
-                        panel.hidden = true;
-                        panel.style.maxHeight = '';
-                        panel.removeEventListener('transitionend', handler);
-                    });
-                } else {
-                    panel.hidden = false;
-                    panel.style.maxHeight = '0';
+            if (!grid) return;
+
+            function getCardCenterX(card) {
+                var gridRect = grid.getBoundingClientRect();
+                var cardRect = card.getBoundingClientRect();
+                return cardRect.left - gridRect.left + cardRect.width / 2;
+            }
+
+            function getCardsInSameRow(card) {
+                var top = card.getBoundingClientRect().top;
+                return Array.from(grid.querySelectorAll('.wine-card')).filter(function(c) {
+                    return Math.abs(c.getBoundingClientRect().top - top) < 10;
+                });
+            }
+
+            function getLastCardInRow(card) {
+                var row = getCardsInSameRow(card);
+                return row[row.length - 1];
+            }
+
+            function buildPanel(card) {
+                var tpl  = card.querySelector('.wine-card__panel-data');
+                if (!tpl) return null;
+
+                var panel = document.createElement('div');
+                panel.className = 'wine-row-panel';
+                panel.setAttribute('role', 'region');
+
+                var inner = document.createElement('div');
+                inner.className = 'wine-row-panel__inner';
+                inner.appendChild(document.importNode(tpl.content, true));
+                panel.appendChild(inner);
+
+                return panel;
+            }
+
+            function closePanel(animate) {
+                if (!rowPanel) return;
+                if (activeCard) {
+                    activeCard.classList.remove('wine-card--active');
+                    activeCard.querySelector('.wine-card__toggle').setAttribute('aria-expanded', 'false');
+                }
+                activeCard = null;
+                if (!animate) {
+                    rowPanel.remove();
+                    rowPanel = null;
+                    return;
+                }
+                rowPanel.classList.remove('wine-row-panel--open');
+                rowPanel.addEventListener('transitionend', function handler() {
+                    rowPanel.removeEventListener('transitionend', handler);
+                    if (rowPanel) { rowPanel.remove(); rowPanel = null; }
+                });
+            }
+
+            function openPanel(card) {
+                var lastCard = getLastCardInRow(card);
+                var panel    = buildPanel(card);
+                if (!panel) return;
+
+                // Position caret
+                var centerX = getCardCenterX(card);
+                var gridW   = grid.offsetWidth;
+                panel.style.setProperty('--caret-x', (centerX / gridW * 100).toFixed(2) + '%');
+
+                lastCard.after(panel);
+                rowPanel   = panel;
+                activeCard = card;
+
+                card.classList.add('wine-card--active');
+                card.querySelector('.wine-card__toggle').setAttribute('aria-expanded', 'true');
+
+                // Trigger transition
+                requestAnimationFrame(function() {
                     requestAnimationFrame(function() {
-                        requestAnimationFrame(function() {
-                            panel.style.maxHeight = panel.scrollHeight + 'px';
-                        });
+                        panel.classList.add('wine-row-panel--open');
+                        panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
                     });
-                    btn.setAttribute('aria-expanded', 'true');
-                    card.classList.add('wine-card--open');
-                    if (hint) hint.textContent = 'Less info ↑';
-                    panel.addEventListener('transitionend', function handler() {
-                        panel.style.maxHeight = 'none';
-                        panel.removeEventListener('transitionend', handler);
-                    });
+                });
+            }
+
+            grid.addEventListener('click', function(e) {
+                var btn = e.target.closest('.wine-card--expandable .wine-card__toggle');
+                if (!btn) return;
+                var card = btn.closest('.wine-card');
+
+                if (activeCard === card) {
+                    closePanel(true);
+                    return;
+                }
+
+                // If a panel is open for a different row, close without animation then open new
+                if (rowPanel) {
+                    closePanel(false);
+                }
+
+                openPanel(card);
+            });
+
+            // Close panel when clicking outside the grid
+            document.addEventListener('click', function(e) {
+                if (rowPanel && !grid.contains(e.target)) {
+                    closePanel(true);
                 }
             });
-        });
+        })();
     })();
     </script>
 

@@ -90,8 +90,8 @@
   overflow: visible;
   transition: var(--transition);
 
-  // Wins against _accessibility.less and _modern-features.less shared card rules
-  // because _wine-components.less now loads after both (see plugin-style.less import order)
+  // Explicit overrides — compiled plugin-style.css may still have old hover rules
+  // Also overrides _modern-features.less :is(:hover,:focus-within) and _accessibility.less :focus-within
   &:hover,
   &:focus-within,
   &:is(:hover, :focus-within) {
@@ -165,7 +165,7 @@
   text-align: center;
 }
 
-.wine-card .wine-card__title {
+.wine-card__title {
   margin: 0 0 var(--spacing-xs) 0;
   font-size: var(--font-size-large);
   color: var(--color-wine-red);
@@ -810,8 +810,7 @@
 
 
 .producer-archive__results.section {
-    padding-top: var(--spacing-2xl);
-    padding-bottom: var(--spacing-2xl);
+    padding: var(--spacing-2xl) 0;
 
     // Add a gentle transition so the opacity flicker during AJAX is smooth
     .container {

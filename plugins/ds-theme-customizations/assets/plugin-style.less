@@ -18,14 +18,16 @@
 // 4. Base Components (buttons, cards, forms, nav)
 @import "_components.less";
 
-// 5. Wine-Specific Components (producer cards, wine cards, etc.)
-@import "_wine-components.less";
-
-// 6. Accessibility (reduced motion, focus states)
+// 5. Accessibility (reduced motion, focus states)
 @import "_accessibility.less";
 
-// 7. Modern Features (container queries, :has(), etc.)
+// 6. Modern Features (container queries, :has(), etc.)
 @import "_modern-features.less";
+
+// 7. Wine-Specific Components (producer cards, wine cards, etc.)
+// Must come after _accessibility.less and _modern-features.less so wine-card
+// overrides for hover/focus win the cascade without hacks.
+@import "_wine-components.less";
 
 // 8. Design Variants (body class scoped — for demo switcher)
 // @import "_design-v2.less"; // Merged into base files March 2026 — see _design-v2.less for notes

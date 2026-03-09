@@ -55,7 +55,7 @@ while ( have_posts() ) : the_post();
     }
 
     $label_url   = $label_id ? wp_get_attachment_url( $label_id ) : null;
-    $has_sidebar = $label_id || $bottle_full || ! empty( $files );
+    $has_sidebar = $wine_type || $producer || $producer_loc || $alcohol || $label_id || $bottle_full || ! empty( $files );
     $placeholder_url = WP_PLUGIN_URL . '/ds-wineguy/assets/images/wineplaceholder.png';
     ?>
 
@@ -230,7 +230,7 @@ while ( have_posts() ) : the_post();
             ]);
         ?>
         <?php if ( ! empty( $more_wines ) ) : ?>
-        <section class="section section--alt wine-single__more">
+        <section class="section wine-single__more">
             <div class="container container--narrow">
 
                 <div class="section-header">
@@ -245,49 +245,32 @@ while ( have_posts() ) : the_post();
 
                 <div class="wine-grid">
                     <?php foreach ( $more_wines as $more_wine ) :
-                        $mw_id       = $more_wine->ID;
-                        $mw_vintage  = get_post_meta( $mw_id, 'dswg_vintage',  true );
-                        $mw_varietal = get_post_meta( $mw_id, 'dswg_varietal', true );
-                        $mw_alcohol  = get_post_meta( $mw_id, 'dswg_alcohol',  true );
-                        $mw_files    = get_post_meta( $mw_id, 'dswg_wine_files', true );
-                        $mw_excerpt  = get_the_excerpt( $mw_id );
-                        $mw_types    = get_the_terms( $mw_id, 'dswg_wine_type' );
-                        $mw_type     = ( $mw_types && ! is_wp_error( $mw_types ) ) ? $mw_types[0] : null;
-                        $mw_type_class = $mw_type
-                            ? 'wine-card__type--' . strtolower( str_replace( [' ', 'é'], ['-', 'e'], $mw_type->name ) )
-                            : '';
-                        $mw_has_expand = $mw_varietal || $mw_alcohol || $mw_excerpt || $mw_files;
+                        $mw_id      = $more_wine->ID;
+                        $mw_vintage = get_post_meta( $mw_id, 'dswg_vintage', true );
+                        $mw_types   = get_the_terms( $mw_id, 'dswg_wine_type' );
+                        $mw_type    = ( $mw_types && ! is_wp_error( $mw_types ) ) ? $mw_types[0] : null;
+                        $mw_bottle  = get_the_post_thumbnail_url( $mw_id, 'dswg-bottle-large' );
+
+                        $mw_subtitle_parts = array_filter( [ $mw_vintage, $mw_type ? $mw_type->name : '' ] );
+                        $mw_subtitle = implode( ' · ', $mw_subtitle_parts );
                     ?>
-                    <article class="wine-card <?php echo $mw_has_expand ? 'wine-card--expandable' : ''; ?>">
+                    <article class="wine-card">
+                        <a href="<?php echo esc_url( get_permalink( $mw_id ) ); ?>" class="wine-card__toggle">
 
-                        <a href="<?php echo esc_url( get_permalink( $mw_id ) ); ?>" class="wine-card__link-wrap">
+                            <div class="wine-card__bottle">
+                                <img src="<?php echo esc_url( $mw_bottle ?: $placeholder_url ); ?>"
+                                     alt="<?php echo esc_attr( $more_wine->post_title ); ?>"
+                                     class="wine-card__bottle-img<?php echo ! $mw_bottle ? ' wine-card__bottle-img--placeholder' : ''; ?>">
+                            </div>
 
-                            <div class="wine-card__image">
-                                <?php if ( has_post_thumbnail( $mw_id ) ) : ?>
-                                    <?php echo get_the_post_thumbnail( $mw_id, 'dswg-bottle-large' ); ?>
-                                <?php else : ?>
-                                    <img src="<?php echo esc_url( $placeholder_url ); ?>"
-                                         alt="<?php echo esc_attr( $more_wine->post_title ); ?>"
-                                         class="wine-card__placeholder">
+                            <div class="wine-card__info">
+                                <h3 class="wine-card__title"><?php echo esc_html( $more_wine->post_title ); ?></h3>
+                                <?php if ( $mw_subtitle ) : ?>
+                                    <p class="wine-card__subtitle"><?php echo esc_html( $mw_subtitle ); ?></p>
                                 <?php endif; ?>
                             </div>
 
-                            <div class="wine-card__content">
-                                <h3 class="wine-card__title"><?php echo esc_html( $more_wine->post_title ); ?></h3>
-                                <div class="wine-card__meta-row">
-                                    <?php if ( $mw_vintage ) : ?>
-                                        <span class="wine-card__vintage"><?php echo esc_html( $mw_vintage ); ?></span>
-                                    <?php endif; ?>
-                                    <?php if ( $mw_type ) : ?>
-                                        <span class="wine-card__type <?php echo esc_attr( $mw_type_class ); ?>">
-                                            <?php echo esc_html( $mw_type->name ); ?>
-                                        </span>
-                                    <?php endif; ?>
-                                </div>
-                            </div>
-
                         </a>
-
                     </article>
                     <?php endforeach; ?>
                 </div><!-- .wine-grid -->
@@ -295,7 +278,7 @@ while ( have_posts() ) : the_post();
                 <p class="wine-single__back-link">
                     <a href="<?php echo esc_url( get_permalink( $producer_id ) ); ?>" class="button button--secondary">
                         <?php printf(
-                            esc_html__( '← View all %s wines', 'ds-wineguy' ),
+                            esc_html__( '← Explore %s', 'ds-wineguy' ),
                             esc_html( $producer->post_title )
                         ); ?>
                     </a>
