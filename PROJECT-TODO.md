@@ -201,6 +201,7 @@ All work tracked in GitHub: https://github.com/dotdors/integrity-wines
 ## KNOWN ISSUES / NOTES
 
 - **Design variants are demo-only scaffolding** — V1 has several "quick fix for demo" comments in the LESS. These need a proper pass once the design direction is confirmed.
+- **Mobile nav dead code** — The `===== MOBILE / SLIDEOUT NAV OVERRIDES =====` block at the top of the mobile nav section in `_components.less` (`:root` CSS vars, backdrop-filter on `.header--mobile-nav .header-nav`, cream nav link colors) predates the full-page overlay and applies to the old slide-in panel which is now permanently suppressed. Safe to audit and remove in a future CSS cleanup pass.
 - **`--footer-border` specificity** — `footer.css` scopes this variable to `.site-footer`, so body-level `--color-border` overrides don't cascade into it. Must always set `--footer-border` explicitly on `.site-footer` in variant files (already done in V1).
 - **Block editor section classes** — editors must manually add `section`, `section--narrow`, `fullwidth` CSS classes to block groups for the layout system to work. Document in client training.
 - **`.featured` nav class** — V1 green CTA nav button requires adding "featured" CSS class to the menu item in Appearance → Menus. Document in client training.

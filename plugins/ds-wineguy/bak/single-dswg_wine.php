@@ -29,9 +29,8 @@ while ( have_posts() ) : the_post();
     $vintage     = get_post_meta( $wine_id, 'dswg_vintage',     true );
     $varietal    = get_post_meta( $wine_id, 'dswg_varietal',    true );
     $alcohol     = get_post_meta( $wine_id, 'dswg_alcohol',     true );
-    $label_id      = get_post_meta( $wine_id, 'dswg_wine_logo',        true );
-    $label_back_id = get_post_meta( $wine_id, 'dswg_wine_label_back',  true );
-    $files_str     = get_post_meta( $wine_id, 'dswg_wine_files',       true );
+    $label_id    = get_post_meta( $wine_id, 'dswg_wine_logo',   true );
+    $files_str   = get_post_meta( $wine_id, 'dswg_wine_files',  true );
     $producer_id = get_post_meta( $wine_id, 'dswg_producer_id', true );
     $bottle_url  = get_the_post_thumbnail_url( $wine_id, 'dswg-bottle-large' );
     $bottle_full = get_the_post_thumbnail_url( $wine_id, 'full' ); // for download
@@ -55,9 +54,8 @@ while ( have_posts() ) : the_post();
         }
     }
 
-    $label_url      = $label_id      ? wp_get_attachment_url( $label_id )      : null;
-    $label_back_url = $label_back_id ? wp_get_attachment_url( $label_back_id ) : null;
-    $has_sidebar    = $wine_type || $producer || $producer_loc || $alcohol || $label_id || $label_back_id || $bottle_full || ! empty( $files );
+    $label_url   = $label_id ? wp_get_attachment_url( $label_id ) : null;
+    $has_sidebar = $wine_type || $producer || $producer_loc || $alcohol || $label_id || $bottle_full || ! empty( $files );
     $placeholder_url = WP_PLUGIN_URL . '/ds-wineguy/assets/images/wineplaceholder.png';
     ?>
 
@@ -166,19 +164,7 @@ while ( have_posts() ) : the_post();
                                        target="_blank" rel="noopener"
                                        download>
                                         <span class="wine-single__download-icon"><?php dsp_inline_svg( 'icon-label.svg' ); ?></span>
-                                        <?php _e( 'Label — Front', 'ds-wineguy' ); ?>
-                                    </a>
-                                </li>
-                                <?php endif; ?>
-
-                                <?php if ( $label_back_url ) : ?>
-                                <li class="wine-single__download-item">
-                                    <a href="<?php echo esc_url( $label_back_url ); ?>"
-                                       class="wine-single__download-link"
-                                       target="_blank" rel="noopener"
-                                       download>
-                                        <span class="wine-single__download-icon"><?php dsp_inline_svg( 'icon-label.svg' ); ?></span>
-                                        <?php _e( 'Label — Back', 'ds-wineguy' ); ?>
+                                        <?php _e( 'Label Image', 'ds-wineguy' ); ?>
                                     </a>
                                 </li>
                                 <?php endif; ?>
@@ -205,8 +191,6 @@ while ( have_posts() ) : the_post();
                             ] ); ?>
                         </div>
                         <?php endif; ?>
-
-
 
                     </div><!-- .wine-single__sidebar -->
                     <?php endif; ?>

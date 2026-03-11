@@ -29,23 +29,22 @@
                     <!-- Footer Logo -->
                     <div class="footer-logo">
                         <?php
-                        if (has_custom_logo()) {
-                            $logo_id = get_theme_mod('custom_logo');
-                            $url     = wp_get_attachment_image_url($logo_id, 'full');
-                            $alt     = get_post_meta($logo_id, '_wp_attachment_image_alt', true) ?: get_bloginfo('name');
-                            if ($url) {
-                                printf(
-                                    '<a href="%s" rel="home"><img src="%s" alt="%s" class="footer-logo__img" loading="lazy"></a>',
-                                    esc_url(home_url('/')),
-                                    esc_url($url),
-                                    esc_attr($alt)
-                                );
-                            }
+                        $logo_id  = (int) get_option( 'dsp_logo_full', 0 );
+                        $logo_url = $logo_id ? wp_get_attachment_image_url( $logo_id, 'full' ) : '';
+                        $logo_alt = $logo_id ? ( get_post_meta( $logo_id, '_wp_attachment_image_alt', true ) ?: get_bloginfo( 'name' ) ) : '';
+
+                        if ( $logo_url ) {
+                            printf(
+                                '<a href="%s" rel="home"><img src="%s" alt="%s" class="footer-logo__img" loading="lazy"></a>',
+                                esc_url( home_url( '/' ) ),
+                                esc_url( $logo_url ),
+                                esc_attr( $logo_alt )
+                            );
                         } else {
                             printf(
                                 '<a href="%s" class="footer-logo__text" rel="home">%s</a>',
-                                esc_url(home_url('/')),
-                                esc_html(get_bloginfo('name'))
+                                esc_url( home_url( '/' ) ),
+                                esc_html( get_bloginfo( 'name' ) )
                             );
                         }
                         ?>

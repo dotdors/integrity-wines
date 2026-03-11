@@ -452,28 +452,63 @@ function dswg_wine_details_callback($post) {
  * Wine Images Meta Box Callback
  */
 function dswg_wine_images_callback($post) {
-    $logo_id = get_post_meta($post->ID, 'dswg_wine_logo', true);
-    
+    $logo_id      = get_post_meta($post->ID, 'dswg_wine_logo',       true);
+    $label_back_id = get_post_meta($post->ID, 'dswg_wine_label_back', true);
     ?>
     <p><strong><?php _e('Bottle Image', 'ds-wineguy'); ?></strong></p>
     <p class="description"><?php _e('Use the "Featured Image" box to set the bottle image', 'ds-wineguy'); ?></p>
-    
+
     <hr style="margin: 15px 0;">
-    
-    <p><strong><?php _e('Wine Label', 'ds-wineguy'); ?></strong></p>
-    <div class="dswg-logo-preview">
+
+    <p><strong><?php _e('Label — Front', 'ds-wineguy'); ?></strong></p>
+    <div class="dswg-logo-preview" id="dswg_wine_logo_preview">
         <?php if ($logo_id) : ?>
             <?php echo wp_get_attachment_image($logo_id, 'thumbnail'); ?>
         <?php endif; ?>
     </div>
     <input type="hidden" id="dswg_wine_logo" name="dswg_wine_logo" value="<?php echo esc_attr($logo_id); ?>" />
     <p>
-        <button type="button" class="button dswg-upload-logo"><?php _e('Upload Logo', 'ds-wineguy'); ?></button>
+        <button type="button" class="button dswg-upload-label"
+                data-target="#dswg_wine_logo"
+                data-preview="#dswg_wine_logo_preview"
+                data-title="<?php esc_attr_e('Select Front Label', 'ds-wineguy'); ?>"
+                data-button="<?php esc_attr_e('Use as Front Label', 'ds-wineguy'); ?>">
+            <?php _e('Upload Front Label', 'ds-wineguy'); ?>
+        </button>
         <?php if ($logo_id) : ?>
-            <button type="button" class="button dswg-remove-logo"><?php _e('Remove Logo', 'ds-wineguy'); ?></button>
+            <button type="button" class="button dswg-remove-label"
+                    data-target="#dswg_wine_logo"
+                    data-preview="#dswg_wine_logo_preview">
+                <?php _e('Remove', 'ds-wineguy'); ?>
+            </button>
         <?php endif; ?>
     </p>
-    <p class="description"><?php _e('Producer logo or wine label logo', 'ds-wineguy'); ?></p>
+
+    <hr style="margin: 15px 0;">
+
+    <p><strong><?php _e('Label — Back', 'ds-wineguy'); ?></strong></p>
+    <div class="dswg-logo-preview" id="dswg_wine_label_back_preview">
+        <?php if ($label_back_id) : ?>
+            <?php echo wp_get_attachment_image($label_back_id, 'thumbnail'); ?>
+        <?php endif; ?>
+    </div>
+    <input type="hidden" id="dswg_wine_label_back" name="dswg_wine_label_back" value="<?php echo esc_attr($label_back_id); ?>" />
+    <p>
+        <button type="button" class="button dswg-upload-label"
+                data-target="#dswg_wine_label_back"
+                data-preview="#dswg_wine_label_back_preview"
+                data-title="<?php esc_attr_e('Select Back Label', 'ds-wineguy'); ?>"
+                data-button="<?php esc_attr_e('Use as Back Label', 'ds-wineguy'); ?>">
+            <?php _e('Upload Back Label', 'ds-wineguy'); ?>
+        </button>
+        <?php if ($label_back_id) : ?>
+            <button type="button" class="button dswg-remove-label"
+                    data-target="#dswg_wine_label_back"
+                    data-preview="#dswg_wine_label_back_preview">
+                <?php _e('Remove', 'ds-wineguy'); ?>
+            </button>
+        <?php endif; ?>
+    </p>
     <?php
 }
 
@@ -632,6 +667,7 @@ function dswg_save_wine_meta($post_id) {
         'dswg_varietal',
         'dswg_alcohol',
         'dswg_wine_logo',
+        'dswg_wine_label_back',
         'dswg_wine_files',
     ];
     

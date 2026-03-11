@@ -121,6 +121,10 @@
   &:focus-visible {
     outline: none;
   }
+
+  &:hover {
+    opacity: 1;
+  }
 }
 
 // Bottle area — 2:3 aspect ratio keeps circle correctly proportioned for portrait bottles
@@ -388,6 +392,7 @@
   overflow: hidden;
   transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
+  container-type: inline-size;
 
   // Caret pointing up toward the active card
   &::before {
@@ -424,26 +429,26 @@
   border: 1px solid var(--color-border);
   background: transparent;
 
-  @media (max-width: 800px) {
+  // Sidebar hidden below 675px — bottle + details fill the space
+  @container (max-width: 675px) {
     grid-template-columns: 140px 1fr;
-    grid-template-rows: auto auto;
 
     .wine-panel__sidebar {
-      grid-column: 2;
-      grid-row: 2;
+      display: none;
     }
   }
 
-  @media (max-width: 540px) {
+  // Single column below 400px — bottle also hidden
+  @container (max-width: 400px) {
     grid-template-columns: 1fr;
 
     .wine-panel__bottle { display: none; }
-    .wine-panel__sidebar { grid-column: 1; }
   }
 }
 
 // Panel: bottle image (circle treatment, same as card)
 .wine-panel__bottle {
+  aspect-ratio: 2 / 3;
   background: radial-gradient(circle, #ffffff 50%, transparent 50%);
   display: flex;
   align-items: center;
@@ -519,7 +524,8 @@
   display: flex;
   flex-direction: column;
   gap: var(--spacing-md);
-  min-width: 160px;
+  min-width: 0; // Allow grid cell to shrink — prevents long filenames from blowing out layout
+  width: 160px; // Fixed width instead, sidebar doesn't need to grow
 }
 
 .wine-panel__meta {
@@ -568,7 +574,7 @@
 
 .wine-panel__download-link {
   display: flex;
-  align-items: center;
+  align-items: flex-start; // Top-align icon when text wraps to second line
   gap: var(--spacing-xs);
   font-size: var(--font-size-small);
   text-transform: uppercase;
@@ -577,6 +583,7 @@
   color: var(--color-text);
   text-decoration: none;
   padding: var(--spacing-xs) 0;
+  word-break: break-word; // Prevent long filenames from overflowing
 
   &:hover { color: var(--color-gold-primary); }
 }
@@ -1023,22 +1030,22 @@
     // Three-column layout: bottle | details | sidebar
     &__layout {
         display: grid;
-        grid-template-columns: minmax(160px, 240px) 1fr 200px;
+        grid-template-columns: 34% 1fr 200px;
         grid-template-areas: "bottle details sidebar";
         gap: var(--spacing-xl);
         align-items: start;
 
         // No sidebar variant (no label, no files)
         &--no-sidebar {
-            grid-template-columns: minmax(160px, 240px) 1fr;
+            grid-template-columns: 34% 1fr;
             grid-template-areas: "bottle details";
         }
 
         @media (max-width: 900px) {
-            grid-template-columns: minmax(140px, 180px) 1fr;
+            grid-template-columns: 250px 1fr;
             grid-template-areas:
                 "bottle details"
-                "sidebar sidebar";
+                "bottle sidebar";
         }
 
         @media (max-width: 600px) {
@@ -1052,6 +1059,7 @@
 
     &__bottle {
         grid-area: bottle;
+        aspect-ratio: 2 / 3; // Constrains container so radial-gradient circle stays proportional
         // Sharp circle — soft fade alt: radial-gradient(circle, #ffffff 45%, transparent 55%)
         background: radial-gradient(circle, #ffffff 55%, transparent 55%);
         display: flex;
@@ -1062,8 +1070,7 @@
     &__bottle-img {
         display: block;
         width: 100%;
-        height: auto;
-        max-height: 520px;
+        height: 100%;  // Must match card pattern — height: auto lets image override aspect-ratio on parent
         object-fit: contain;
         mix-blend-mode: multiply; // blends white bg into gradient circle
 
@@ -1144,6 +1151,8 @@
 
         &:last-child {
             border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
         }
     }
 

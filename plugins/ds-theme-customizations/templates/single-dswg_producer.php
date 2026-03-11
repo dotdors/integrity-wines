@@ -162,9 +162,13 @@ while (have_posts()) : the_post();
 
                             <?php if ($gallery_ids) :
                                 $gallery_array = array_filter(explode(',', $gallery_ids));
-                                if ($gallery_array) : ?>
+                                if ($gallery_array) :
+                                    $photo_count = count($gallery_array);
+                                    $col_map = [1=>1, 2=>2, 3=>3, 4=>2, 5=>3, 6=>3, 7=>4, 8=>4, 9=>3];
+                                    $cols = $col_map[$photo_count] ?? 4;
+                                ?>
                             <div class="story__photos">
-                                <div class="photo-grid photo-grid--single-column">
+                                <div class="photo-grid photo-grid--single-column" style="--photo-cols: <?php echo $cols; ?>">
                                     <?php foreach ($gallery_array as $image_id) : ?>
                                         <div class="photo-grid__item">
                                             <?php echo wp_get_attachment_image(trim($image_id), 'dswg-producer-large'); ?>
@@ -567,11 +571,24 @@ while (have_posts()) : the_post();
                 card.classList.add('wine-card--active');
                 card.querySelector('.wine-card__toggle').setAttribute('aria-expanded', 'true');
 
-                // Trigger transition
+                // Trigger transition, then scroll so the open panel is visible.
+                // We wait for transitionend because the panel is height:0 when
+                // inserted — scrollIntoView at insertion time sees it as already
+                // in view and does nothing.
                 requestAnimationFrame(function() {
                     requestAnimationFrame(function() {
                         panel.classList.add('wine-row-panel--open');
-                        panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+                        panel.addEventListener('transitionend', function handler(e) {
+                            if (e.propertyName !== 'max-height') return;
+                            panel.removeEventListener('transitionend', handler);
+
+                            var header   = document.querySelector('.site-header');
+                            var headerH  = header ? header.offsetHeight : 0;
+                            var panelTop = panel.getBoundingClientRect().top + window.scrollY - headerH - 16;
+
+                            window.scrollTo({ top: panelTop, behavior: 'smooth' });
+                        });
                     });
                 });
             }

@@ -110,7 +110,8 @@ ds-age-verification (age gate + cookie popup)
 | Vintage | `dswg_vintage` | text | Year or "NV" |
 | Varietal/Blend | `dswg_varietal` | text | |
 | Alcohol % | `dswg_alcohol` | text | |
-| Wine Logo | `dswg_wine_logo` | int | Single attachment ID |
+| Wine Logo | `dswg_wine_logo` | int | Single attachment ID — front label |
+| Wine Label Back | `dswg_wine_label_back` | int | Single attachment ID — back label |
 | Wine Files | `dswg_wine_files` | string | Comma-separated attachment IDs (PDFs etc) |
 
 **Also available on Wines:**
@@ -473,7 +474,25 @@ integrity-wines/
 
 56. **`.producer-archive__results.section` padding fix:** Was `padding: var(--spacing-2xl) 0` which zeroed the left/right padding inherited from `.section:not(.fullwidth)`. Changed to `padding-top` + `padding-bottom` only.
 
+57. **Footer logo:** `footer.php` uses `get_option('dsp_logo_full', 0)` — same option as mobile nav overlay. Falls back to site name text if not set. Plugin CSS sets `.footer-logo { display: block; width: 250px }` and `.footer-logo__img { filter: none !important }` to suppress base theme dark-mode inversion and preserve full-color logo.
+
+58. **Footer CSS variables:** The plugin (`_variables.less`) previously redeclared all 11 `--footer-*` variables with hardcoded hex values, overriding the theme's properly-chained `var(--color-*)` defaults. That block was removed. Plugin now only sets the two intentional overrides: `--footer-colophon-bg: var(--color-wine-red)` and `--footer-colophon-text: var(--color-surface, #ffffff)`. All other footer colors inherit from `footer.css` correctly.
+
+59. **Wine attachment importer:** `plugins/ds-wineguy/admin/wine-images-importer.php`. SFTP files to `wp-content/uploads/wine-imports/` (or subdirectories — scanned recursively via `RecursiveDirectoryIterator`). Filename conventions (case-insensitive, spaces around dash tolerated): `IW####-bottle.*` → featured image; `IW####-label.jpg`, `IW####-label-front.jpg`, `IW####-front-label.jpg`, `IW#### - front label.jpg` → `dswg_wine_logo`; `IW####-label-back.jpg`, `IW####-back-label.jpg`, `IW#### - back label.jpg` → `dswg_wine_label_back`; `IW####-techsheet.*`, `IW#### - tech sheet.*` → `dswg_wine_files`. Preview table shows relative path (including subdirectory). Default: skip if field already has value. "Overwrite existing" checkbox to replace. Tech sheets always appended.
+
+60. **Wine CSV exporter:** `plugins/ds-wineguy/admin/wine-exporter.php`. Submenu: Wine Producers → Export Wines. Uses `admin_post_dswg_export_wines` hook (points to `admin-post.php`) — not `admin_init` — so headers are clean before output. Columns match import format exactly: Wine Name, Producer, Inv Number, Vintage, Varietal, Alcohol, Wine Type, Description, Active, Bottle Image (Y/N), Label — Front (Y/N), Label — Back (Y/N), Files (comma-separated filenames). Sorted by Inv Number ASC. UTF-8 BOM included so Excel opens without encoding issues.
+
+61. **Bottle image aspect ratio:** `aspect-ratio: 2/3` must be set on the *container* (`.wine-card__bottle`, `.wine-panel__bottle`, `.wine-single__bottle`), and the image inside must use `height: 100%` (not `height: auto`). With `height: auto` the image's natural height overrides the container's aspect-ratio. This is why `wine-single__bottle-img` had `max-height: 520px` removed — the container's aspect-ratio now controls proportions. Actual bottle images are approximately 1:2 ratio; `aspect-ratio: 2/3` on the container is a deliberate crop/frame choice that keeps the white circle correctly proportioned.
+
+62. **Wine single layout columns:** `grid-template-columns: 34% 1fr 200px` (full). `--no-sidebar` variant: `34% 1fr`. Tablet (`max-width: 900px`): `250px 1fr`. Percentage on the bottle column is intentional — `%` in grid is relative to the grid container, not the viewport (unlike `vw`). `minmax()` was removed as the minimum was never reached.
+
+63. **Back label image:** Not displayed on `single-dswg_wine.php` sidebar — front label image only. Back label is still stored (`dswg_wine_label_back`), still appears as a download link in the sidebar download list, just not rendered as an `<img>`.
+
+64. **Wine panel sidebar overflow fix:** `.wine-panel__sidebar` changed from `min-width: 160px` to `min-width: 0; width: 160px`. The `min-width: 160px` was causing long filenames to blow out the grid. `word-break: break-word` and `align-items: flex-start` added to `.wine-panel__download-link` so long names wrap cleanly with the icon top-aligned.
+
+65. **`_modern-features.less` duplicate `.container` block removed:** The file contained a `.container { width: min(90%, ...); padding-inline: clamp(...) }` block that conflicted with the canonical definition in `_layout.less` and added double padding (the `min(90%)` already gives breathing room, then `padding-inline` added more inside that). The rest of the file contains scaffolding/demo code (unused classes, empty `@supports` blocks, `:is()` transforms that break `mix-blend-mode`) — flagged in PROJECT-TODO for a full audit once layout is stable.
+
 ---
 
-*Last updated: March 9, 2026*
+*Last updated: March 10, 2026*
 *Plugin version: ds-wineguy v1.1, ds-theme-customizations v1.2*

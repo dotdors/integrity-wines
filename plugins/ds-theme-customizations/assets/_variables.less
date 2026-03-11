@@ -223,19 +223,11 @@
 }
 
 // ===== FOOTER OVERRIDES FOR INTEGRITY WINES =====
+// Note: footer.css already maps --footer-* to --color-* variables correctly.
+// Only override here when the value genuinely differs from the theme default.
 .site-footer {
-  --footer-bg:            @color-background;
-  --footer-border:        @color-border;
-  --footer-text:          @color-text;
-  --footer-text-muted:    @color-text-muted;
-  --footer-link:          @color-text;
-  --footer-link-hover:    @color-wine-red;
-  --footer-title:         @color-text;
-  --footer-divider:       @color-border;
-  --footer-logo-opacity:  0.85;
-
-  --footer-colophon-bg:   @color-surface;
-  --footer-colophon-text: @color-text-muted;
+  --footer-colophon-bg:   var(--color-gold-dark);
+  --footer-colophon-text: var(--color-surface, #ffffff);
 }
 
 body.footer-dark .site-footer {

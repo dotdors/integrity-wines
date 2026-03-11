@@ -87,57 +87,57 @@
     /**
      * Wine Label Upload
      */
-    var logoFrame;
-    
-    $('.dswg-upload-logo').on('click', function(e) {
+    /**
+     * Wine Label Upload — front and back.
+     * Buttons carry data-target (hidden input selector),
+     * data-preview (preview div selector), data-title, data-button.
+     * One handler covers both labels with no shared frame state.
+     */
+    $(document).on('click', '.dswg-upload-label', function(e) {
         e.preventDefault();
-        
-        // If the media frame already exists, reopen it
-        if (logoFrame) {
-            logoFrame.open();
-            return;
-        }
-        
-        // Create the media frame
-        logoFrame = wp.media({
-            title: 'Select Wine Label',
-            button: {
-                text: 'Use as Label'
-            },
+
+        var $btn     = $(this);
+        var target   = $btn.data('target');
+        var preview  = $btn.data('preview');
+        var title    = $btn.data('title')  || 'Select Image';
+        var btnText  = $btn.data('button') || 'Use Image';
+
+        var labelFrame = wp.media({
+            title:    title,
+            button:   { text: btnText },
             multiple: false
         });
-        
-        // When an image is selected, run a callback
-        logoFrame.on('select', function() {
-            var attachment = logoFrame.state().get('selection').first().toJSON();
-            
-            // Update hidden field
-            $('#dswg_wine_logo').val(attachment.id);
-            
-            // Handle SVGs and files without thumbnail sizes
+
+        labelFrame.on('select', function() {
+            var attachment = labelFrame.state().get('selection').first().toJSON();
+
+            $(target).val(attachment.id);
+
             var imageUrl = attachment.sizes && attachment.sizes.thumbnail
                 ? attachment.sizes.thumbnail.url
                 : attachment.url;
-            
-            // Update preview
-            $('.dswg-logo-preview').html('<img src="' + imageUrl + '" />');
-            
-            // Show remove button
-            if ($('.dswg-remove-logo').length === 0) {
-                $('.dswg-upload-logo').after('<button type="button" class="button dswg-remove-logo">Remove Logo</button>');
+
+            $(preview).html('<img src="' + imageUrl + '" />');
+
+            // Show remove button if not already present
+            if ($btn.siblings('.dswg-remove-label[data-target="' + target + '"]').length === 0) {
+                $btn.after(
+                    '<button type="button" class="button dswg-remove-label"' +
+                    ' data-target="' + target + '"' +
+                    ' data-preview="' + preview + '">Remove</button>'
+                );
             }
         });
-        
-        // Open the modal
-        logoFrame.open();
+
+        labelFrame.open();
     });
-    
-    // Remove logo
-    $(document).on('click', '.dswg-remove-logo', function(e) {
+
+    $(document).on('click', '.dswg-remove-label', function(e) {
         e.preventDefault();
-        
-        $('#dswg_wine_logo').val('');
-        $('.dswg-logo-preview').html('');
+        var target  = $(this).data('target');
+        var preview = $(this).data('preview');
+        $(target).val('');
+        $(preview).html('');
         $(this).remove();
     });
     
@@ -149,26 +149,22 @@
     $('.dswg-add-files').on('click', function(e) {
         e.preventDefault();
         
-        // If the media frame already exists, reopen it
-        if (filesFrame) {
-            filesFrame.open();
-            return;
+        // Create the media frame if it doesn't exist yet
+        if (!filesFrame) {
+            filesFrame = wp.media({
+                title: 'Select Files',
+                button: {
+                    text: 'Add Files'
+                },
+                multiple: true
+            });
         }
-        
-        // Create the media frame
-        filesFrame = wp.media({
-            title: 'Select Files',
-            button: {
-                text: 'Add Files'
-            },
-            multiple: true
-        });
-        
-        // When files are selected, run a callback
-        filesFrame.on('select', function() {
+
+        // Re-register select handler each open so it fires exactly once per selection
+        filesFrame.off('select').on('select', function() {
             var selection = filesFrame.state().get('selection');
             var files = $('#dswg_wine_files').val();
-            var filesArray = files ? files.split(',') : [];
+            var filesArray = files ? files.split(',').filter(Boolean) : [];
             
             selection.map(function(attachment) {
                 attachment = attachment.toJSON();

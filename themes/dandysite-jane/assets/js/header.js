@@ -160,6 +160,24 @@
 
     function openMobileMenu() {
         mobileMenuOpen = true;
+
+        // header--hidden carries transform:translateY(-100%), and will-change:transform
+        // (set in CSS) makes the header a containing block for position:fixed children.
+        // Both must be neutralised before opening so the hamburger button resolves
+        // to the viewport rather than the off-screen header position.
+        // We only touch what's strictly needed — header--revealed is left alone.
+        header.classList.remove('header--hidden');
+        header.style.transform  = 'none';
+        header.style.willChange = 'auto';
+        header.style.transition = 'none';
+
+        // Re-enable transitions next frame so overlay fade-in still animates
+        requestAnimationFrame(function() {
+            header.style.transform  = '';
+            header.style.willChange = '';
+            header.style.transition = '';
+        });
+
         header.classList.add('mobile-menu-open');
         document.body.classList.add('mobile-menu-open');
         if (menuToggle) menuToggle.setAttribute('aria-expanded', 'true');
