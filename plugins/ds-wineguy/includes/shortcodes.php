@@ -170,3 +170,134 @@ function dswg_producer_grid_shortcode( $atts ) {
     return dswg_render_producer_grid( $atts );
 }
 add_shortcode( 'producer_grid', 'dswg_producer_grid_shortcode' );
+
+
+// =============================================================================
+// [country_grid] shortcode
+// =============================================================================
+//
+// Renders a grid of country cards linking to each country's archive page.
+// Designed for a standalone "Countries" WordPress Page.
+//
+// Usage:
+//   [country_grid]
+//
+// Each card shows:
+//   - Country photo (dswg_country_photo_id term meta) as full-bleed background
+//   - Country name
+//   - Producer count
+//   - Wine count (across all producers in that country)
+//
+// No attributes needed — always shows all 5 countries, alphabetical.
+//
+// Template for the card is inline here (no separate partial needed).
+
+/**
+ * Render the country grid.
+ *
+ * @return string  HTML string.
+ */
+function dswg_render_country_grid() {
+    $terms = get_terms( [
+        'taxonomy'   => 'dswg_country',
+        'hide_empty' => true,
+        'orderby'    => 'count',
+        'order'      => 'DESC',
+    ] );
+
+    if ( is_wp_error( $terms ) || empty( $terms ) ) {
+        return '<p>' . esc_html__( 'No countries found.', 'ds-wineguy' ) . '</p>';
+    }
+
+    ob_start();
+    ?>
+    <div class="country-grid">
+        <?php foreach ( $terms as $term ) :
+            $photo_id  = get_term_meta( $term->term_id, 'dswg_country_photo_id', true );
+            $photo_url = $photo_id ? wp_get_attachment_image_url( $photo_id, 'large' ) : '';
+            $term_url  = get_term_link( $term );
+
+            // Producer count — WordPress keeps this on the term object
+            $producer_count = (int) $term->count;
+
+            // Wine count — query wines whose producer is in this country
+            $producer_ids = get_posts( [
+                'post_type'      => 'dswg_producer',
+                'post_status'    => 'publish',
+                'posts_per_page' => -1,
+                'fields'         => 'ids',
+                'tax_query'      => [ [
+                    'taxonomy' => 'dswg_country',
+                    'field'    => 'term_id',
+                    'terms'    => $term->term_id,
+                ] ],
+            ] );
+
+            $wine_count = 0;
+            if ( ! empty( $producer_ids ) ) {
+                $wine_query = new WP_Query( [
+                    'post_type'      => 'dswg_wine',
+                    'post_status'    => 'publish',
+                    'posts_per_page' => -1,
+                    'fields'         => 'ids',
+                    'meta_query'     => [ [
+                        'key'     => 'dswg_producer_id',
+                        'value'   => $producer_ids,
+                        'compare' => 'IN',
+                    ] ],
+                ] );
+                $wine_count = $wine_query->found_posts;
+                wp_reset_postdata();
+            }
+
+            $image_style = $photo_url
+                ? 'background-image: url(' . esc_url( $photo_url ) . ');'
+                : '';
+        ?>
+        <div class="country-card<?php echo $photo_url ? '' : ' country-card--no-image'; ?>">
+
+            <div class="country-card__image"
+                 style="<?php echo esc_attr( $image_style ); ?>"
+                 role="img"
+                 aria-label="<?php echo esc_attr( $term->name ); ?>">
+
+                <div class="country-card__info">
+                    <h2 class="country-card__name"><?php echo esc_html( $term->name ); ?></h2>
+                    <span class="country-card__label">
+                        <?php echo esc_html( sprintf(
+                            _n( '%d producer', '%d producers', $producer_count, 'ds-wineguy' ),
+                            $producer_count
+                        ) ); ?>
+                        <?php if ( $wine_count ) : ?>
+                            &nbsp;&middot;&nbsp;
+                            <?php echo esc_html( sprintf(
+                                _n( '%d wine', '%d wines', $wine_count, 'ds-wineguy' ),
+                                $wine_count
+                            ) ); ?>
+                        <?php endif; ?>
+                    </span>
+                </div>
+
+            </div><!-- .country-card__image -->
+
+            <a href="<?php echo esc_url( $term_url ); ?>"
+               class="country-card__link"
+               aria-label="<?php echo esc_attr( sprintf( __( 'Explore %s', 'ds-wineguy' ), $term->name ) ); ?>"></a>
+
+        </div><!-- .country-card -->
+        <?php endforeach; ?>
+    </div><!-- .country-grid -->
+    <?php
+    return ob_get_clean();
+}
+
+/**
+ * [country_grid] shortcode handler.
+ *
+ * @return string  Grid HTML.
+ */
+function dswg_country_grid_shortcode( $atts ) {
+    return dswg_render_country_grid();
+}
+add_shortcode( 'country_grid', 'dswg_country_grid_shortcode' );
+

@@ -1,12 +1,12 @@
 # Integrity Wines — Project TODO
 
-**Last updated:** March 6, 2026
+**Last updated:** March 11, 2026
 
 ---
 
-## STATUS: Active Development — Wine Single Page Complete, Data Import Underway
+## STATUS: Active Development — Styling and UX Polish
 
-Producer archive, country taxonomy, card system, and AJAX filtering are built and working.
+Producer archive, country taxonomy, card system, wine single, and social icons are built and working.
 All work tracked in GitHub: https://github.com/dotdors/integrity-wines
 
 ---
@@ -82,6 +82,21 @@ All work tracked in GitHub: https://github.com/dotdors/integrity-wines
 - [x] Hero split headline centered on fullbleed, left on split
 
 ---
+
+### Session: March 11, 2026 — Social Icons, Typography, CSS Standards
+- [x] Social links system built in `dandysite-jane/includes/social-settings.php` — `[ds_socials]` shortcode, `Appearance → Theme Settings → Social Links` section
+- [x] `render_block` filter enables shortcodes in block-based widget areas (covers footer blocks)
+- [x] Social icon SVGs: `icon-instagram.svg`, `icon-facebook.svg` in `dandysite-jane/assets/images/` — `fill="currentColor"` on root `<svg>` tag
+- [x] Social icon CSS variable system: `--social-color` / `--social-color-hover` in `_variables.less` — green/gold for Integrity Wines; `.ds-socials span.ds-socials__icon` selector beats `.site-footer span` override
+- [x] Country archive: `dswg_country_photo_id` term meta added (editorial photo for country cards) alongside existing `dswg_country_map_id`
+- [x] `[country_grid]` shortcode added (`includes/shortcodes.php`) — renders country cards with bg photo, gold glass band, producer/wine counts
+- [x] Country card CSS: `aspect-ratio: 16/9` desktop, `4/3` at `@bp-xl` (900px)
+- [x] Breakpoints standardized — `@bp-sm/md/lg/xl/2xl` LESS variables in `_variables.less`; all raw px values replaced in `_components.less`, `_wine-components.less`, `_layout.less`
+- [x] `_modern-features.less` gutted to tombstone — dead container queries, harmful transforms removed
+- [x] Typography: `html { font-size: 112.5% }`, body `1.25rem`, `h1` standalone `font-weight: 400`
+- [x] `.subheading` editor utility class — italic Garamond, shares `.subheading-styles()` mixin with `.producer-identity__location`
+- [x] `.page-template-default .site-main { padding-top: var(--spacing-lg) }` added
+- [x] Footer widget h3 styling added to `_components.less`
 
 ### Session: March 6, 2026 — Data Import + Wine Single Page
 - [x] `dswg_inventory_no` meta field added to wines (admin meta box + importer) — used as unique key for import deduplication

@@ -641,6 +641,7 @@ require_once DSP_THEME_DIR . '/includes/header-settings.php';
 require_once DSP_THEME_DIR . '/includes/header-functions.php';
 require_once DSP_THEME_DIR . '/includes/header-meta.php';
 require_once DSP_THEME_DIR . '/includes/footer-settings.php';
+require_once DSP_THEME_DIR . '/includes/social-settings.php';
 
 // ===== SITE IDENTITY (logo variants) =====
 require_once DSP_THEME_DIR . '/includes/site-identity.php';

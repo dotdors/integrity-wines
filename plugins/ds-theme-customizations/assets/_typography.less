@@ -3,9 +3,18 @@
 // EB Garamond for all text (headings and body)
 
 // ===== BASE =====
+//
+// Setting font-size on html makes 1rem = 18px site-wide.
+// All clamp() heading values and rem-based spacing scale up proportionally.
+// Body text at 1.25rem = 22.5px — generous for Garamond which runs small.
+//
+html {
+  font-size: 112.5%; // 1rem = 18px (browser default 16px × 1.125)
+}
+
 body {
   font-family: var(--font-primary);  // EB Garamond for all text
-  font-size: 1.125rem;               // Slightly larger than 1rem base — more editorial
+  font-size: 1.25rem;                // 22.5px — generous for Garamond
   line-height: var(--line-height-base);
   color: var(--color-text);
   background-color: var(--color-background);
@@ -24,7 +33,7 @@ h1, h2, h3, h4, h5, h6 {
   letter-spacing: -0.01em;
 }
 
-h1 { font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 700; }
+h1 { font-size: clamp(2.5rem, 5vw, 4rem); }
 h2 { font-size: clamp(2rem, 4vw, 3rem); }
 h3 { font-size: clamp(1.5rem, 3vw, 2rem); }
 h4 { font-size: var(--font-size-xl); }
@@ -42,6 +51,12 @@ h6 {
 // Explicitly left-aligned inside components where left-align is correct.
 h1, h2, h3 {
   text-align: center;
+}
+
+// Standard WordPress page and post titles — inherit standard heading styles.
+// No color override here; var(--color-text) comes from the h1/h2/h3 base rule above.
+:is(h1, h2, h3):is(.page-title, .entry-title, .wp-block-post-title) {
+  margin-bottom: var(--spacing-md);
 }
 
 .wine-card,

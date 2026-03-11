@@ -201,15 +201,20 @@ function dswg_add_default_wine_types() {
 register_activation_hook(DSWG_PLUGIN_DIR . 'ds-wineguy.php', 'dswg_add_default_wine_types');
 
 // =============================================================================
-// Country Term Meta — Map Image
+// Country Term Meta — Map Image + Country Photo
 // =============================================================================
 //
-// Adds a "Country Map Image" field to the Add/Edit Country term screens.
-// Stored as term meta: key = 'dswg_country_map_id' (attachment ID).
+// Adds two image fields to the Add/Edit Country term screens:
+//
+//   dswg_country_map_id   — Regional map graphic, used on the country archive
+//                           page split-hero (taxonomy-dswg_country.php).
+//
+//   dswg_country_photo_id — Editorial photo, used as card background on the
+//                           Countries landing page ([country_grid] shortcode).
 //
 // Retrieve in templates:
-//   $map_id  = get_term_meta( $term->term_id, 'dswg_country_map_id', true );
-//   $map_url = $map_id ? wp_get_attachment_url( $map_id ) : '';
+//   $map_id   = get_term_meta( $term->term_id, 'dswg_country_map_id',   true );
+//   $photo_id = get_term_meta( $term->term_id, 'dswg_country_photo_id', true );
 //
 
 /**
@@ -231,6 +236,20 @@ function dswg_country_add_term_fields() {
             </button>
         </div>
         <p class="description"><?php esc_html_e( 'Used on the country page to display a regional map graphic.', 'ds-wineguy' ); ?></p>
+    </div>
+    <div class="form-field">
+        <label for="dswg_country_photo_id"><?php esc_html_e( 'Country Photo (card background)', 'ds-wineguy' ); ?></label>
+        <div class="dswg-term-image-upload">
+            <input type="hidden" id="dswg_country_photo_id" name="dswg_country_photo_id" value="">
+            <div id="dswg-country-photo-preview" style="margin-bottom:8px;"></div>
+            <button type="button" class="button dswg-upload-map-btn" data-target="dswg_country_photo_id" data-preview="dswg-country-photo-preview">
+                <?php esc_html_e( 'Upload / Select Image', 'ds-wineguy' ); ?>
+            </button>
+            <button type="button" class="button dswg-remove-map-btn" data-target="dswg_country_photo_id" data-preview="dswg-country-photo-preview" style="display:none;">
+                <?php esc_html_e( 'Remove', 'ds-wineguy' ); ?>
+            </button>
+        </div>
+        <p class="description"><?php esc_html_e( 'Landscape photo used as card background on the Countries landing page. Aim for 800×450px or wider.', 'ds-wineguy' ); ?></p>
     </div>
     <?php
 }
@@ -268,6 +287,32 @@ function dswg_country_edit_term_fields( $term ) {
             <p class="description"><?php esc_html_e( 'Used on the country page to display a regional map graphic.', 'ds-wineguy' ); ?></p>
         </td>
     </tr>
+    <tr class="form-field">
+        <th scope="row">
+            <label for="dswg_country_photo_id"><?php esc_html_e( 'Country Photo (card background)', 'ds-wineguy' ); ?></label>
+        </th>
+        <td>
+            <?php
+            $photo_id  = get_term_meta( $term->term_id, 'dswg_country_photo_id', true );
+            $photo_url = $photo_id ? wp_get_attachment_image_url( $photo_id, 'thumbnail' ) : '';
+            ?>
+            <div class="dswg-term-image-upload">
+                <input type="hidden" id="dswg_country_photo_id" name="dswg_country_photo_id" value="<?php echo esc_attr( $photo_id ); ?>">
+                <div id="dswg-country-photo-preview" style="margin-bottom:8px;">
+                    <?php if ( $photo_url ) : ?>
+                        <img src="<?php echo esc_url( $photo_url ); ?>" style="max-width:200px;height:auto;display:block;">
+                    <?php endif; ?>
+                </div>
+                <button type="button" class="button dswg-upload-map-btn" data-target="dswg_country_photo_id" data-preview="dswg-country-photo-preview">
+                    <?php esc_html_e( 'Upload / Select Image', 'ds-wineguy' ); ?>
+                </button>
+                <button type="button" class="button dswg-remove-map-btn" data-target="dswg_country_photo_id" data-preview="dswg-country-photo-preview" <?php echo $photo_id ? '' : 'style="display:none;"'; ?>>
+                    <?php esc_html_e( 'Remove', 'ds-wineguy' ); ?>
+                </button>
+            </div>
+            <p class="description"><?php esc_html_e( 'Landscape photo used as card background on the Countries landing page. Aim for 800×450px or wider.', 'ds-wineguy' ); ?></p>
+        </td>
+    </tr>
     <?php
 }
 add_action( 'dswg_country_edit_form_fields', 'dswg_country_edit_term_fields' );
@@ -292,6 +337,14 @@ function dswg_save_country_term_meta( $term_id ) {
         update_term_meta( $term_id, 'dswg_country_map_id', $map_id );
     } else {
         delete_term_meta( $term_id, 'dswg_country_map_id' );
+    }
+
+    $photo_id = isset( $_POST['dswg_country_photo_id'] ) ? absint( $_POST['dswg_country_photo_id'] ) : 0;
+
+    if ( $photo_id ) {
+        update_term_meta( $term_id, 'dswg_country_photo_id', $photo_id );
+    } else {
+        delete_term_meta( $term_id, 'dswg_country_photo_id' );
     }
 }
 add_action( 'created_dswg_country', 'dswg_save_country_term_meta' );

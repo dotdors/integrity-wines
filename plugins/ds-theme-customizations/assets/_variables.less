@@ -107,6 +107,16 @@
 @producer-card-width: 260px;
 @bottle-aspect-ratio: 0.75;        // Width/height ratio for bottle images
 
+// ===== BREAKPOINTS =====
+// Use these everywhere — never hardcode px values in media queries.
+// Note: 782px (WordPress admin bar height change) is intentionally excluded;
+// that's a WP core value handled separately in the theme where needed.
+@bp-sm:  480px;   // large phones landscape
+@bp-md:  640px;   // small tablets / large phones
+@bp-lg:  768px;   // tablets (iPad portrait) — primary mobile/desktop split
+@bp-xl:  900px;   // wide tablets / small laptops
+@bp-2xl: 1024px;  // laptops / desktop
+
 // ===== CSS CUSTOM PROPERTIES (runtime variables) =====
 :root {
   /* Brand Colors */
@@ -176,6 +186,12 @@
   --color-wine-type-sparkling: @color-wine-type-sparkling;
   --wine-card-width: @wine-card-width;
   --producer-card-width: @producer-card-width;
+
+  // ===== SOCIAL ICONS =====
+  // Defined here for Integrity Wines. Base defaults (set in dandysite-jane)
+  // would be --color-primary / --color-secondary — overridden per project here.
+  --social-color:       var(--color-green-primary);
+  --social-color-hover: var(--color-gold-primary);
 
   // ===== HEADER OVERRIDES FOR INTEGRITY WINES =====
   // Overrides dandysite-jane header.css neutral defaults

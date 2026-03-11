@@ -492,7 +492,30 @@ integrity-wines/
 
 65. **`_modern-features.less` duplicate `.container` block removed:** The file contained a `.container { width: min(90%, ...); padding-inline: clamp(...) }` block that conflicted with the canonical definition in `_layout.less` and added double padding (the `min(90%)` already gives breathing room, then `padding-inline` added more inside that). The rest of the file contains scaffolding/demo code (unused classes, empty `@supports` blocks, `:is()` transforms that break `mix-blend-mode`) — flagged in PROJECT-TODO for a full audit once layout is stable.
 
+66. **Social links system:** `themes/dandysite-jane/includes/social-settings.php` — adds "Social Links" section to `Appearance → Theme Settings`. Options: `dsp_social_instagram`, `dsp_social_facebook` (URL fields, `esc_url_raw()` sanitized). Provides `[ds_socials]` shortcode — renders icon links for all platforms with a saved URL; skips empty ones. `size` attribute controls icon px size (default 40). Platform registry is `dsp_social_platforms()` — add a new platform by adding an entry there + dropping the SVG. `render_block` filter (targeting `core/paragraph`, `core/html`, `core/shortcode`, `core/freeform`) enables shortcodes in block-based widget areas. `widget_text` filter covers classic widgets. Registered in `functions.php` via `require_once DSP_THEME_DIR . '/includes/social-settings.php'` (after `footer-settings.php`).
+
+67. **Social icon SVGs:** Stored in `themes/dandysite-jane/assets/images/` — `icon-instagram.svg`, `icon-facebook.svg`. Must have `fill="currentColor"` on the root `<svg>` tag (not on individual `<path>` elements). Single-path monochrome SVGs from SVG Repo work perfectly. Multi-color or multi-fill SVGs (like brand gradient icons) cannot use `currentColor` — always check the source before using. If `fill` is on the `<svg>` tag only, just swap `fill="#000000"` → `fill="currentColor"`.
+
+68. **Social icon color system:** Two CSS custom properties in `_variables.less` control all social icon colors: `--social-color: var(--color-green-primary)` and `--social-color-hover: var(--color-gold-primary)`. These are Integrity Wines overrides — base theme default would be `--color-primary` / `--color-secondary`. `.ds-socials__link` uses `color: var(--social-color)` and SVG uses `fill: currentColor` to relay the color. **Specificity trap:** `.site-footer span` rule intercepts the color chain before it reaches the SVG. Fix: use `.ds-socials span.ds-socials__icon` (adds element + class specificity) to beat the footer rule. Dark footer variant: `.footer-dark .ds-socials__link` overrides to `rgba(255,255,255,0.7)` default, gold on hover.
+
+69. **`[ds_socials]` shortcode not rendering in footer block widget:** If the shortcode renders as literal text in a footer block widget area, the cause is a hyphen vs underscore typo (`[ds-socials]` vs `[ds_socials]`). Shortcodes use underscores.
+
+70. **Breakpoints standardized (March 2026):** All hardcoded px values in media queries replaced with LESS variables defined in `_variables.less`. Never use raw px values in media queries — always use these variables:
+    - `@bp-sm: 480px` — large phones landscape
+    - `@bp-md: 640px` — small tablets / large phones (consolidates old 600px/640px)
+    - `@bp-lg: 768px` — tablets, iPad portrait — **primary mobile/desktop split** (consolidates 700px/767px/768px/769px)
+    - `@bp-xl: 900px` — wide tablets / small laptops
+    - `@bp-2xl: 1024px` — laptops / desktop
+    - **Note:** `782px` in the base theme CSS is intentionally excluded — it's WordPress core's admin bar height-change breakpoint, not a layout breakpoint. Do not replace it.
+    - `min-width` variants written as `(@bp-lg + 1)` etc. to avoid overlap at exact boundary.
+
+71. **Typography standards (current):** `html { font-size: 112.5% }` makes 1rem = 18px. Body: `1.25rem`. `h1` standalone rule: `font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 400`. Heading block (h1–h6 group): `font-weight: 700` — standalone h1 rule overrides this to 400 explicitly.
+
+72. **`.subheading` editor utility class:** Defined in `_components.less` — italic EB Garamond, `--font-size-xl`, `--color-text-light`, `letter-spacing: 0.04em`. Shares `.subheading-styles()` LESS mixin with `.producer-identity__location` — both stay in sync from the mixin. Apply in block editor via "Additional CSS Class" on any paragraph block for an italic editorial subheading treatment.
+
+73. **`.page-template-default .site-main`:** Gets `padding-top: var(--spacing-lg)`. WordPress adds `page-template-default` body class on any Page using the default template — reliable selector for targeting regular WP pages without hitting CPT singles or archives.
+
 ---
 
-*Last updated: March 10, 2026*
+*Last updated: March 11, 2026*
 *Plugin version: ds-wineguy v1.1, ds-theme-customizations v1.2*

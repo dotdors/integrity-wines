@@ -90,10 +90,8 @@
   overflow: visible;
   transition: var(--transition);
 
-  // Wins against _accessibility.less and _modern-features.less shared card rules
-  // because _wine-components.less now loads after both (see plugin-style.less import order)
-  &:hover,
-  &:focus-within,
+  // Suppress any inherited hover transforms/shadows — wine cards use
+  // bottle circle expansion for hover instead (background-size swap, no transform)
   &:is(:hover, :focus-within) {
     box-shadow: none;
     transform: none;
@@ -185,44 +183,150 @@
 }
 
 // ===== COUNTRY CARD =====
+//
+// Landscape card used on the Countries landing page ([country_grid] shortcode).
+// Mirrors the ds-producer-card pattern: full-bleed bg image, light gradient
+// overlay, gold glass info band at bottom with eyebrow counts + country name.
+// Full-cover anchor sits above everything for the click target.
+//
+// Structure:
+//   .country-card
+//     .country-card__image   (bg image div)
+//       .country-card__info  (counts + name bar, bottom — glass band)
+//     .country-card__link    (full-cover anchor)
+
 .country-card {
-  background: var(--color-surface);
-  border-radius: var(--border-radius-lg);
-  box-shadow: var(--box-shadow);
-  overflow: hidden;
-  transition: var(--transition);
-  
-  &:hover {
-    box-shadow: var(--box-shadow-lg);
-    transform: translateY(-2px);
-  }
+    position: relative;
+    aspect-ratio: 16 / 9;   // landscape — adjust here if needed
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+    &:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    @media (max-width: @bp-xl) {
+        aspect-ratio: 4 / 3;
+    }
 }
 
-.country-card__map {
-  width: 100%;
-  height: 200px;
-  overflow: hidden;
-  
-  img {
+.country-card__image {
     width: 100%;
     height: 100%;
-    object-fit: cover;
-  }
+    background-size: cover;
+    background-position: center bottom;
+    background-repeat: no-repeat;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+
+    // Light gradient over image (same as producer card)
+    &::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+            to bottom,
+            rgba(0, 0, 0, 0.10) 0%,
+            rgba(0, 0, 0, 0.20) 50%,
+            rgba(0, 0, 0, 0.40) 100%
+        );
+        pointer-events: none;
+        z-index: 1;
+    }
 }
 
-.country-card__content {
-  padding: var(--spacing-lg);
+// Gold glass info band — matches ds-producer-card__info exactly
+.country-card__info {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    padding: 1.25rem 1.5rem;
+    background: #c6a64b4f;
+    backdrop-filter: blur(4px) saturate(120%);
+    -webkit-backdrop-filter: blur(4px) saturate(120%);
+    text-align: center;
+    z-index: 2;
 }
 
-.country-card__title {
-  margin: 0 0 var(--spacing-sm) 0;
-  font-size: var(--font-size-2xl);
-  color: var(--color-wine-red);
+// Eyebrow: producer count · wine count
+.country-card__label {
+    display: block;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: rgba(255, 255, 255, 0.95);
+    margin-bottom: 0.35rem;
+    font-weight: 600;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    font-family: var(--font-secondary);
+    text-align: center;
 }
 
-.country-card__count {
-  font-size: var(--font-size-base);
-  color: var(--color-text-muted);
+// Country name — matches ds-producer-card__name
+.country-card__name {
+    color: #ffffff;
+    font-size: 2rem;
+    margin: 0 0 0.1em 0;
+    font-weight: 600;
+    line-height: 1.2;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    text-align: center;
+}
+
+// Full-cover link — matches ds-producer-card__link
+.country-card__link {
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    cursor: pointer;
+
+    &:focus {
+        outline: 3px solid rgba(255, 255, 255, 0.8);
+        outline-offset: -4px;
+    }
+}
+
+// No-image fallback — warm gradient (same approach as ds-producer-card--no-image)
+.country-card--no-image {
+    .country-card__image {
+        background: linear-gradient(
+            145deg,
+            var(--color-wine-red) 0%,
+            color-mix(in srgb, var(--color-wine-red) 60%, #000) 100%
+        );
+    }
+}
+
+// ===== COUNTRY GRID =====
+//
+// 2-column grid for the [country_grid] shortcode.
+// Last card spans full width when count is odd (5 countries = 2+2+1).
+
+.country-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-md);
+
+    // Lone last card on its row spans full width
+    .country-card:last-child:nth-child(odd) {
+        grid-column: 1 / -1;
+        aspect-ratio: 21 / 7;  // wider card, slightly shorter proportionally
+    }
+
+    @media (max-width: @bp-lg) {
+        grid-template-columns: 1fr;
+
+        .country-card:last-child:nth-child(odd) {
+            grid-column: 1;
+            aspect-ratio: 16 / 9;
+        }
+    }
 }
 
 // ===== ARCHIVE GRIDS =====
@@ -231,7 +335,7 @@
   grid-template-columns: repeat(auto-fill, minmax(var(--producer-card-width), 1fr));
   gap: var(--spacing-md);
 
-  @media (max-width: 768px) {
+  @media (max-width: @bp-lg) {
     grid-template-columns: 1fr;
   }
 }
@@ -241,11 +345,11 @@
   grid-template-columns: repeat(auto-fill, minmax(var(--wine-card-width), 1fr));
   gap: var(--spacing-lg);
   
-  @media (max-width: 768px) {
+  @media (max-width: @bp-lg) {
     grid-template-columns: repeat(2, 1fr);
   }
   
-  @media (max-width: 480px) {
+  @media (max-width: @bp-sm) {
     grid-template-columns: 1fr;
   }
 }
@@ -934,7 +1038,7 @@
 }
 
 // Mobile: stack filter fields
-@media (max-width: 600px) {
+@media (max-width: @bp-md) {
     .producer-filter__inner {
         flex-direction: column;
         align-items: stretch;
@@ -945,9 +1049,32 @@
 }
 
 // ---- Country archive page -----------------------------------------------
+
+// Flex wrapper around the split-hero and producer grid.
+// Default: hero first, grid below (column).
+// To flip order without touching the template, set:
+//   .country-archive-wrapper { flex-direction: column-reverse; }
+.country-archive-wrapper {
+    display: flex;
+    flex-direction: column;
+}
+
 // Back link section — centered button
 .country-archive__back {
     text-align: center;
+}
+
+// Regional map — contained, editorial. Sits below the producer grid.
+// Uses .section.section--narrow for standard vertical padding + content-width constraint.
+.country-archive__map {
+    text-align: center;
+}
+
+.country-archive__map-img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
 }
 
 // Self-contained split layout — image left, text panel right.
@@ -958,7 +1085,7 @@
     grid-template-columns: 1fr 1fr;
     min-height: 480px;
 
-    @media (max-width: 900px) {
+    @media (max-width: @bp-xl) {
         grid-template-columns: 1fr;
     }
 }
@@ -1041,14 +1168,14 @@
             grid-template-areas: "bottle details";
         }
 
-        @media (max-width: 900px) {
+        @media (max-width: @bp-xl) {
             grid-template-columns: 250px 1fr;
             grid-template-areas:
                 "bottle details"
                 "bottle sidebar";
         }
 
-        @media (max-width: 600px) {
+        @media (max-width: @bp-md) {
             grid-template-columns: 1fr;
             grid-template-areas:
                 "bottle"
@@ -1106,7 +1233,7 @@
         text-align: left;
         line-height: 1.2;
 
-        @media (min-width: 600px) {
+        @media (min-width: (@bp-md + 1)) {
             font-size: clamp(1.5rem, 3vw, 2.25rem);
         }
     }
